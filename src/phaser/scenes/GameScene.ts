@@ -6,11 +6,11 @@ import {
 } from "../../game/input/bindings";
 import { createSceneBridge, type SceneBridge } from "../adapters/sceneBridge";
 import {
-  createActorSprite,
-  drawEnemyTexture,
-  drawPlayerTexture,
-  syncEnemySprite,
-  syncPlayerSprite,
+  createEnemyRig,
+  createPlayerRig,
+  ensureActorPartTextures,
+  syncActorRig,
+  type ActorRig,
 } from "../view/drawActors";
 import { drawArena } from "../view/drawArena";
 import { updateCameraFeedback } from "../view/camera";
@@ -19,8 +19,8 @@ import { drawBulletsAndFx } from "../view/drawFx";
 export class GameScene extends Phaser.Scene {
   private bridge!: SceneBridge;
   private bindings!: InputBindingState;
-  private player!: Phaser.GameObjects.Image;
-  private enemies = new Map<string, Phaser.GameObjects.Image>();
+  private player!: ActorRig;
+  private enemies = new Map<string, ActorRig>();
   private fxGraphics!: Phaser.GameObjects.Graphics;
   private previousBulletCount = 0;
 
@@ -28,47 +28,19 @@ export class GameScene extends Phaser.Scene {
     super("game");
   }
 
-  preload(): void {
-    this.load.image(
-      "actor-player-tv",
-      new URL("../../assets/generated/actor-player-tv.png", import.meta.url).href,
-    );
-    this.load.image(
-      "actor-enemy-ranged-crt",
-      new URL("../../assets/generated/actor-enemy-ranged-crt.png", import.meta.url).href,
-    );
-    this.load.image(
-      "actor-enemy-rush-human",
-      new URL("../../assets/generated/actor-enemy-rush-human.png", import.meta.url).href,
-    );
-    this.load.image(
-      "actor-enemy-ranged-human",
-      new URL("../../assets/generated/actor-enemy-ranged-human.png", import.meta.url).href,
-    );
-  }
-
   create(): void {
     this.cameras.main.setBackgroundColor("#07101a");
+    ensureActorPartTextures(this);
     this.bridge = createSceneBridge();
     this.bindings = createInputBindings(this);
 
     const state = this.bridge.getState();
     drawArena(this, state.arena);
 
-    const playerTexture = drawPlayerTexture(this);
-    this.player = createActorSprite(
-      this,
-      playerTexture,
-      state.player.position.x,
-      state.player.position.y,
-    );
+    this.player = createPlayerRig(this, state.player);
 
     for (const enemy of state.enemies) {
-      const texture = drawEnemyTexture(this, enemy);
-      this.enemies.set(
-        enemy.id,
-        createActorSprite(this, texture, enemy.position.x, enemy.position.y),
-      );
+      this.enemies.set(enemy.id, createEnemyRig(this, enemy));
     }
 
     this.fxGraphics = this.add.graphics();
@@ -79,12 +51,22 @@ export class GameScene extends Phaser.Scene {
     const input = readPlayerInput(this, this.bindings, { x: 0, y: 0 });
     const state = this.bridge.step(input, Math.min(delta, 50));
 
-    syncPlayerSprite(this.player, state.player);
+    syncActorRig(
+      this.player,
+      state.player,
+      state.weapons[state.player.weaponId],
+      Math.min(delta, 50),
+    );
 
     for (const enemy of state.enemies) {
-      const sprite = this.enemies.get(enemy.id);
-      if (sprite) {
-        syncEnemySprite(sprite, enemy);
+      const rig = this.enemies.get(enemy.id);
+      if (rig) {
+        syncActorRig(
+          rig,
+          enemy,
+          enemy.weaponId ? state.weapons[enemy.weaponId] : undefined,
+          Math.min(delta, 50),
+        );
       }
     }
 
