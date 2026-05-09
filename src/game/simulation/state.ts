@@ -24,6 +24,7 @@ export const createInitialGameState = (): GameState => ({
   weapons: createStarterWeapons(),
   score: 0,
   status: "playing",
+  engaged: false,
   elapsedMs: 0,
   nextId: 1,
 });

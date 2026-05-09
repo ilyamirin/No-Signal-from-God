@@ -105,6 +105,7 @@ export type GameState = {
   weapons: Record<string, WeaponState>;
   score: number;
   status: GameStatus;
+  engaged: boolean;
   elapsedMs: number;
   nextId: number;
 };

@@ -40,6 +40,7 @@ describe("updateGame", () => {
     });
     state.enemies[0].position = { x: 500, y: 390 };
     state.enemies[1].position = { x: 880, y: 390 };
+    state.engaged = true;
 
     const next = updateGame(state, neutralInput, 16);
 
@@ -49,12 +50,25 @@ describe("updateGame", () => {
     expect(next.bullets.filter((bullet) => bullet.ownerId.startsWith("enemy-ranged"))).toHaveLength(2);
   });
 
+  it("keeps the opening encounter playable for the first reaction window", () => {
+    let state = createInitialGameState();
+
+    for (let frame = 0; frame < 300; frame += 1) {
+      state = updateGame(state, neutralInput, 16);
+    }
+
+    expect(state.status).toBe("playing");
+    expect(state.player.alive).toBe(true);
+    expect(state.player.health).toBeGreaterThan(0);
+  });
+
   it("marks victory and awards score after the last enemy dies", () => {
     const state = createInitialGameState();
     state.enemies.forEach((enemy, index) => {
       enemy.alive = index === 0;
       enemy.health = index === 0 ? 1 : 0;
     });
+    state.engaged = true;
     state.bullets.push({
       id: "test-bullet",
       ownerId: "player",

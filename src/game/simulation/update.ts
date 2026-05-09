@@ -12,6 +12,9 @@ const reduceTimer = (value: number, deltaMs: number): number => Math.max(0, valu
 
 const cloneGameState = (state: GameState): GameState => structuredClone(state) as GameState;
 
+const hasEngagementInput = (input: PlayerInput): boolean =>
+  input.firing || input.move.x !== 0 || input.move.y !== 0;
+
 const canPlayerStandAt = (state: GameState, position: Vec2): boolean =>
   !state.arena.obstacles.some((obstacle) => obstacle.blocksMovement && circleIntersectsRect(position, state.player.radius, obstacle));
 
@@ -59,10 +62,15 @@ export const updateGame = (current: GameState, input: PlayerInput, deltaMs: numb
   Object.values(state.weapons).forEach((weapon) => tickWeapon(weapon, deltaMs));
   state.player.invulnerableMs = reduceTimer(state.player.invulnerableMs, deltaMs);
   state.player.facing = angleTo(state.player.position, input.aimWorld);
+  state.engaged = state.engaged || hasEngagementInput(input);
 
   updatePlayerMovement(state, input, deltaMs);
   if (input.firing && state.player.alive) {
     tryFireWeapon(state, state.player.id, state.player.weaponId, state.player.position, state.player.facing);
+  }
+
+  if (!state.engaged) {
+    return state;
   }
 
   updateEnemies(state, deltaMs);
