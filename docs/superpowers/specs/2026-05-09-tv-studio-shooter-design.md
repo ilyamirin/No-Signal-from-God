@@ -4,7 +4,9 @@
 
 Build a first playable browser-game slice inspired by top-down neon room-clear shooters and the provided TV-studio references. The target is a 2-3 minute arena prototype that verifies movement, mouse aiming, shooting, enemy pressure, score, restart flow, and the visual mood before expanding into more mechanics.
 
-The game should feel like a compact, violent TV-studio shootout: dark broadcast rooms, blue and magenta lighting, green-screen accents, cameras, studio lights, cables, server panels, news desks, blood decals, shell casings, and a black pixel HUD with pink score text. The result should be visually original and must not reuse copyrighted game assets.
+The game should feel like a compact, violent TV-studio shootout from the late 1990s to early 2000s: dark broadcast rooms, blue and magenta lighting, green-screen accents, CRT monitors, bulky cameras, studio lights, cables, server panels, news desks, blood decals, shell casings, and a black pixel HUD with pink score text. The result should be visually original and must not reuse copyrighted game assets.
+
+The camera view is strictly top-down, matching the room-clear readability of classic overhead action games. Do not use angled isometric characters, side-view props, or perspective camera tilt in the first slice.
 
 ## References
 
@@ -30,6 +32,8 @@ Kick is explicitly out of scope for the first implementation, but the input/acti
 
 ## Player And Weapon Model
 
+The player character wears a suit and has a bulky 1990s CRT television for a head. The silhouette should read from directly above: suit body, clear shoulders, TV-box head, and one visible weapon direction.
+
 The player always has exactly one weapon in hand, matching the room-clear shooter fantasy. There is no inventory. The first slice starts the player with one configured weapon, such as a pistol or shotgun.
 
 The first slice has no manual reload key. Use a simple weapon model with a visible loaded-round count and an automatic short reload delay when the magazine is empty. This keeps the first control scheme focused on movement, aim, and firing while preserving the ammo pressure shown in the references.
@@ -44,6 +48,8 @@ Enemy set:
 
 - Ranged enemies: keep distance when possible, aim at the player, and fire when line of sight is available.
 - Rush enemies: close distance quickly and punish standing still.
+
+Enemy heads can vary: some enemies have normal human heads, and some have CRT television heads. This variation should support the TV-studio fantasy without making enemy type readability ambiguous. Enemy weapon and movement behavior must remain readable from the body, weapon pose, color accent, or movement pattern.
 
 The first slice uses simple enemy behavior rather than pathfinding-heavy stealth. Obstacles can block movement and line of fire, but the arena remains open enough for immediate play.
 
@@ -102,11 +108,11 @@ The bridge boundary should let the scene submit actions such as movement, aim, f
 
 Start with procedural or code-drawn pixel-art-like assets so the prototype is playable quickly:
 
-- Player body and weapon silhouette
-- TV-head ranged enemies
-- Rush enemies with a distinct silhouette
+- Player in a suit with a bulky 1990s CRT television head and a clear weapon silhouette
+- Ranged enemies with either normal human heads or CRT television heads
+- Rush enemies with either normal human heads or CRT television heads, plus a distinct movement/body silhouette
 - News desks and monitor walls
-- Cameras, tripods, studio lights, cables, control panels, server racks, green screen
+- CRT monitor walls, bulky cameras, tripods, studio lights, cables, control panels, server racks, green screen
 - Blood decals, bullet impacts, casing/debris
 
 If the procedural assets do not reach the intended mood, use `replicate-nano-banana-2-http` to generate bitmap reference sheets or sprite textures from the provided images. When using Replicate, use the raw HTTP helper workflow, pass the local reference images as `--image-input`, keep fields inside the published `google/nano-banana-2` schema, and download outputs immediately.
@@ -116,6 +122,10 @@ If the procedural assets do not reach the intended mood, use `replicate-nano-ban
 Visual QA is mandatory before calling the slice done. The implementation pass must run the game locally, open it in a browser, capture screenshots, and compare them against the references for:
 
 - Overall TV-studio mood and top-down readability
+- Strict overhead camera: no accidental isometric or side-view character presentation
+- Late 1990s to early 2000s broadcast-tech styling, including CRTs and bulky equipment
+- Player reads as a suited character with a CRT television head
+- Enemy head variation reads as intentional: normal heads and CRT television heads both appear without hiding enemy behavior
 - No blank canvas or missing assets
 - No holes in the arena floor or walls
 - No broken HUD positioning or unreadable HUD text
