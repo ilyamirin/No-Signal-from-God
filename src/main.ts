@@ -1,22 +1,6 @@
 import Phaser from "phaser";
+import { GameScene } from "./phaser/scenes/GameScene";
 import "./styles.css";
-
-class PlaceholderScene extends Phaser.Scene {
-  constructor() {
-    super("placeholder");
-  }
-
-  create(): void {
-    this.cameras.main.setBackgroundColor("#08111d");
-    this.add.text(48, 48, "TV STUDIO SHOOTER", {
-      fontFamily: "Courier New",
-      fontSize: "32px",
-      color: "#ffd2f1",
-      backgroundColor: "#050505",
-      padding: { x: 12, y: 8 },
-    });
-  }
-}
 
 const gameRoot = document.querySelector<HTMLDivElement>("#game-root");
 
@@ -32,7 +16,13 @@ new Phaser.Game({
   backgroundColor: "#05070b",
   pixelArt: true,
   roundPixels: true,
-  scene: [PlaceholderScene],
+  scene: [GameScene],
+  physics: {
+    default: "arcade",
+    arcade: {
+      debug: false,
+    },
+  },
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
