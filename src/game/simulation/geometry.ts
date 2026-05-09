@@ -39,17 +39,46 @@ export const circleIntersectsRect = (center: Vec2, radius: number, rect: Rect): 
   return Math.hypot(center.x - closestX, center.y - closestY) < radius;
 };
 
-export const hasLineOfSight = (from: Vec2, to: Vec2, blockers: Rect[]): boolean => {
-  const steps = Math.max(8, Math.ceil(distance(from, to) / 18));
-  for (let index = 1; index < steps; index += 1) {
-    const t = index / steps;
-    const probe = {
-      x: from.x + (to.x - from.x) * t,
-      y: from.y + (to.y - from.y) * t,
-    };
-    if (blockers.some((blocker) => blocker.blocksBullets && pointInRect(probe, blocker))) {
-      return false;
-    }
+const segmentIntersectsRect = (from: Vec2, to: Vec2, rect: Rect): boolean => {
+  if (pointInRect(from, rect) || pointInRect(to, rect)) {
+    return true;
   }
-  return true;
+
+  const direction = {
+    x: to.x - from.x,
+    y: to.y - from.y,
+  };
+  let minT = 0;
+  let maxT = 1;
+
+  const clip = (edgeDirection: number, edgeDistance: number): boolean => {
+    if (edgeDirection === 0) {
+      return edgeDistance >= 0;
+    }
+
+    const t = edgeDistance / edgeDirection;
+    if (edgeDirection < 0) {
+      if (t > maxT) {
+        return false;
+      }
+      minT = Math.max(minT, t);
+    } else {
+      if (t < minT) {
+        return false;
+      }
+      maxT = Math.min(maxT, t);
+    }
+    return true;
+  };
+
+  return (
+    clip(-direction.x, from.x - rect.x) &&
+    clip(direction.x, rect.x + rect.width - from.x) &&
+    clip(-direction.y, from.y - rect.y) &&
+    clip(direction.y, rect.y + rect.height - from.y)
+  );
+};
+
+export const hasLineOfSight = (from: Vec2, to: Vec2, blockers: Rect[]): boolean => {
+  return !blockers.some((blocker) => blocker.blocksBullets && segmentIntersectsRect(from, to, blocker));
 };
