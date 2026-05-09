@@ -28,6 +28,29 @@ export class GameScene extends Phaser.Scene {
     super("game");
   }
 
+  preload(): void {
+    this.load.image(
+      "generated-tv-studio-arena",
+      new URL("../../assets/generated/tv-studio-arena-bg.png", import.meta.url).href,
+    );
+    this.load.image(
+      "actor-player-tv",
+      new URL("../../assets/generated/actor-player-tv.png", import.meta.url).href,
+    );
+    this.load.image(
+      "actor-enemy-ranged-crt",
+      new URL("../../assets/generated/actor-enemy-ranged-crt.png", import.meta.url).href,
+    );
+    this.load.image(
+      "actor-enemy-rush-human",
+      new URL("../../assets/generated/actor-enemy-rush-human.png", import.meta.url).href,
+    );
+    this.load.image(
+      "actor-enemy-ranged-human",
+      new URL("../../assets/generated/actor-enemy-ranged-human.png", import.meta.url).href,
+    );
+  }
+
   create(): void {
     this.cameras.main.setBackgroundColor("#07101a");
     this.bridge = createSceneBridge();

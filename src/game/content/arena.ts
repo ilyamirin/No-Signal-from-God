@@ -4,12 +4,12 @@ export const createArena = (): ArenaState => ({
   width: 1366,
   height: 768,
   obstacles: [
-    { id: "top-news-desk", x: 420, y: 126, width: 350, height: 74, blocksMovement: true, blocksBullets: true },
-    { id: "lower-news-desk", x: 318, y: 520, width: 360, height: 74, blocksMovement: true, blocksBullets: true },
-    { id: "server-bank", x: 1050, y: 250, width: 92, height: 180, blocksMovement: true, blocksBullets: true },
-    { id: "control-console", x: 130, y: 624, width: 260, height: 72, blocksMovement: true, blocksBullets: true },
-    { id: "camera-tripod-left", x: 226, y: 340, width: 54, height: 54, blocksMovement: true, blocksBullets: false },
-    { id: "camera-tripod-right", x: 948, y: 470, width: 56, height: 56, blocksMovement: true, blocksBullets: false },
+    { id: "left-news-desk", x: 215, y: 210, width: 275, height: 170, blocksMovement: true, blocksBullets: true },
+    { id: "center-news-desk", x: 590, y: 220, width: 245, height: 92, blocksMovement: true, blocksBullets: true },
+    { id: "server-wall", x: 920, y: 66, width: 398, height: 254, blocksMovement: true, blocksBullets: true },
+    { id: "green-screen", x: 1040, y: 310, width: 280, height: 292, blocksMovement: true, blocksBullets: true },
+    { id: "camera-tripod-center", x: 835, y: 495, width: 84, height: 100, blocksMovement: true, blocksBullets: false },
+    { id: "bottom-control-desk", x: 238, y: 676, width: 278, height: 74, blocksMovement: true, blocksBullets: true },
   ],
   decor: [
     { id: "crt-wall-top", kind: "crt-wall", position: { x: 600, y: 72 }, rotation: 0 },
