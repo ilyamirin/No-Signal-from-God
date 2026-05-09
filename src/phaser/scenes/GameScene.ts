@@ -13,12 +13,16 @@ import {
   syncPlayerSprite,
 } from "../view/drawActors";
 import { drawArena } from "../view/drawArena";
+import { updateCameraFeedback } from "../view/camera";
+import { drawBulletsAndFx } from "../view/drawFx";
 
 export class GameScene extends Phaser.Scene {
   private bridge!: SceneBridge;
   private bindings!: InputBindingState;
   private player!: Phaser.GameObjects.Image;
   private enemies = new Map<string, Phaser.GameObjects.Image>();
+  private fxGraphics!: Phaser.GameObjects.Graphics;
+  private previousBulletCount = 0;
 
   constructor() {
     super("game");
@@ -47,6 +51,9 @@ export class GameScene extends Phaser.Scene {
         createActorSprite(this, texture, enemy.position.x, enemy.position.y),
       );
     }
+
+    this.fxGraphics = this.add.graphics();
+    this.emitState(state);
   }
 
   update(_time: number, delta: number): void {
@@ -61,5 +68,14 @@ export class GameScene extends Phaser.Scene {
         syncEnemySprite(sprite, enemy);
       }
     }
+
+    drawBulletsAndFx(this.fxGraphics, state.bullets, state.fx);
+    updateCameraFeedback(this.cameras.main, state, this.previousBulletCount);
+    this.previousBulletCount = state.bullets.length;
+    this.emitState(state);
+  }
+
+  private emitState(state: ReturnType<SceneBridge["getState"]>): void {
+    window.dispatchEvent(new CustomEvent("game-state-change", { detail: state }));
   }
 }
