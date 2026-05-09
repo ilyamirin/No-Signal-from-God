@@ -14,6 +14,22 @@ The camera view is strictly top-down, matching the room-clear readability of cla
 - `/Users/ilyagmirin/Downloads/replicate-prediction-3acrj365jdrmw0cy08vbyc9w7m (1).jpeg`
 - `/Users/ilyagmirin/Downloads/replicate-prediction-k50tnff449rmy0cy1s9aa8m7mm.jpeg`
 - `/Users/ilyagmirin/Downloads/replicate-prediction-51qwra49knrmy0cy1s99p9e6nr.jpeg`
+- `/Users/ilyagmirin/Downloads/Screen_Shot_2014-06-13_at_9.01.36_AM.0.0.avif`
+- `/Users/ilyagmirin/Downloads/images (6).jpeg`
+- `/Users/ilyagmirin/Downloads/MV5BM2UzZTVmYzAtZDEyNC00NTdkLTgzZWItYWY5YjEyMDkxYjkzXkEyXkFqcGc@._V1_.jpg`
+- `/Users/ilyagmirin/Downloads/Hotline_Miami_Gameplay_(2012).png`
+
+## Original-Game Visual Delta Notes
+
+The current target is not a polished TV-studio illustration; it is a combat map with a violent, readable overhead language. The original-game references differ from the previous version in these seven ways, and future visual work should preserve all of them:
+
+1. **Camera and perspective:** rooms, bodies, weapons, floors, and props read as a strict orthographic floor plan. Avoid side-view faces, isometric furniture, and perspective-heavy props.
+2. **Palette:** use aggressive red, magenta, acid yellow, dirty white, black, and cyan accents. Avoid a calm blue-gray studio palette as the dominant look.
+3. **Dirt, blood, and chaos:** add blood pools, trails, bodies, broken glass, dropped weapons, shell casings, and debris so the level looks like a fight already happened.
+4. **Level structure:** build rooms, corridors, door gaps, wall segments, and sight-line blockers. A single open studio should be avoided when aiming for the room-clear feel.
+5. **Gameplay readability:** interactive entities must pop first: player, enemies, guns, bodies, doors, and walls. Decorative studio detail should not bury actors or bullets.
+6. **Actor silhouettes:** characters should be rougher, flatter, and more icon-like from above, with strong dark outlines and clear weapon direction.
+7. **HUD attitude:** keep black panels and pink-white pixel text, but make them chunkier, dirtier, and closer to the reference proportions rather than clean UI cards.
 
 ## Gameplay Scope
 

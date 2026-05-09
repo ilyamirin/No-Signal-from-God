@@ -30,10 +30,6 @@ export class GameScene extends Phaser.Scene {
 
   preload(): void {
     this.load.image(
-      "generated-tv-studio-arena",
-      new URL("../../assets/generated/tv-studio-arena-bg.png", import.meta.url).href,
-    );
-    this.load.image(
       "actor-player-tv",
       new URL("../../assets/generated/actor-player-tv.png", import.meta.url).href,
     );
