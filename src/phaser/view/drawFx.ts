@@ -10,10 +10,11 @@ export const drawBulletsAndFx = (
 
   for (const item of fx) {
     if (item.kind === "blood") {
-      graphics.fillStyle(0xb50817, Math.min(1, item.ttlMs / 500));
+      graphics.fillStyle(0xb50817, Math.min(0.95, item.ttlMs / 1200));
       graphics.fillCircle(item.position.x, item.position.y, 18);
       graphics.fillCircle(item.position.x + 16, item.position.y - 8, 6);
       graphics.fillCircle(item.position.x - 12, item.position.y + 10, 7);
+      graphics.fillCircle(item.position.x + 4, item.position.y + 20, 4);
     }
   }
 

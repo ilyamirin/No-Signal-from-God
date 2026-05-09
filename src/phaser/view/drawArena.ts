@@ -141,6 +141,10 @@ export const drawArena = (
   graphics.fillRect(426, 94, 340, 170);
   graphics.fillStyle(0xded0c7, 0.85);
   graphics.fillRect(542, 205, 116, 45);
+  graphics.fillStyle(0xff41d6, 1);
+  graphics.fillRect(112, 78, 18, 584);
+  graphics.fillStyle(0x25d7ff, 1);
+  graphics.fillRect(1210, 86, 18, 575);
 
   for (const obstacle of arena.obstacles) {
     const fill = obstacle.id.includes("desk") ? 0xb8794f : 0x232831;
@@ -158,6 +162,19 @@ export const drawArena = (
   graphics.fillStyle(0x050505, 1);
   graphics.fillRect(0, 0, arena.width, 34);
   graphics.fillRect(0, arena.height - 34, arena.width, 34);
+
+  const title = scene.add
+    .text(602, 232, "TV8\nNEWS", {
+      align: "center",
+      color: "#d9d6cf",
+      fontFamily: "Courier New",
+      fontSize: "42px",
+      fontStyle: "900",
+      lineSpacing: -8,
+    })
+    .setOrigin(0.5)
+    .setAlpha(0.82);
+  container.add(title);
 
   return container;
 };

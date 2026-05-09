@@ -12,7 +12,7 @@ const addFx = (state: GameState, kind: "blood" | "impact", position: Vec2, rotat
     kind,
     position: { ...position },
     rotation,
-    ttlMs: kind === "blood" ? 360 : 220,
+    ttlMs: kind === "blood" ? 6000 : 220,
   });
 };
 

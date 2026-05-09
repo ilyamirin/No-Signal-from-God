@@ -34,16 +34,18 @@ export const drawPlayerTexture = (scene: Phaser.Scene): string => {
 
   const graphics = scene.make.graphics({ x: 0, y: 0 }, false);
   graphics.fillStyle(0xf4f0dc, 1);
-  graphics.fillRect(19, 29, 28, 42);
-  graphics.fillStyle(0x162230, 1);
-  graphics.fillRect(12, 32, 40, 46);
+  graphics.fillRect(20, 31, 26, 40);
+  graphics.fillStyle(0x263849, 1);
+  graphics.fillRect(11, 31, 42, 47);
+  graphics.lineStyle(3, 0x050505, 1);
+  graphics.strokeRect(11, 31, 42, 47);
   graphics.fillStyle(0xffffff, 1);
   graphics.fillTriangle(25, 34, 39, 34, 32, 52);
-  drawCrtHead(graphics, 32, 22, 30, 0xbdf7ec);
+  drawCrtHead(graphics, 32, 21, 34, 0xbdf7ec);
   graphics.fillStyle(0x1e1e21, 1);
-  graphics.fillRect(46, 48, 34, 8);
+  graphics.fillRect(45, 47, 38, 9);
   graphics.lineStyle(3, 0x050505, 1);
-  graphics.strokeRect(46, 48, 34, 8);
+  graphics.strokeRect(45, 47, 38, 9);
   graphics.generateTexture(key, 96, 96);
   graphics.destroy();
   return key;
@@ -72,6 +74,8 @@ export const drawEnemyTexture = (
   if (enemy.kind === "ranged") {
     graphics.fillStyle(0x191919, 1);
     graphics.fillRect(47, 45, 28, 7);
+    graphics.lineStyle(2, 0x050505, 1);
+    graphics.strokeRect(47, 45, 28, 7);
   } else {
     graphics.fillStyle(0xbfc6c8, 1);
     graphics.fillRect(46, 42, 18, 5);
@@ -103,6 +107,12 @@ export const syncEnemySprite = (
   enemy: EnemyState,
 ): void => {
   sprite.setPosition(enemy.position.x, enemy.position.y);
-  sprite.setRotation(enemy.facing);
-  sprite.setVisible(enemy.alive);
+  sprite.setRotation(enemy.alive ? enemy.facing : enemy.facing + 0.75);
+  sprite.setVisible(true);
+  sprite.setAlpha(enemy.alive ? 1 : 0.45);
+  if (enemy.alive) {
+    sprite.clearTint();
+  } else {
+    sprite.setTint(0x7f2a2a);
+  }
 };
