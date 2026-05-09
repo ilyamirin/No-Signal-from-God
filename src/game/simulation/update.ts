@@ -1,0 +1,73 @@
+import type { PlayerInput } from "../input/actions";
+import { createInitialGameState } from "./state";
+import { angleTo, circleIntersectsRect, clampToArena, normalize, scale } from "./geometry";
+import type { GameState, Vec2 } from "./types";
+import { updateBulletsAndHits, updateStatus } from "./systems/combat";
+import { updateEnemies } from "./systems/enemies";
+import { tickWeapon, tryFireWeapon } from "./systems/weapons";
+
+const PLAYER_SPEED = 270;
+
+const reduceTimer = (value: number, deltaMs: number): number => Math.max(0, value - deltaMs);
+
+const cloneGameState = (state: GameState): GameState => structuredClone(state) as GameState;
+
+const canPlayerStandAt = (state: GameState, position: Vec2): boolean =>
+  !state.arena.obstacles.some((obstacle) => obstacle.blocksMovement && circleIntersectsRect(position, state.player.radius, obstacle));
+
+const updatePlayerMovement = (state: GameState, input: PlayerInput, deltaMs: number): void => {
+  const direction = normalize(input.move);
+  const velocity = scale(direction, PLAYER_SPEED);
+  const deltaSeconds = deltaMs / 1000;
+  const nextPosition = clampToArena(
+    {
+      x: state.player.position.x + velocity.x * deltaSeconds,
+      y: state.player.position.y + velocity.y * deltaSeconds,
+    },
+    state.player.radius,
+    state.arena.width,
+    state.arena.height,
+  );
+
+  state.player.velocity = velocity;
+  if (canPlayerStandAt(state, nextPosition)) {
+    state.player.position = nextPosition;
+  } else {
+    state.player.velocity = { x: 0, y: 0 };
+  }
+};
+
+const updateFx = (state: GameState, deltaMs: number): void => {
+  state.fx.forEach((fx) => {
+    fx.ttlMs = reduceTimer(fx.ttlMs, deltaMs);
+  });
+  state.fx = state.fx.filter((fx) => fx.ttlMs > 0);
+};
+
+export const updateGame = (current: GameState, input: PlayerInput, deltaMs: number): GameState => {
+  if (input.restart && current.status !== "playing") {
+    return createInitialGameState();
+  }
+
+  const state = cloneGameState(current);
+  if (state.status !== "playing") {
+    return state;
+  }
+
+  state.elapsedMs += deltaMs;
+  updateFx(state, deltaMs);
+  Object.values(state.weapons).forEach((weapon) => tickWeapon(weapon, deltaMs));
+  state.player.invulnerableMs = reduceTimer(state.player.invulnerableMs, deltaMs);
+  state.player.facing = angleTo(state.player.position, input.aimWorld);
+
+  updatePlayerMovement(state, input, deltaMs);
+  if (input.firing && state.player.alive) {
+    tryFireWeapon(state, state.player.id, state.player.weaponId, state.player.position, state.player.facing);
+  }
+
+  updateEnemies(state, deltaMs);
+  updateBulletsAndHits(state, deltaMs);
+  updateStatus(state);
+
+  return state;
+};
