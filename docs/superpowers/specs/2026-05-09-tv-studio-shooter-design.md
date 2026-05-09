@@ -56,6 +56,22 @@ The first slice has no manual reload key. Use a simple weapon model with a visib
 
 Future weapon pickup should follow a replacement model: picking up a new weapon swaps the current weapon and drops the old one. The first slice only needs the equipped-weapon abstraction and ammo display.
 
+## Modular Actor Rig
+
+Actors should move toward a reusable strict-overhead rig instead of one baked sprite per character. Each actor is composed from reusable catalog parts:
+
+- `legs`: rotate toward movement input or velocity and play a top-down walk cycle while moving.
+- `torso`: rotates toward aim direction, carrying shoulders and upper-body mass.
+- `head`: rotates with the torso and can be swapped between human, CRT, robot, and future variants.
+- `arms`: rotates with the torso, holds the current weapon, and can change pose per weapon family.
+- `weapon`: separate visible weapon sprite attached to the hands.
+
+The upper-body group (`torso`, `head`, `arms`, `weapon`) follows aim direction. On firing, this group gets a short recoil impulse: small backwards offset, slight rotation kick, then a quick return. Legs remain driven by movement so aiming and running can disagree, which is important for Hotline Miami-style readability.
+
+The part catalog should live in `src/game/content/actorParts.ts` and describe reusable components, tags, anchors, weapon pose sets, and actor rig presets. This keeps art production scalable: people, CRT-headed people, robots, suits, jackets, different legs, and different arm/weapon poses can reuse the same compatible parts instead of requiring a full new sprite sheet for every character.
+
+Weapon changes should not replace the whole actor. They should switch the weapon sprite and compatible arm/pose definition while preserving legs, torso, and head where possible.
+
 ## Combat
 
 Combat should be fast, readable, and lethal. The player dies from one or two hits. Enemies die quickly. Shots need clear feedback: muzzle flash, bullet trail or projectile readability, blood impact, shell casing or debris, short hit-stop, and modest screen shake.
