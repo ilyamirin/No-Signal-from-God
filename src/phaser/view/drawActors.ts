@@ -76,11 +76,16 @@ const drawPixelRect = (
 const drawLegTexture = (scene: Phaser.Scene, part: ActorPartDefinition): void => {
   const fill = part.id.includes("suit") ? 0x171719 : 0x23342a;
   ensureTexture(scene, part.spriteKey, (graphics) => {
-    drawPixelRect(graphics, 36, 20, 14, 54, fill);
     graphics.fillStyle(0x050505, 1);
-    graphics.fillRect(34, 68, 20, 10);
-    graphics.fillStyle(part.id.includes("suit") ? 0xf0ede0 : 0x78ef8a, 1);
-    graphics.fillRect(39, 23, 5, 40);
+    graphics.fillEllipse(48, 48, 20, 60);
+    graphics.fillEllipse(48, 72, 26, 16);
+    graphics.fillStyle(fill, 1);
+    graphics.fillEllipse(48, 47, 14, 52);
+    graphics.fillEllipse(48, 70, 20, 11);
+    graphics.fillStyle(part.id.includes("suit") ? 0x2c2d31 : 0x3f7850, 1);
+    graphics.fillRect(45, 24, 6, 34);
+    graphics.fillStyle(0x050505, 1);
+    graphics.fillRect(39, 72, 18, 5);
   });
 };
 
@@ -88,66 +93,78 @@ const drawTorsoTexture = (scene: Phaser.Scene, part: ActorPartDefinition): void 
   const suit = part.id.includes("suit");
   ensureTexture(scene, part.spriteKey, (graphics) => {
     graphics.fillStyle(0x050505, 1);
-    graphics.fillRect(25, 24, 46, 44);
-    graphics.fillStyle(suit ? 0x171719 : 0x1d4f2e, 1);
-    graphics.fillRect(29, 27, 38, 38);
-    graphics.fillStyle(suit ? 0xffffff : 0xe5eddc, 1);
-    graphics.fillTriangle(39, 28, 57, 28, 48, 48);
-    graphics.fillStyle(suit ? 0x8d1d43 : 0x0d2517, 1);
-    graphics.fillRect(44, 40, 8, 24);
-    graphics.fillStyle(suit ? 0x282a31 : 0x2e7044, 1);
-    graphics.fillRect(21, 30, 10, 30);
-    graphics.fillRect(65, 30, 10, 30);
+    graphics.fillEllipse(48, 46, 66, 40);
+    graphics.fillEllipse(48, 61, 42, 30);
+    graphics.fillStyle(suit ? 0x151719 : 0x1b4d2d, 1);
+    graphics.fillEllipse(48, 45, 58, 32);
+    graphics.fillEllipse(48, 59, 34, 24);
+    graphics.fillStyle(suit ? 0x2e3036 : 0x2d7245, 1);
+    graphics.fillRect(23, 38, 50, 8);
+    graphics.fillStyle(suit ? 0xece5d7 : 0xb7efbb, 1);
+    graphics.fillRect(43, 31, 10, 13);
+    graphics.fillStyle(suit ? 0x7e1639 : 0x0c2618, 1);
+    graphics.fillRect(46, 40, 4, 18);
   });
 };
 
 const drawHeadTexture = (scene: Phaser.Scene, part: ActorPartDefinition): void => {
   ensureTexture(scene, part.spriteKey, (graphics) => {
     if (part.id.includes("crt")) {
-      drawPixelRect(graphics, 22, 22, 52, 40, 0x8e9896);
-      graphics.fillStyle(0xbcd4d3, 1);
-      graphics.fillRect(29, 31, 34, 20);
+      drawPixelRect(graphics, 20, 25, 56, 46, 0x8e9896);
+      graphics.fillStyle(0xaeb8b7, 1);
+      graphics.fillRect(28, 33, 40, 24);
+      graphics.fillStyle(0xcbd5d4, 0.9);
+      graphics.fillRect(32, 37, 32, 16);
       graphics.fillStyle(0x778785, 1);
-      for (let y = 33; y < 50; y += 4) {
-        graphics.fillRect(31, y, 30, 2);
+      for (let y = 38; y < 53; y += 4) {
+        graphics.fillRect(34, y, 28, 2);
       }
       graphics.fillStyle(0x050505, 1);
-      graphics.fillCircle(68, 34, 3);
-      graphics.fillCircle(68, 45, 3);
+      graphics.fillRect(24, 20, 48, 6);
+      graphics.fillRect(30, 70, 36, 5);
       graphics.lineStyle(3, 0x050505, 1);
-      graphics.lineBetween(36, 22, 28, 12);
-      graphics.lineBetween(58, 22, 66, 12);
+      graphics.lineBetween(37, 25, 30, 14);
+      graphics.lineBetween(59, 25, 66, 14);
       return;
     }
 
     if (part.id.includes("robot")) {
-      drawPixelRect(graphics, 25, 23, 46, 38, 0x5f6e70);
+      drawPixelRect(graphics, 25, 25, 46, 42, 0x5f6e70);
       graphics.fillStyle(0x76f8ff, 1);
-      graphics.fillRect(34, 34, 28, 14);
+      graphics.fillRect(34, 38, 28, 12);
+      graphics.fillStyle(0x3d484a, 1);
+      graphics.fillRect(31, 29, 34, 7);
       return;
     }
 
     graphics.fillStyle(0x050505, 1);
-    graphics.fillCircle(48, 43, 24);
+    graphics.fillCircle(48, 48, 23);
     graphics.fillStyle(0xf1b184, 1);
-    graphics.fillCircle(48, 45, 20);
+    graphics.fillCircle(48, 49, 18);
     graphics.fillStyle(0x2c150b, 1);
-    graphics.fillRect(29, 24, 38, 18);
+    graphics.fillCircle(48, 43, 19);
+    graphics.fillStyle(0xf1b184, 1);
+    graphics.fillCircle(48, 53, 13);
+    graphics.fillStyle(0x050505, 1);
+    graphics.fillRect(39, 66, 18, 4);
   });
 };
 
 const drawArmsTexture = (scene: Phaser.Scene, part: ActorPartDefinition): void => {
   const sleeve = part.id.includes("suit") ? 0x171719 : 0x1d4f2e;
   ensureTexture(scene, part.spriteKey, (graphics) => {
+    graphics.lineStyle(13, 0x050505, 1);
+    graphics.lineBetween(31, 51, 42, 20);
+    graphics.lineBetween(65, 51, 54, 20);
+    graphics.lineStyle(8, sleeve, 1);
+    graphics.lineBetween(31, 51, 42, 21);
+    graphics.lineBetween(65, 51, 54, 21);
     graphics.fillStyle(0x050505, 1);
-    graphics.fillRect(29, 19, 13, 50);
-    graphics.fillRect(54, 19, 13, 50);
-    graphics.fillStyle(sleeve, 1);
-    graphics.fillRect(32, 22, 8, 40);
-    graphics.fillRect(56, 22, 8, 40);
+    graphics.fillCircle(42, 20, 7);
+    graphics.fillCircle(54, 20, 7);
     graphics.fillStyle(0xf1b184, 1);
-    graphics.fillRect(31, 58, 10, 12);
-    graphics.fillRect(55, 58, 10, 12);
+    graphics.fillCircle(42, 20, 4);
+    graphics.fillCircle(54, 20, 4);
   });
 };
 
@@ -155,13 +172,13 @@ const drawWeaponTexture = (scene: Phaser.Scene, part: ActorPartDefinition): void
   ensureTexture(scene, part.spriteKey, (graphics) => {
     const barrelLength = part.id.includes("shotgun") ? 52 : 34;
     graphics.fillStyle(0x050505, 1);
-    graphics.fillRect(45, 12, 8, barrelLength);
-    graphics.fillRect(39, 44, 20, 12);
-    graphics.fillRect(52, 52, 9, 18);
+    graphics.fillRect(44, 11, 8, barrelLength);
+    graphics.fillRect(38, 43, 22, 11);
+    graphics.fillRect(52, 48, 8, 18);
     graphics.fillStyle(0xbec6c8, 1);
-    graphics.fillRect(47, 15, 4, barrelLength - 4);
+    graphics.fillRect(47, 14, 3, barrelLength - 4);
     graphics.fillStyle(0x5a5f63, 1);
-    graphics.fillRect(42, 46, 14, 7);
+    graphics.fillRect(42, 46, 13, 5);
   });
 };
 
