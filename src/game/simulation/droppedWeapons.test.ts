@@ -11,9 +11,9 @@ describe("dropped weapons", () => {
 
     updateDroppedWeapons(state, 100);
 
-    expect(weapon.position.x).toBeGreaterThan(675);
+    expect(weapon.position.x).toBeGreaterThan(470);
     expect(weapon.velocity.x).toBeLessThan(300);
-    expect(weapon.rotation).not.toBe(-0.25);
+    expect(weapon.rotation).not.toBe(0.2);
   });
 
   it("equips nearest dropped weapon and leaves the old one on the floor", () => {
@@ -21,7 +21,7 @@ describe("dropped weapons", () => {
     state.player.position = { ...state.droppedWeapons[0].position };
 
     expect(tryPickupWeapon(state)).toBe(true);
-    expect(state.player.weaponId).toBe("floor-rifle-1");
+    expect(state.player.weaponId).toBe("floor-pistol-reception");
     expect(state.droppedWeapons.some((weapon) => weapon.weaponId === "service-pistol")).toBe(true);
   });
 });

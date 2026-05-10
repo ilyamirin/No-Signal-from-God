@@ -7,7 +7,7 @@ describe("doors", () => {
     const state = createInitialGameState();
     const door = state.doors[0];
 
-    applyDoorPressure(state, { x: door.hinge.x - 16, y: door.hinge.y + 28 }, 18);
+    applyDoorPressure(state, { x: door.hinge.x + 28, y: door.hinge.y - 16 }, 18);
     updateDoors(state, 120);
 
     const collider = state.colliders.find((candidate) => candidate.id === `door-${door.id}`);
@@ -20,10 +20,23 @@ describe("doors", () => {
     const state = createInitialGameState();
     const door = state.doors[0];
 
-    state.player.position = { x: door.hinge.x - 18, y: door.hinge.y + 28 };
+    state.player.position = { x: door.hinge.x + 28, y: door.hinge.y - 16 };
     applyDoorPressure(state, state.player.position, state.player.radius);
     updateDoors(state, 120);
 
     expect(door.angle).not.toBe(door.closedAngle);
+  });
+
+  it("uses standardized single and double reception-hub doors", () => {
+    const state = createInitialGameState();
+    const singleDoors = state.doors.filter((door) => door.id.includes("single"));
+    const doubleDoors = state.doors.filter((door) => door.id.includes("double"));
+
+    expect(singleDoors).toHaveLength(2);
+    expect(doubleDoors).toHaveLength(4);
+    expect(state.doors.every((door) => door.assetKey === "scifi-door")).toBe(true);
+    expect(state.doors.every((door) => door.length === 56)).toBe(true);
+    expect(state.doors.every((door) => door.thickness === 7)).toBe(true);
+    expect(state.doors.every((door) => door.blocksBullets)).toBe(true);
   });
 });

@@ -3,6 +3,7 @@ import { createDoors } from "../content/doors";
 import { createDroppedWeapons } from "../content/droppedWeapons";
 import { createEnemies } from "../content/enemies";
 import { createProps } from "../content/props";
+import { receptionHubLayout } from "../content/receptionHubLayout";
 import { createStarterWeapons } from "../content/weapons";
 import { rectToCollider } from "./collision";
 import { doorToCollider } from "./systems/doors";
@@ -24,7 +25,7 @@ export const createInitialGameState = (): GameState => {
     id: "player",
     head: "crt",
     outfit: "suit",
-    position: { x: 690, y: 390 },
+    position: { ...receptionHubLayout.playerSpawn },
     velocity: { x: 0, y: 0 },
     radius: 18,
     facing: -Math.PI / 2,

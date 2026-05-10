@@ -35,10 +35,12 @@ export const createWeapon = (id: string, kind: WeaponKind): WeaponState =>
 
 export const createStarterWeapons = (): Record<string, WeaponState> => ({
   "service-pistol": createPistol("service-pistol"),
-  "enemy-ranged-anchor-pistol": createPistol("enemy-ranged-anchor-pistol"),
-  "enemy-ranged-control-pistol": createPistol("enemy-ranged-control-pistol"),
-  "enemy-ranged-green-pistol": createPistol("enemy-ranged-green-pistol"),
-  "enemy-ranged-office-rifle": createRifle("enemy-ranged-office-rifle"),
-  "floor-rifle-1": createRifle("floor-rifle-1"),
-  "floor-pistol-1": createPistol("floor-pistol-1"),
+  "security-guard-pistol": createPistol("security-guard-pistol"),
+  "newsroom-guard-left-pistol": createPistol("newsroom-guard-left-pistol"),
+  "newsroom-guard-right-pistol": createPistol("newsroom-guard-right-pistol"),
+  "server-guard-rifle": createRifle("server-guard-rifle"),
+  "control-guard-pistol": createPistol("control-guard-pistol"),
+  "control-guard-rifle": createRifle("control-guard-rifle"),
+  "floor-pistol-reception": createPistol("floor-pistol-reception"),
+  "floor-rifle-server": createRifle("floor-rifle-server"),
 });

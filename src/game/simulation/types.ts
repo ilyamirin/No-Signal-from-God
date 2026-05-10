@@ -78,6 +78,15 @@ export type DecorItem = {
   rotation: number;
 };
 
+export type FloorRegion = {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  frames: number[];
+};
+
 export type WeaponState = {
   id: string;
   kind: WeaponKind;
@@ -196,6 +205,7 @@ export type DroppedWeaponState = {
 export type ArenaState = {
   width: number;
   height: number;
+  floorRegions: FloorRegion[];
   obstacles: Rect[];
   decor: DecorItem[];
 };

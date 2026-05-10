@@ -1,36 +1,10 @@
 import type { ArenaState } from "../simulation/types";
+import { receptionHubLayout } from "./receptionHubLayout";
 
 export const createArena = (): ArenaState => ({
-  width: 1366,
-  height: 768,
-  obstacles: [
-    { id: "wall-top", x: 72, y: 52, width: 1212, height: 18, blocksMovement: true, blocksBullets: true },
-    { id: "wall-bottom", x: 72, y: 698, width: 1212, height: 18, blocksMovement: true, blocksBullets: true },
-    { id: "wall-left", x: 72, y: 52, width: 18, height: 664, blocksMovement: true, blocksBullets: true },
-    { id: "wall-right", x: 1266, y: 52, width: 18, height: 664, blocksMovement: true, blocksBullets: true },
-    { id: "divider-left-top", x: 350, y: 52, width: 18, height: 250, blocksMovement: true, blocksBullets: true },
-    { id: "divider-left-bottom", x: 350, y: 420, width: 18, height: 296, blocksMovement: true, blocksBullets: true },
-    { id: "divider-right-top", x: 814, y: 52, width: 18, height: 246, blocksMovement: true, blocksBullets: true },
-    { id: "divider-right-bottom", x: 814, y: 414, width: 18, height: 302, blocksMovement: true, blocksBullets: true },
-    { id: "wall-center-top", x: 368, y: 292, width: 280, height: 18, blocksMovement: true, blocksBullets: true },
-    { id: "wall-center-top-right", x: 716, y: 292, width: 98, height: 18, blocksMovement: true, blocksBullets: true },
-    { id: "left-news-desk", x: 150, y: 165, width: 175, height: 74, blocksMovement: true, blocksBullets: true },
-    { id: "center-news-desk", x: 520, y: 132, width: 210, height: 76, blocksMovement: true, blocksBullets: true },
-    { id: "server-bank", x: 960, y: 88, width: 250, height: 78, blocksMovement: true, blocksBullets: true },
-    { id: "green-screen-wall", x: 1064, y: 292, width: 160, height: 158, blocksMovement: true, blocksBullets: true },
-    { id: "camera-tripod-center", x: 570, y: 512, width: 70, height: 70, blocksMovement: true, blocksBullets: false },
-    { id: "bottom-control-desk", x: 1012, y: 612, width: 210, height: 70, blocksMovement: true, blocksBullets: true },
-  ],
-  decor: [
-    { id: "crt-wall-top", kind: "crt-wall", position: { x: 600, y: 72 }, rotation: 0 },
-    { id: "green-screen-right", kind: "green-screen", position: { x: 1245, y: 385 }, rotation: 0 },
-    { id: "floor-cable-left", kind: "cable", position: { x: 235, y: 430 }, rotation: 0.2 },
-    { id: "floor-cable-right", kind: "cable", position: { x: 925, y: 310 }, rotation: -0.35 },
-    { id: "studio-light-left", kind: "studio-light", position: { x: 190, y: 280 }, rotation: 0.75 },
-    { id: "studio-light-right", kind: "studio-light", position: { x: 1160, y: 220 }, rotation: -0.75 },
-    { id: "camera-floor-left", kind: "camera", position: { x: 252, y: 365 }, rotation: 0.5 },
-    { id: "camera-floor-right", kind: "camera", position: { x: 976, y: 498 }, rotation: -1.2 },
-    { id: "server-rack-main", kind: "server-rack", position: { x: 1096, y: 340 }, rotation: 0 },
-    { id: "control-panel-bottom", kind: "control-panel", position: { x: 260, y: 660 }, rotation: 0 },
-  ],
+  width: receptionHubLayout.size.width,
+  height: receptionHubLayout.size.height,
+  floorRegions: receptionHubLayout.floorRegions,
+  obstacles: receptionHubLayout.obstacles,
+  decor: [],
 });

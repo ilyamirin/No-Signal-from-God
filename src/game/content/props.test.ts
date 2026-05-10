@@ -27,4 +27,33 @@ describe("prop catalog", () => {
     expect(props.some((prop) => prop.catalogKey === "table_1" && prop.collider)).toBe(true);
     expect(props.some((prop) => prop.catalogKey === "keyboard_mouse" && !prop.collider)).toBe(true);
   });
+
+  it("dresses every reception-hub zone with usable asset-pack props", () => {
+    const props = createProps();
+
+    expect(props.some((prop) => prop.id.startsWith("reception-"))).toBe(true);
+    expect(props.some((prop) => prop.id.startsWith("security-"))).toBe(true);
+    expect(props.some((prop) => prop.id.startsWith("newsroom-"))).toBe(true);
+    expect(props.some((prop) => prop.id.startsWith("server-"))).toBe(true);
+    expect(props.some((prop) => prop.id.startsWith("control-"))).toBe(true);
+  });
+
+  it("keeps soft blockers bullet-passable and hard blockers bullet-blocking", () => {
+    const props = createProps();
+    const soft = props.find((prop) => prop.id === "reception-coffee-table");
+    const hard = props.find((prop) => prop.id === "server-rack-prop-a");
+
+    expect(soft?.collider?.channels).toEqual({
+      movement: true,
+      bullets: false,
+      vision: false,
+      sound: false,
+    });
+    expect(hard?.collider?.channels).toEqual({
+      movement: true,
+      bullets: true,
+      vision: true,
+      sound: true,
+    });
+  });
 });

@@ -38,13 +38,6 @@ const drawWall = (graphics: Phaser.GameObjects.Graphics, rect: Box): void => {
   }
 };
 
-const drawDoorGap = (graphics: Phaser.GameObjects.Graphics, x: number, y: number, width: number, height: number): void => {
-  graphics.fillStyle(0x090607, 1);
-  graphics.fillRect(x, y, width, height);
-  graphics.lineStyle(3, 0xf5d8a6, 0.9);
-  graphics.strokeRect(x + 2, y + 2, width - 4, height - 4);
-};
-
 const drawDesk = (graphics: Phaser.GameObjects.Graphics, rect: Box): void => {
   graphics.fillStyle(0x090607, 1);
   graphics.fillRect(rect.x - 4, rect.y - 4, rect.width + 8, rect.height + 8);
@@ -195,20 +188,12 @@ export const drawArena = (
 
   container.add(graphics);
 
-  addFloorTiles(scene, container, { x: 90, y: 70, width: 260, height: 628 }, [0, 1]);
-  addFloorTiles(scene, container, { x: 368, y: 70, width: 446, height: 222 }, [4]);
-  addFloorTiles(scene, container, { x: 368, y: 310, width: 446, height: 388 }, [1, 2]);
-  addFloorTiles(scene, container, { x: 832, y: 70, width: 434, height: 222 }, [2, 3]);
-  addFloorTiles(scene, container, { x: 832, y: 310, width: 434, height: 388 }, [0, 3]);
-  addFloorTiles(scene, container, { x: 368, y: 310, width: 446, height: 110 }, [5, 6]);
-  addFloorTiles(scene, container, { x: 986, y: 168, width: 280, height: 124 }, [4, 5]);
+  for (const region of arena.floorRegions) {
+    addFloorTiles(scene, container, region, region.frames);
+  }
 
   const overlay = scene.add.graphics();
   container.add(overlay);
-
-  drawDoorGap(overlay, 350, 302, 18, 118);
-  drawDoorGap(overlay, 814, 298, 18, 116);
-  drawDoorGap(overlay, 648, 292, 68, 18);
 
   drawGlass(overlay, 850, 338);
   drawShells(overlay, 592, 372);
