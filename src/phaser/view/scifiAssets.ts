@@ -9,11 +9,14 @@ import boxBigUrl from "../../assets/vendor/valentint-scifi/Decorations/boxBig.pn
 import boxSmallUrl from "../../assets/vendor/valentint-scifi/Decorations/boxSmall.png?url";
 import chair1Url from "../../assets/vendor/valentint-scifi/Decorations/chair_1_Sheet.png?url";
 import chair2Url from "../../assets/vendor/valentint-scifi/Decorations/chair_2_Sheet.png?url";
+import coolerUrl from "../../assets/vendor/valentint-scifi/Decorations/cooler_Sheet.png?url";
 import couch1Url from "../../assets/vendor/valentint-scifi/Decorations/couch_1_Sheet.png?url";
+import couch2Url from "../../assets/vendor/valentint-scifi/Decorations/couch_2_Sheet.png?url";
 import display1Url from "../../assets/vendor/valentint-scifi/Decorations/display_1_Sheet.png?url";
 import display2Url from "../../assets/vendor/valentint-scifi/Decorations/display_2_Sheet.png?url";
 import keyboardMouseUrl from "../../assets/vendor/valentint-scifi/Decorations/keyboardMouse.png?url";
 import labDeviceUrl from "../../assets/vendor/valentint-scifi/Decorations/laboratoryDevice.png?url";
+import lampsUrl from "../../assets/vendor/valentint-scifi/Decorations/lamps_Sheet.png?url";
 import plantUrl from "../../assets/vendor/valentint-scifi/Decorations/plants_Sheet.png?url";
 import table1Url from "../../assets/vendor/valentint-scifi/Decorations/table_1_Sheet.png?url";
 import table2Url from "../../assets/vendor/valentint-scifi/Decorations/table_2_Sheet.png?url";
@@ -22,6 +25,7 @@ import table4Url from "../../assets/vendor/valentint-scifi/Decorations/table_4_S
 import table5Url from "../../assets/vendor/valentint-scifi/Decorations/table_5_Sheet.png?url";
 import table8Url from "../../assets/vendor/valentint-scifi/Decorations/table_8_Sheet.png?url";
 import table10Url from "../../assets/vendor/valentint-scifi/Decorations/table_10_Sheet.png?url";
+import table11Url from "../../assets/vendor/valentint-scifi/Decorations/table_11_Sheet.png?url";
 import trashCan2Url from "../../assets/vendor/valentint-scifi/Decorations/trashCan_2_Sheet.png?url";
 import tvUrl from "../../assets/vendor/valentint-scifi/Decorations/tv_Sheet.png?url";
 import enemyAttackUrl from "../../assets/vendor/valentint-scifi/NPCs/Enemy/enemy_attack_Sheet.png?url";
@@ -339,6 +343,12 @@ const spriteSheets: SpriteSheetAsset[] = [
     frameHeight: 32,
   },
   {
+    key: "scifi-table-11",
+    url: table11Url,
+    frameWidth: 64,
+    frameHeight: 32,
+  },
+  {
     key: "scifi-display-1",
     url: display1Url,
     frameWidth: 64,
@@ -355,6 +365,24 @@ const spriteSheets: SpriteSheetAsset[] = [
     url: couch1Url,
     frameWidth: 64,
     frameHeight: 32,
+  },
+  {
+    key: "scifi-couch-2",
+    url: couch2Url,
+    frameWidth: 64,
+    frameHeight: 32,
+  },
+  {
+    key: "scifi-cooler",
+    url: coolerUrl,
+    frameWidth: 32,
+    frameHeight: 32,
+  },
+  {
+    key: "scifi-lamps",
+    url: lampsUrl,
+    frameWidth: 16,
+    frameHeight: 16,
   },
   {
     key: "scifi-plant",

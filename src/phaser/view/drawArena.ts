@@ -183,8 +183,10 @@ export const drawArena = (
   const container = scene.add.container(0, 0);
   const graphics = scene.add.graphics();
 
-  graphics.fillStyle(0x050406, 1);
-  graphics.fillRect(0, 0, arena.width, arena.height);
+  if (!arena.background) {
+    graphics.fillStyle(0x050406, 1);
+    graphics.fillRect(0, 0, arena.width, arena.height);
+  }
 
   container.add(graphics);
 
