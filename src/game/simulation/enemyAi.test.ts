@@ -30,3 +30,67 @@ describe("enemy alert groups", () => {
     expect(otherGroup.ai.state).toBe("posted");
   });
 });
+
+describe("non-combat enemy AI states", () => {
+  it("keeps talking enemies facing each other until alerted", () => {
+    const state = createInitialGameState();
+    const [left, right] = state.enemies;
+    state.enemies.forEach((enemy) => {
+      enemy.alive = enemy.id === left.id || enemy.id === right.id;
+      enemy.health = enemy.alive ? 1 : 0;
+    });
+    left.position = { x: 100, y: 100 };
+    right.position = { x: 180, y: 100 };
+    left.ai = { ...left.ai, state: "talking", conversationId: "test-chat", alertGroupId: "test" };
+    right.ai = { ...right.ai, state: "talking", conversationId: "test-chat", alertGroupId: "test" };
+    state.player.position = { x: 1000, y: 1000 };
+
+    updateEnemies(state, 16);
+
+    expect(left.facing).toBeCloseTo(0);
+    expect(right.facing).toBeCloseTo(Math.PI);
+  });
+
+  it("moves a patrolling enemy toward its next route point", () => {
+    const state = createInitialGameState();
+    const enemy = state.enemies[0];
+    state.enemies.forEach((candidate) => {
+      candidate.alive = candidate.id === enemy.id;
+      candidate.health = candidate.alive ? 1 : 0;
+    });
+    enemy.position = { x: 100, y: 100 };
+    enemy.ai = {
+      ...enemy.ai,
+      state: "patrolling",
+      route: [{ x: 100, y: 100 }, { x: 200, y: 100 }],
+      routeIndex: 1,
+    };
+    state.player.position = { x: 1000, y: 1000 };
+
+    updateEnemies(state, 250);
+
+    expect(enemy.position.x).toBeGreaterThan(100);
+  });
+
+  it("returns a cooling enemy to its post after the cooldown expires", () => {
+    const state = createInitialGameState();
+    const enemy = state.enemies[0];
+    state.enemies.forEach((candidate) => {
+      candidate.alive = candidate.id === enemy.id;
+      candidate.health = candidate.alive ? 1 : 0;
+    });
+    enemy.position = { x: 120, y: 100 };
+    enemy.ai = {
+      ...enemy.ai,
+      state: "coolingDown",
+      cooldownMs: 10,
+      post: { position: { x: 100, y: 100 }, facing: Math.PI / 2 },
+    };
+    state.player.position = { x: 1000, y: 1000 };
+
+    updateEnemies(state, 20);
+
+    expect(enemy.ai.state).toBe("posted");
+    expect(enemy.facing).toBeCloseTo(Math.PI / 2);
+  });
+});

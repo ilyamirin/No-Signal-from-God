@@ -13,6 +13,11 @@ const RUSH_STOP_DISTANCE = 58;
 const RUSH_HIT_DISTANCE = 62;
 const RUSH_DAMAGE_COOLDOWN_MS = 520;
 const RANGED_ATTACK_COOLDOWN_MS = 520;
+const PATROL_SPEED = 95;
+const INVESTIGATE_SPEED = 120;
+const ROUTE_POINT_DISTANCE = 16;
+const SUSPICION_DELAY_MS = 260;
+const DEFAULT_COOLDOWN_MS = 950;
 
 const reduceTimer = (value: number, deltaMs: number): number => Math.max(0, value - deltaMs);
 
@@ -63,6 +68,13 @@ const moveEnemy = (state: GameState, enemy: EnemyState, desiredVelocity: Vec2, d
   }
 
   enemy.velocity = { x: 0, y: 0 };
+};
+
+const moveTowardPoint = (state: GameState, enemy: EnemyState, target: Vec2, speed: number, deltaMs: number): boolean => {
+  enemy.facing = angleTo(enemy.position, target);
+  const toTarget = normalize({ x: target.x - enemy.position.x, y: target.y - enemy.position.y });
+  moveEnemy(state, enemy, scale(toTarget, speed), deltaMs);
+  return distance(enemy.position, target) <= ROUTE_POINT_DISTANCE;
 };
 
 const swingAtPlayer = (state: GameState, enemy: EnemyState): void => {
@@ -156,6 +168,88 @@ const updateRangedEnemy = (state: GameState, enemy: EnemyState, deltaMs: number)
   }
 };
 
+const updateNonCombatEnemy = (state: GameState, enemy: EnemyState, deltaMs: number): void => {
+  if (enemy.ai.state === "posted") {
+    enemy.velocity = { x: 0, y: 0 };
+    if (enemy.ai.post) {
+      enemy.facing = enemy.ai.post.facing;
+    }
+    return;
+  }
+
+  if (enemy.ai.state === "talking") {
+    enemy.velocity = { x: 0, y: 0 };
+    const partner = state.enemies.find(
+      (candidate) =>
+        candidate.alive &&
+        candidate.id !== enemy.id &&
+        candidate.ai.conversationId === enemy.ai.conversationId,
+    );
+    if (partner) {
+      enemy.facing = angleTo(enemy.position, partner.position);
+    }
+    return;
+  }
+
+  if (enemy.ai.state === "patrolling") {
+    const route = enemy.ai.route;
+    if (!route || route.length === 0) {
+      enemy.velocity = { x: 0, y: 0 };
+      return;
+    }
+
+    const routeIndex = enemy.ai.routeIndex ?? 0;
+    const target = route[routeIndex % route.length];
+    if (moveTowardPoint(state, enemy, target, PATROL_SPEED, deltaMs)) {
+      enemy.ai.routeIndex = (routeIndex + 1) % route.length;
+    }
+    return;
+  }
+
+  if (enemy.ai.state === "suspicious") {
+    enemy.velocity = { x: 0, y: 0 };
+    enemy.ai.suspicionMs += deltaMs;
+    if (enemy.ai.knownPlayerPosition) {
+      enemy.facing = angleTo(enemy.position, enemy.ai.knownPlayerPosition);
+    }
+    if (enemy.ai.suspicionMs >= SUSPICION_DELAY_MS) {
+      enemy.ai.suspicionMs = 0;
+      enemy.ai.state = "investigating";
+    }
+    return;
+  }
+
+  if (enemy.ai.state === "investigating") {
+    if (!enemy.ai.knownPlayerPosition) {
+      enemy.ai.state = "coolingDown";
+      enemy.ai.cooldownMs = DEFAULT_COOLDOWN_MS;
+      return;
+    }
+
+    if (moveTowardPoint(state, enemy, enemy.ai.knownPlayerPosition, INVESTIGATE_SPEED, deltaMs)) {
+      enemy.ai.state = "coolingDown";
+      enemy.ai.cooldownMs = DEFAULT_COOLDOWN_MS;
+    }
+    return;
+  }
+
+  if (enemy.ai.state === "coolingDown") {
+    enemy.velocity = { x: 0, y: 0 };
+    enemy.ai.cooldownMs = reduceTimer(enemy.ai.cooldownMs, deltaMs);
+    if (enemy.ai.cooldownMs === 0) {
+      if (enemy.ai.post) {
+        enemy.position = { ...enemy.ai.post.position };
+        enemy.facing = enemy.ai.post.facing;
+        enemy.ai.state = "posted";
+      } else if (enemy.ai.route && enemy.ai.route.length > 0) {
+        enemy.ai.state = "patrolling";
+      } else {
+        enemy.ai.state = "posted";
+      }
+    }
+  }
+};
+
 export const updateEnemies = (state: GameState, deltaMs: number): void => {
   for (const enemy of state.enemies) {
     if (!enemy.alive) {
@@ -166,7 +260,7 @@ export const updateEnemies = (state: GameState, deltaMs: number): void => {
     updatePerceptionAndAlerts(state, enemy);
 
     if (enemy.ai.state !== "combat") {
-      enemy.velocity = { x: 0, y: 0 };
+      updateNonCombatEnemy(state, enemy, deltaMs);
       continue;
     }
 
