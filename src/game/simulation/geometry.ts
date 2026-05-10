@@ -22,6 +22,26 @@ export const fromAngle = (angle: number): Vec2 => ({ x: Math.cos(angle), y: Math
 
 export const distance = (a: Vec2, b: Vec2): number => Math.hypot(a.x - b.x, a.y - b.y);
 
+export const angleDelta = (from: number, to: number): number =>
+  Math.atan2(Math.sin(from - to), Math.cos(from - to));
+
+export const distanceToSegment = (point: Vec2, start: Vec2, end: Vec2): number => {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  const lengthSquared = dx * dx + dy * dy;
+
+  if (lengthSquared === 0) {
+    return distance(point, start);
+  }
+
+  const t = Math.max(
+    0,
+    Math.min(1, ((point.x - start.x) * dx + (point.y - start.y) * dy) / lengthSquared),
+  );
+  const projected = { x: start.x + t * dx, y: start.y + t * dy };
+  return distance(point, projected);
+};
+
 export const clampToArena = (position: Vec2, radius: number, width: number, height: number): Vec2 => ({
   x: Math.max(radius, Math.min(width - radius, position.x)),
   y: Math.max(radius, Math.min(height - radius, position.y)),
