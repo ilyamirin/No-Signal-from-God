@@ -101,4 +101,11 @@ describe("updateGame", () => {
     expect(next.player.alive).toBe(true);
     expect(next.score).toBe(0);
   });
+
+  it("emits a player gunshot sound event when the player fires", () => {
+    const state = createInitialGameState();
+    const next = updateGame(state, { ...neutralInput, firing: true }, 16);
+
+    expect(next.soundEvents.some((sound) => sound.kind === "gunshot" && sound.sourceId === "player")).toBe(true);
+  });
 });

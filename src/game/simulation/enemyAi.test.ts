@@ -149,3 +149,29 @@ describe("ranged enemy fire safety", () => {
     expect(state.bullets.filter((bullet) => bullet.ownerId === shooter.id)).toHaveLength(0);
   });
 });
+
+describe("enemy hearing integration", () => {
+  it("moves a posted enemy to suspicious after hearing a gunshot sound", () => {
+    const state = createInitialGameState();
+    const enemy = state.enemies[0];
+    state.enemies.forEach((candidate) => {
+      candidate.alive = candidate.id === enemy.id;
+      candidate.health = candidate.alive ? 1 : 0;
+    });
+    enemy.ai.state = "posted";
+    enemy.position = { x: 100, y: 100 };
+    state.player.position = { x: 1000, y: 1000 };
+    state.soundEvents.push({
+      id: "test-gunshot",
+      kind: "gunshot",
+      position: { x: 180, y: 100 },
+      radius: 500,
+      sourceId: "player",
+    });
+
+    updateEnemies(state, 16);
+
+    expect(enemy.ai.state).toBe("suspicious");
+    expect(enemy.ai.knownPlayerPosition).toEqual({ x: 180, y: 100 });
+  });
+});

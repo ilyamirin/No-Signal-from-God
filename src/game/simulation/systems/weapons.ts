@@ -67,6 +67,13 @@ export const tryFireWeapon = (
 
   state.bullets.push(bullet);
   state.fx.push(muzzleFx, casingFx);
+  state.soundEvents.push({
+    id: nextId(state, "sound"),
+    kind: "gunshot",
+    position: { ...origin },
+    radius: weapon.kind === "rifle" ? 760 : 620,
+    sourceId: ownerId,
+  });
   weapon.loadedRounds -= 1;
   weapon.cooldownRemainingMs = weapon.fireCooldownMs;
   markActorShot(state, ownerId);

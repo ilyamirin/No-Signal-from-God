@@ -66,6 +66,7 @@ export const updateGame = (current: GameState, input: PlayerInput, deltaMs: numb
     return state;
   }
 
+  state.soundEvents = [];
   state.elapsedMs += deltaMs;
   updateFx(state, deltaMs);
   updateDoors(state, deltaMs);
