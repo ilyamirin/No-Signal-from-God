@@ -4,4 +4,8 @@ node_modules/
 dist/
 output/
 .playwright-cli/
+art/
+tmp/
+screenshots/
+src/assets/generated/
 .DS_Store
