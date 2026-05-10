@@ -23,31 +23,29 @@ export type ActorRig = {
   moveDirection: number;
 };
 
-const FRAME_SIZE = 96;
-const SHEET_COLUMNS = 16;
+const FRAME_SIZE = 256;
+const SHEET_COLUMNS = 8;
 const AIM_DIRECTIONS = 8;
-const MOVE_DIRECTIONS = 8;
-const WALK_FRAMES = 4;
 const WALK_SPEED_THRESHOLD = 8;
 const RECOIL_DURATION_MS = 110;
-const ACTOR_SCALE = 0.82;
+const ACTOR_SCALE = 0.31;
 
 const actorSheets: ActorSheetDefinition[] = [
   {
     key: "baked-player-crt-suit-pistol",
-    url: new URL("../../assets/generated/baked-actors/player-crt-suit-pistol.png", import.meta.url).href,
+    url: new URL("../../assets/generated/ai-actors/player-tv-suit-pistol.png", import.meta.url).href,
   },
   {
     key: "baked-enemy-human-guard-pistol",
-    url: new URL("../../assets/generated/baked-actors/enemy-human-guard-pistol.png", import.meta.url).href,
+    url: new URL("../../assets/generated/ai-actors/enemy-human-guard-pistol.png", import.meta.url).href,
   },
   {
     key: "baked-enemy-crt-guard-pistol",
-    url: new URL("../../assets/generated/baked-actors/enemy-crt-guard-pistol.png", import.meta.url).href,
+    url: new URL("../../assets/generated/ai-actors/enemy-crt-guard-pistol.png", import.meta.url).href,
   },
   {
     key: "baked-enemy-human-rush",
-    url: new URL("../../assets/generated/baked-actors/enemy-human-rush.png", import.meta.url).href,
+    url: new URL("../../assets/generated/ai-actors/enemy-human-rush.png", import.meta.url).href,
   },
 ];
 
@@ -75,8 +73,7 @@ const velocityDirectionIndex = (velocity: Vec2): number | undefined => {
   return angleToDirectionIndex(Math.atan2(velocity.y, velocity.x));
 };
 
-const frameIndexFor = (aimDirection: number, moveDirection: number, walkFrame: number): number =>
-  aimDirection * MOVE_DIRECTIONS * WALK_FRAMES + moveDirection * WALK_FRAMES + walkFrame;
+const frameIndexFor = (aimDirection: number): number => aimDirection;
 
 const enemyTextureKey = (enemy: EnemyState): string => {
   if (enemy.kind === "rush") {
@@ -91,7 +88,7 @@ const createActorSprite = (
   position: Vec2,
 ): ActorRig => {
   const shadow = scene.add
-    .ellipse(position.x, position.y + 15, 52, 30, 0x030303, 0.58)
+    .ellipse(position.x, position.y + 15, 54, 30, 0x030303, 0.58)
     .setDepth(23);
   const sprite = scene.add
     .sprite(position.x, position.y, textureKey, 0)
@@ -153,15 +150,15 @@ export const syncActorRig = (
     rig.walkTimerMs = 0;
   }
 
-  const walkFrame = moving ? Math.floor(rig.walkTimerMs / 85) % WALK_FRAMES : 0;
   const recoilProgress = rig.recoilMs / RECOIL_DURATION_MS;
   const recoilDistance = recoilProgress * 5;
   const facing = actor.facing;
   const recoilX = -Math.cos(facing) * recoilDistance;
   const recoilY = -Math.sin(facing) * recoilDistance;
+  const walkBob = moving ? Math.sin(rig.walkTimerMs / 70) * 1.5 : 0;
 
-  rig.sprite.setFrame(frameIndexFor(aimDirection, rig.moveDirection, walkFrame));
-  rig.sprite.setPosition(actor.position.x + recoilX, actor.position.y + recoilY);
+  rig.sprite.setFrame(frameIndexFor(aimDirection));
+  rig.sprite.setPosition(actor.position.x + recoilX, actor.position.y + recoilY + walkBob);
   rig.sprite.setRotation(actor.alive ? 0 : actor.facing + Math.PI / 2 + 0.75);
   rig.sprite.setAlpha(actor.alive ? 1 : 0.58);
   rig.sprite.setTint(actor.alive ? 0xffffff : 0x9b1d25);
@@ -186,6 +183,4 @@ export const actorSheetDebug = {
   frameSize: FRAME_SIZE,
   sheetColumns: SHEET_COLUMNS,
   aimDirections: AIM_DIRECTIONS,
-  moveDirections: MOVE_DIRECTIONS,
-  walkFrames: WALK_FRAMES,
 };
