@@ -12,7 +12,7 @@ import {
   type ActorRig,
 } from "../view/drawActors";
 import { drawArena } from "../view/drawArena";
-import { updateCameraFeedback } from "../view/camera";
+import { configureGameplayCamera, updateCameraFeedback } from "../view/camera";
 import {
   createDoorRig,
   syncDoorRig,
@@ -63,6 +63,7 @@ export class GameScene extends Phaser.Scene {
     this.bindings = createInputBindings(this);
 
     const state = this.bridge.getState();
+    configureGameplayCamera(this.cameras.main, state);
     drawArena(this, state.arena);
 
     for (const prop of state.props) {
@@ -143,7 +144,7 @@ export class GameScene extends Phaser.Scene {
 
     drawBulletsAndFx(this.fxGraphics, state.bullets, state.fx);
     syncScifiFxRig(this, this.scifiFx, state.decals, state.fx);
-    updateCameraFeedback(this.cameras.main, state, this.previousBulletCount);
+    updateCameraFeedback(this.cameras.main, state, this.previousBulletCount, input.aimWorld);
     this.previousBulletCount = state.bullets.length;
     this.emitState(state);
   }
