@@ -1,54 +1,58 @@
-import { createArena } from "../content/arena";
-import { createDoors } from "../content/doors";
-import { createDroppedWeapons } from "../content/droppedWeapons";
-import { createEnemies } from "../content/enemies";
-import { createProps } from "../content/props";
-import { receptionHubLayout } from "../content/receptionHubLayout";
-import { createStarterWeapons } from "../content/weapons";
+import { getLevelDefinition } from "../content/levels/levelRegistry";
 import { rectToCollider } from "./collision";
 import { doorToCollider } from "./systems/doors";
-import type { GameState } from "./types";
+import type { GameState, LevelId } from "./types";
 
-export const createInitialGameState = (): GameState => {
-  const arena = createArena();
-  const props = createProps();
-  const doors = createDoors();
+type CreateGameStateOptions = {
+  levelId?: LevelId | string | null;
+};
+
+export const createInitialGameState = (options: CreateGameStateOptions = {}): GameState => {
+  const level = getLevelDefinition(options.levelId);
   const colliders = [
-    ...arena.obstacles.map((obstacle) => rectToCollider(obstacle.id, obstacle, obstacle.blocksBullets)),
-    ...props.flatMap((prop) => (prop.collider ? [prop.collider] : [])),
-    ...doors.map(doorToCollider),
+    ...level.arena.obstacles.map((obstacle) => rectToCollider(obstacle.id, obstacle, obstacle.blocksBullets)),
+    ...level.props.flatMap((prop) => (prop.collider ? [prop.collider] : [])),
+    ...level.doors.map(doorToCollider),
   ];
 
   return {
-    arena,
+    arena: level.arena,
+    level: {
+      id: level.id,
+      victory: level.victory,
+    },
+    levelState: {
+      finalFightComplete: false,
+      exitActive: false,
+    },
     player: {
-    id: "player",
-    head: "crt",
-    outfit: "suit",
-    position: { ...receptionHubLayout.playerSpawn },
-    velocity: { x: 0, y: 0 },
-    radius: 18,
-    facing: -Math.PI / 2,
-    health: 8,
-    alive: true,
-    weaponId: "service-pistol",
-    invulnerableMs: 0,
-    animation: { intent: "idle", weaponKind: "pistol", moving: false, speed: 0, lastShotMs: 0 },
-  },
-  enemies: createEnemies(),
-  bullets: [],
-  fx: [],
-  decals: [],
-  props,
-  doors,
-  droppedWeapons: createDroppedWeapons(),
-  colliders,
-  interaction: undefined,
-  weapons: createStarterWeapons(),
-  score: 0,
-  status: "playing",
-  engaged: false,
-  elapsedMs: 0,
-  nextId: 1,
+      id: "player",
+      head: "crt",
+      outfit: "suit",
+      position: { ...level.playerSpawn },
+      velocity: { x: 0, y: 0 },
+      radius: 18,
+      facing: -Math.PI / 2,
+      health: 8,
+      alive: true,
+      weaponId: level.playerLoadout.kind === "weapon" ? level.playerLoadout.weaponId : undefined,
+      invulnerableMs: 0,
+      animation: { intent: "idle", weaponKind: "pistol", moving: false, speed: 0, lastShotMs: 0 },
+    },
+    enemies: level.enemies,
+    bullets: [],
+    fx: [],
+    decals: [],
+    props: level.props,
+    doors: level.doors,
+    droppedWeapons: level.droppedWeapons,
+    colliders,
+    interaction: undefined,
+    weapons: level.weapons,
+    score: 0,
+    status: "playing",
+    engaged: false,
+    elapsedMs: 0,
+    nextId: 1,
   };
 };

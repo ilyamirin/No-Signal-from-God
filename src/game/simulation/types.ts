@@ -10,6 +10,8 @@ export type Box = {
   height: number;
 };
 
+export type LevelId = "reception-hub" | "ring-tower";
+
 export type HeadType = "crt" | "human";
 export type EnemyKind = "ranged" | "rush";
 export type ActorArchetype = "humanoid_ranged" | "monster_melee";
@@ -115,7 +117,7 @@ export type ActorBase = {
 export type PlayerState = ActorBase & {
   head: "crt";
   outfit: "suit";
-  weaponId: string;
+  weaponId?: string;
   invulnerableMs: number;
   animation: ActorAnimationState;
 };
@@ -208,10 +210,35 @@ export type ArenaState = {
   floorRegions: FloorRegion[];
   obstacles: Rect[];
   decor: DecorItem[];
+  background?: ArenaBackground;
+};
+
+export type ArenaBackground = {
+  cityTextureKey?: string;
+  cityParallax?: number;
+  towerParallax?: number;
+};
+
+export type LevelVictoryRule =
+  | { kind: "allEnemiesDead" }
+  | {
+      kind: "finalFightThenExit";
+      finalEnemyIds: string[];
+      exitTrigger: Box;
+    };
+
+export type LevelRuntimeState = {
+  finalFightComplete: boolean;
+  exitActive: boolean;
 };
 
 export type GameState = {
   arena: ArenaState;
+  level: {
+    id: LevelId;
+    victory: LevelVictoryRule;
+  };
+  levelState: LevelRuntimeState;
   player: PlayerState;
   enemies: EnemyState[];
   bullets: BulletState[];

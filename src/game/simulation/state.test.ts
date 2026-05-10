@@ -4,12 +4,12 @@ import { createInitialGameState } from "./state";
 
 describe("createInitialGameState", () => {
   it("creates one suited TV-head player with one equipped weapon and eight enemies", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
 
     expect(state.player.head).toBe("crt");
     expect(state.player.outfit).toBe("suit");
     expect(state.player.weaponId).toBe("service-pistol");
-    expect(state.weapons[state.player.weaponId]?.loadedRounds).toBe(6);
+    expect(state.weapons[state.player.weaponId!]?.loadedRounds).toBe(6);
     expect(state.enemies).toHaveLength(8);
     expect(state.enemies.filter((enemy) => enemy.archetype === "humanoid_ranged")).toHaveLength(6);
     expect(state.enemies.filter((enemy) => enemy.archetype === "monster_melee")).toHaveLength(2);
@@ -19,7 +19,7 @@ describe("createInitialGameState", () => {
   });
 
   it("initializes prop, door, dropped weapon, decal, and collider collections", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
 
     expect(state.props.length).toBeGreaterThan(0);
     expect(state.doors.length).toBeGreaterThan(0);
@@ -28,8 +28,17 @@ describe("createInitialGameState", () => {
     expect(state.colliders.length).toBeGreaterThan(state.arena.obstacles.length);
   });
 
+  it("can create the old reception hub level explicitly", () => {
+    const state = createInitialGameState({ levelId: "reception-hub" });
+
+    expect(state.level.id).toBe("reception-hub");
+    expect(state.arena.width).toBe(2200);
+    expect(state.player.weaponId).toBe("service-pistol");
+    expect(state.doors.length).toBeGreaterThan(0);
+  });
+
   it("starts every actor outside movement blockers", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     const actors = [state.player, ...state.enemies];
     const movementBlockers = state.arena.obstacles.filter((obstacle) => obstacle.blocksMovement);
 
@@ -44,7 +53,7 @@ describe("createInitialGameState", () => {
   });
 
   it("gives each armed actor a unique existing mutable weapon state", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     const weaponIds = [state.player, ...state.enemies]
       .map((actor) => actor.weaponId)
       .filter((weaponId): weaponId is string => weaponId !== undefined);
@@ -56,7 +65,7 @@ describe("createInitialGameState", () => {
   });
 
   it("starts the player in the safe reception while enemies start outside it", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     const reception = { x: 120, y: 820, width: 600, height: 430 };
 
     expect(state.player.position.x).toBeGreaterThan(reception.x);
