@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createInitialGameState } from "./state";
+import { updateDoors } from "./systems/doors";
 import { updateEnemies } from "./systems/enemies";
 
 describe("enemy alert groups", () => {
@@ -92,5 +93,37 @@ describe("non-combat enemy AI states", () => {
 
     expect(enemy.ai.state).toBe("posted");
     expect(enemy.facing).toBeCloseTo(Math.PI / 2);
+  });
+});
+
+describe("enemy door traversal", () => {
+  it("applies door pressure while a patrolling enemy moves through a doorway", () => {
+    const state = createInitialGameState();
+    const enemy = state.enemies[0];
+    const door = state.doors[0];
+    state.enemies.forEach((candidate) => {
+      candidate.alive = candidate.id === enemy.id;
+      candidate.health = candidate.alive ? 1 : 0;
+    });
+    enemy.position = { x: door.hinge.x + 16, y: door.hinge.y + 28 };
+    enemy.ai = {
+      ...enemy.ai,
+      state: "patrolling",
+      route: [
+        { x: door.hinge.x + 16, y: door.hinge.y + 28 },
+        { x: door.hinge.x + 16, y: door.hinge.y + 100 },
+      ],
+      routeIndex: 1,
+    };
+    state.player.position = { x: 1000, y: 1000 };
+    const initialAngle = door.angle;
+
+    for (let frame = 0; frame < 8; frame += 1) {
+      updateEnemies(state, 80);
+      updateDoors(state, 80);
+    }
+
+    expect(door.angle).not.toBe(initialAngle);
+    expect(enemy.position.y).toBeGreaterThan(door.hinge.y + 28);
   });
 });

@@ -2,6 +2,7 @@ import { angleTo, clampToArena, distance, normalize, scale } from "../geometry";
 import { blocksMovementAtCircle, hasLineOfSightThroughColliders } from "../collision";
 import type { EnemyState, GameState, Vec2 } from "../types";
 import { emitHeavyBlood } from "./death";
+import { applyDoorPressure } from "./doors";
 import { canEnemySeePlayer, nearestHeardSound } from "./perception";
 import { tryFireWeapon } from "./weapons";
 
@@ -39,6 +40,8 @@ const tryMoveEnemy = (state: GameState, enemy: EnemyState, desiredVelocity: Vec2
     state.arena.width,
     state.arena.height,
   );
+
+  applyDoorPressure(state, nextPosition, enemy.radius);
 
   if (canStandAt(state, enemy, nextPosition)) {
     enemy.position = nextPosition;
