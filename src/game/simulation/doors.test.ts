@@ -7,7 +7,7 @@ describe("doors", () => {
     const state = createInitialGameState();
     const door = state.doors[0];
 
-    applyDoorPressure(state, { x: door.hinge.x + 28, y: door.hinge.y - 16 }, 18);
+    applyDoorPressure(state, { x: door.hinge.x + 16, y: door.hinge.y + 28 }, 18);
     updateDoors(state, 120);
 
     const collider = state.colliders.find((candidate) => candidate.id === `door-${door.id}`);
@@ -20,7 +20,7 @@ describe("doors", () => {
     const state = createInitialGameState();
     const door = state.doors[0];
 
-    state.player.position = { x: door.hinge.x + 28, y: door.hinge.y - 16 };
+    state.player.position = { x: door.hinge.x + 16, y: door.hinge.y + 28 };
     applyDoorPressure(state, state.player.position, state.player.radius);
     updateDoors(state, 120);
 

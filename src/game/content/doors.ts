@@ -28,12 +28,12 @@ const door = (
 });
 
 export const createDoors = (): DoorState[] => [
-  door("reception-security-double-upper", { x: 720, y: 950 }, 0, -Math.PI / 2, -Math.PI / 2, Math.PI / 2),
-  door("reception-security-double-lower", { x: 720, y: 1062 }, 0, Math.PI / 2, -Math.PI / 2, Math.PI / 2),
+  door("reception-security-double-upper", { x: 720, y: 950 }, Math.PI / 2, 0, 0, Math.PI),
+  door("reception-security-double-lower", { x: 720, y: 1062 }, -Math.PI / 2, 0, -Math.PI, 0),
 
-  door("reception-newsroom-double-left", { x: 350, y: 800 }, -Math.PI / 2, 0, -Math.PI, 0),
-  door("reception-newsroom-double-right", { x: 462, y: 800 }, -Math.PI / 2, -Math.PI, -Math.PI, 0),
+  door("reception-newsroom-double-left", { x: 350, y: 800 }, 0, -Math.PI / 2, -Math.PI / 2, Math.PI / 2),
+  door("reception-newsroom-double-right", { x: 462, y: 800 }, Math.PI, -Math.PI / 2, Math.PI / 2, Math.PI),
 
-  door("security-control-single", { x: 1180, y: 1015 }, 0, -Math.PI / 2, -Math.PI / 2, Math.PI / 2),
-  door("server-control-single", { x: 1520, y: 820 }, -Math.PI / 2, 0, -Math.PI, 0),
+  door("security-server-single", { x: 1240, y: 1006 }, Math.PI / 2, Math.PI, 0, Math.PI),
+  door("control-entry-single", { x: 1520, y: 720 }, 0, Math.PI / 2, -Math.PI / 2, Math.PI / 2),
 ];

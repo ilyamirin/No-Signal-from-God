@@ -339,7 +339,7 @@ const spriteSheets: SpriteSheetAsset[] = [
   {
     key: "scifi-display-2",
     url: display2Url,
-    frameWidth: 64,
+    frameWidth: 32,
     frameHeight: 32,
   },
   {
