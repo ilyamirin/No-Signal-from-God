@@ -34,21 +34,23 @@ describe("updateGame", () => {
   it("lets ranged enemies fire their own weapon state without consuming the player weapon", () => {
     const state = createInitialGameState();
     state.player.position = { x: 690, y: 390 };
-    state.enemies.forEach((enemy, index) => {
-      enemy.alive = index < 2;
-      enemy.health = index < 2 ? 1 : 0;
+    const firingEnemies = state.enemies.filter((enemy) => enemy.archetype === "humanoid_ranged").slice(0, 2);
+    state.enemies.forEach((enemy) => {
+      const active = firingEnemies.includes(enemy);
+      enemy.alive = active;
+      enemy.health = active ? 1 : 0;
       enemy.attackCooldownMs = 0;
     });
-    state.enemies[0].position = { x: 620, y: 390 };
-    state.enemies[1].position = { x: 760, y: 390 };
+    firingEnemies[0].position = { x: 620, y: 390 };
+    firingEnemies[1].position = { x: 760, y: 390 };
     state.engaged = true;
 
     const next = updateGame(state, neutralInput, 16);
 
     expect(next.weapons["service-pistol"].loadedRounds).toBe(6);
-    expect(next.weapons["enemy-ranged-anchor-pistol"].loadedRounds).toBe(5);
-    expect(next.weapons["enemy-ranged-control-pistol"].loadedRounds).toBe(5);
-    expect(next.bullets.filter((bullet) => bullet.ownerId.startsWith("enemy-ranged"))).toHaveLength(2);
+    expect(next.weapons["security-guard-pistol"].loadedRounds).toBe(5);
+    expect(next.weapons["newsroom-guard-left-pistol"].loadedRounds).toBe(5);
+    expect(next.bullets.filter((bullet) => bullet.ownerId.startsWith("enemy-"))).toHaveLength(2);
   });
 
   it("keeps the opening encounter playable for the first reaction window", () => {

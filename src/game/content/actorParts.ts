@@ -158,7 +158,7 @@ export const actorParts: ActorPartDefinition[] = [
 export const weaponPoseCatalog: WeaponPoseDefinition[] = [
   {
     id: "pose-suit-service-pistol",
-    weaponIds: ["service-pistol", "floor-pistol-1"],
+    weaponIds: ["service-pistol", "floor-pistol-reception"],
     label: "Suit service-pistol pose",
     armsPartId: "arms-suit-pistol",
     weaponPartId: "weapon-service-pistol",
@@ -169,9 +169,10 @@ export const weaponPoseCatalog: WeaponPoseDefinition[] = [
   {
     id: "pose-broadcast-service-pistol",
     weaponIds: [
-      "enemy-ranged-anchor-pistol",
-      "enemy-ranged-control-pistol",
-      "enemy-ranged-green-pistol",
+      "security-guard-pistol",
+      "newsroom-guard-left-pistol",
+      "newsroom-guard-right-pistol",
+      "control-guard-pistol",
     ],
     label: "Broadcast guard service-pistol pose",
     armsPartId: "arms-broadcast-pistol",
@@ -182,7 +183,7 @@ export const weaponPoseCatalog: WeaponPoseDefinition[] = [
   },
   {
     id: "pose-broadcast-burst-rifle",
-    weaponIds: ["enemy-ranged-office-rifle", "floor-rifle-1"],
+    weaponIds: ["server-guard-rifle", "control-guard-rifle", "floor-rifle-server"],
     label: "Broadcast guard burst-rifle pose",
     armsPartId: "arms-broadcast-rifle",
     weaponPartId: "weapon-burst-rifle",

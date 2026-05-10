@@ -19,7 +19,7 @@ describe("interactions", () => {
 
     const next = updateGame(state, { ...input, interact: true }, 16);
 
-    expect(next.player.weaponId).toBe("floor-rifle-1");
+    expect(next.player.weaponId).toBe("floor-pistol-reception");
     expect(next.droppedWeapons.some((weapon) => weapon.weaponId === "service-pistol")).toBe(true);
     expect(next.droppedWeapons.find((weapon) => weapon.weaponId === "service-pistol")?.velocity.x).not.toBe(0);
   });
