@@ -135,5 +135,6 @@ describe("updateGame", () => {
     expect(next.status).toBe("playing");
     expect(next.player.alive).toBe(true);
     expect(next.score).toBe(0);
+    expect(next.level.id).toBe("reception-hub");
   });
 });

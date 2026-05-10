@@ -59,7 +59,7 @@ const updateFx = (state: GameState, deltaMs: number): void => {
 
 export const updateGame = (current: GameState, input: PlayerInput, deltaMs: number): GameState => {
   if (input.restart && current.status !== "playing") {
-    return createInitialGameState();
+    return createInitialGameState({ levelId: current.level.id });
   }
 
   const state = cloneGameState(current);
