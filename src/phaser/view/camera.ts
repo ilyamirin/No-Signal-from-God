@@ -1,6 +1,13 @@
 import Phaser from "phaser";
 import type { GameState, Vec2 } from "../../game/simulation/types";
-import { CAMERA_ZOOM, FOLLOW_LERP, calculateCameraTarget, lerp } from "./cameraMath";
+import {
+  CAMERA_ZOOM,
+  FOLLOW_LERP,
+  SHOT_SHAKE_DURATION_MS,
+  SHOT_SHAKE_INTENSITY,
+  calculateCameraTarget,
+  lerp,
+} from "./cameraMath";
 
 export const configureGameplayCamera = (
   camera: Phaser.Cameras.Scene2D.Camera,
@@ -32,6 +39,6 @@ export const updateCameraFeedback = (
   );
 
   if (state.bullets.length > previousBulletCount) {
-    camera.shake(55, 0.0035);
+    camera.shake(SHOT_SHAKE_DURATION_MS, SHOT_SHAKE_INTENSITY);
   }
 };

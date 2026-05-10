@@ -19,7 +19,7 @@ describe("updateGame", () => {
 
     expect(next.player.position.x).toBeGreaterThan(state.player.position.x);
     expect(next.player.position.y).toBeGreaterThan(state.player.position.y);
-    expect(Math.hypot(next.player.velocity.x, next.player.velocity.y)).toBeLessThanOrEqual(270);
+    expect(Math.hypot(next.player.velocity.x, next.player.velocity.y)).toBeLessThanOrEqual(235);
   });
 
   it("fires one bullet from the single equipped weapon and consumes one round", () => {

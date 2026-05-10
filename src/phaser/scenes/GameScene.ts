@@ -5,6 +5,7 @@ import {
   type InputBindingState,
 } from "../../game/input/bindings";
 import { createSceneBridge, type SceneBridge } from "../adapters/sceneBridge";
+import { createGameAudio, loadGameAudio, type GameAudioController } from "../audio/gameAudio";
 import {
   createEnemyRig,
   createPlayerRig,
@@ -35,6 +36,7 @@ import {
   type ScifiFxRig,
 } from "../view/drawScifiFx";
 import { ensureScifiAnimations, loadScifiAssets } from "../view/scifiAssets";
+import type { GameState } from "../../game/simulation/types";
 
 export class GameScene extends Phaser.Scene {
   private bridge!: SceneBridge;
@@ -45,8 +47,10 @@ export class GameScene extends Phaser.Scene {
   private doors = new Map<string, DoorRig>();
   private droppedWeapons = new Map<string, DroppedWeaponRig>();
   private scifiFx!: ScifiFxRig;
+  private audio!: GameAudioController;
   private fxGraphics!: Phaser.GameObjects.Graphics;
   private previousBulletCount = 0;
+  private previousState?: GameState;
 
   constructor() {
     super("game");
@@ -54,6 +58,7 @@ export class GameScene extends Phaser.Scene {
 
   preload(): void {
     loadScifiAssets(this);
+    loadGameAudio(this);
   }
 
   create(): void {
@@ -86,12 +91,17 @@ export class GameScene extends Phaser.Scene {
 
     this.fxGraphics = this.add.graphics();
     this.scifiFx = createScifiFxRig();
+    this.audio = createGameAudio(this);
+    this.previousState = state;
     this.emitState(state);
   }
 
   update(_time: number, delta: number): void {
     const input = readPlayerInput(this, this.bindings, { x: 0, y: 0 });
     const state = this.bridge.step(input, Math.min(delta, 50));
+    if (this.previousState) {
+      this.audio.sync(this.previousState, state);
+    }
 
     syncActorRig(
       this.player,
@@ -146,6 +156,7 @@ export class GameScene extends Phaser.Scene {
     syncScifiFxRig(this, this.scifiFx, state.decals, state.fx);
     updateCameraFeedback(this.cameras.main, state, this.previousBulletCount, input.aimWorld);
     this.previousBulletCount = state.bullets.length;
+    this.previousState = state;
     this.emitState(state);
   }
 

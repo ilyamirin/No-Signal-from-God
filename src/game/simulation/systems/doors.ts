@@ -2,8 +2,8 @@ import type { Collider, DoorState, GameState, Vec2 } from "../types";
 
 const DOOR_FRICTION = 0.94;
 const DOOR_SPRING = 0.000004;
-const DOOR_PUSH = 0.055;
-const DOOR_CONTACT_PADDING = 12;
+const DOOR_PUSH = 0.072;
+const DOOR_CONTACT_PADDING = 18;
 
 export const doorEnd = (door: DoorState): Vec2 => ({
   x: door.hinge.x + Math.cos(door.angle) * door.length,
@@ -63,16 +63,13 @@ export const applyDoorPressure = (
   for (const door of state.doors) {
     const end = doorEnd(door);
     const contact = distanceToSegment(position, door.hinge, end);
-    if (contact.t <= 0 || contact.t >= 1) {
-      continue;
-    }
     if (contact.distance > radius + door.thickness / 2 + DOOR_CONTACT_PADDING) {
       continue;
     }
 
     const angleToActor = Math.atan2(position.y - door.hinge.y, position.x - door.hinge.x);
     const side = Math.sign(normalizeAngle(angleToActor - door.angle)) || 1;
-    const leverage = 0.25 + contact.t * 0.75;
+    const leverage = 0.18 + contact.t * 0.92;
     const pressure = 1 - contact.distance / (radius + door.thickness / 2 + DOOR_CONTACT_PADDING);
     door.angularVelocity -= side * pressure * leverage * DOOR_PUSH;
   }

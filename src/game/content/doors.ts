@@ -34,6 +34,9 @@ export const createDoors = (): DoorState[] => [
   door("reception-newsroom-double-left", { x: 350, y: 800 }, 0, -Math.PI / 2, -Math.PI / 2, Math.PI / 2),
   door("reception-newsroom-double-right", { x: 462, y: 800 }, Math.PI, -Math.PI / 2, Math.PI / 2, Math.PI),
 
-  door("security-server-single", { x: 1240, y: 1006 }, Math.PI / 2, Math.PI, 0, Math.PI),
-  door("control-entry-single", { x: 1520, y: 720 }, 0, Math.PI / 2, -Math.PI / 2, Math.PI / 2),
+  door("security-server-double-upper", { x: 1240, y: 950 }, Math.PI / 2, Math.PI, 0, Math.PI),
+  door("security-server-double-lower", { x: 1240, y: 1062 }, -Math.PI / 2, Math.PI, -Math.PI, 0),
+
+  door("control-entry-double-left", { x: 1520, y: 720 }, 0, Math.PI / 2, -Math.PI / 2, Math.PI / 2),
+  door("control-entry-double-right", { x: 1632, y: 720 }, Math.PI, Math.PI / 2, Math.PI / 2, Math.PI),
 ];

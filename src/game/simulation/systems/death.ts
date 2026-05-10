@@ -32,7 +32,7 @@ export const emitHeavyBlood = (state: GameState, position: Vec2, rotation: numbe
 
 export const killEnemy = (state: GameState, enemy: EnemyState, hitVelocity: Vec2): void => {
   enemy.alive = false;
-  const impulse = scale(fromAngle(Math.atan2(hitVelocity.y, hitVelocity.x)), 260);
+  const impulse = scale(fromAngle(Math.atan2(hitVelocity.y, hitVelocity.x)), 420);
   enemy.velocity = impulse;
   enemy.animation.intent = "death";
   emitHeavyBlood(state, enemy.position, Math.atan2(hitVelocity.y, hitVelocity.x));

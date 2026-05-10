@@ -1,8 +1,10 @@
 import type { Vec2 } from "../../game/simulation/types";
 
 export const CAMERA_ZOOM = 1.35;
-export const AIM_OFFSET = 100;
-export const FOLLOW_LERP = 0.1;
+export const AIM_OFFSET = 80;
+export const FOLLOW_LERP = 0.045;
+export const SHOT_SHAKE_DURATION_MS = 32;
+export const SHOT_SHAKE_INTENSITY = 0.0018;
 
 type Size = {
   width: number;

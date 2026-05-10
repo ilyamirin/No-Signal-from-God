@@ -12,7 +12,7 @@ import { updateActorAnimations } from "./systems/animation";
 import { updateCorpseMotion } from "./systems/death";
 import { tickWeapon, tryFireWeapon } from "./systems/weapons";
 
-const PLAYER_SPEED = 270;
+const PLAYER_SPEED = 235;
 
 const reduceTimer = (value: number, deltaMs: number): number => Math.max(0, value - deltaMs);
 

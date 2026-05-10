@@ -1,13 +1,15 @@
 import { angleTo, clampToArena, distance, normalize, scale } from "../geometry";
 import { blocksMovementAtCircle, hasLineOfSightThroughColliders } from "../collision";
 import type { EnemyState, GameState, Vec2 } from "../types";
+import { emitHeavyBlood } from "./death";
 import { tryFireWeapon } from "./weapons";
 
-const RUSH_SPEED = 215;
+const RUSH_SPEED = 185;
 const RANGED_SPEED = 130;
 const RANGED_MIN_DISTANCE = 210;
 const RANGED_MAX_DISTANCE = 330;
-const RUSH_HIT_DISTANCE = 34;
+const RUSH_STOP_DISTANCE = 58;
+const RUSH_HIT_DISTANCE = 62;
 const RUSH_DAMAGE_COOLDOWN_MS = 520;
 const RANGED_ATTACK_COOLDOWN_MS = 520;
 
@@ -16,7 +18,11 @@ const reduceTimer = (value: number, deltaMs: number): number => Math.max(0, valu
 const canStandAt = (state: GameState, enemy: EnemyState, position: Vec2): boolean =>
   !blocksMovementAtCircle(state.colliders, position, enemy.radius);
 
-const moveEnemy = (state: GameState, enemy: EnemyState, desiredVelocity: Vec2, deltaMs: number): void => {
+const tryMoveEnemy = (state: GameState, enemy: EnemyState, desiredVelocity: Vec2, deltaMs: number): boolean => {
+  if (Math.hypot(desiredVelocity.x, desiredVelocity.y) < 1) {
+    return false;
+  }
+
   const deltaSeconds = deltaMs / 1000;
   const nextPosition = clampToArena(
     {
@@ -31,35 +37,65 @@ const moveEnemy = (state: GameState, enemy: EnemyState, desiredVelocity: Vec2, d
   if (canStandAt(state, enemy, nextPosition)) {
     enemy.position = nextPosition;
     enemy.velocity = desiredVelocity;
-  } else {
-    enemy.velocity = { x: 0, y: 0 };
+    return true;
+  }
+
+  return false;
+};
+
+const moveEnemy = (state: GameState, enemy: EnemyState, desiredVelocity: Vec2, deltaMs: number): void => {
+  if (tryMoveEnemy(state, enemy, desiredVelocity, deltaMs)) {
+    return;
+  }
+
+  const horizontal = { x: desiredVelocity.x, y: 0 };
+  const vertical = { x: 0, y: desiredVelocity.y };
+  const slideCandidates =
+    Math.abs(desiredVelocity.x) >= Math.abs(desiredVelocity.y)
+      ? [horizontal, vertical]
+      : [vertical, horizontal];
+
+  for (const candidate of slideCandidates) {
+    if (tryMoveEnemy(state, enemy, candidate, deltaMs)) {
+      return;
+    }
+  }
+
+  enemy.velocity = { x: 0, y: 0 };
+};
+
+const swingAtPlayer = (state: GameState, enemy: EnemyState): void => {
+  enemy.attackCooldownMs = RUSH_DAMAGE_COOLDOWN_MS;
+  enemy.animation.lastShotMs = 220;
+  enemy.animation.intent = "attack";
+
+  if (state.player.invulnerableMs === 0) {
+    state.player.health -= 1;
+    state.player.invulnerableMs = 700;
+    emitHeavyBlood(state, state.player.position, enemy.facing, true);
   }
 };
 
 const updateRushEnemy = (state: GameState, enemy: EnemyState, deltaMs: number): void => {
+  let playerDistance = distance(enemy.position, state.player.position);
   const toPlayer = normalize({
     x: state.player.position.x - enemy.position.x,
     y: state.player.position.y - enemy.position.y,
   });
   enemy.facing = angleTo(enemy.position, state.player.position);
-  moveEnemy(state, enemy, scale(toPlayer, RUSH_SPEED), deltaMs);
+  if (playerDistance > RUSH_STOP_DISTANCE) {
+    moveEnemy(state, enemy, scale(toPlayer, RUSH_SPEED), deltaMs);
+    playerDistance = distance(enemy.position, state.player.position);
+  } else {
+    enemy.velocity = { x: 0, y: 0 };
+  }
 
   if (
     state.player.alive &&
-    state.player.invulnerableMs === 0 &&
     enemy.attackCooldownMs === 0 &&
-    distance(enemy.position, state.player.position) <= RUSH_HIT_DISTANCE
+    playerDistance <= RUSH_HIT_DISTANCE
   ) {
-    state.player.health -= 1;
-    state.player.invulnerableMs = 700;
-    enemy.attackCooldownMs = RUSH_DAMAGE_COOLDOWN_MS;
-    state.fx.push({
-      id: `fx-${state.nextId++}`,
-      kind: "blood",
-      position: { ...state.player.position },
-      rotation: enemy.facing,
-      ttlMs: 300,
-    });
+    swingAtPlayer(state, enemy);
   }
 };
 
@@ -91,7 +127,6 @@ const updateRangedEnemy = (state: GameState, enemy: EnemyState, deltaMs: number)
 export const updateEnemies = (state: GameState, deltaMs: number): void => {
   for (const enemy of state.enemies) {
     if (!enemy.alive) {
-      enemy.velocity = { x: 0, y: 0 };
       continue;
     }
 
