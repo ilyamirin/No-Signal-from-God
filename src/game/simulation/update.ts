@@ -4,12 +4,13 @@ import { createInitialGameState } from "./state";
 import { angleTo, clampToArena, normalize, scale } from "./geometry";
 import { blocksMovementAtCircle } from "./collision";
 import type { GameState, Vec2 } from "./types";
-import { updateBulletsAndHits, updateStatus } from "./systems/combat";
+import { updateBulletsAndHits } from "./systems/combat";
 import { updateDroppedWeapons } from "./systems/droppedWeapons";
 import { applyDoorPressure, updateDoors } from "./systems/doors";
 import { updateEnemies } from "./systems/enemies";
 import { updateActorAnimations } from "./systems/animation";
 import { updateCorpseMotion } from "./systems/death";
+import { updateLevelObjectives } from "./systems/levelObjectives";
 import { tickWeapon, tryFireWeapon } from "./systems/weapons";
 
 const PLAYER_SPEED = 235;
@@ -94,7 +95,7 @@ export const updateGame = (current: GameState, input: PlayerInput, deltaMs: numb
   updateBulletsAndHits(state, deltaMs);
   updateCorpseMotion(state, deltaMs);
   updateActorAnimations(state, deltaMs);
-  updateStatus(state);
+  updateLevelObjectives(state);
 
   return state;
 };

@@ -74,15 +74,3 @@ export const updateBulletsAndHits = (state: GameState, deltaMs: number): void =>
 
   state.bullets = remaining;
 };
-
-export const updateStatus = (state: GameState): void => {
-  if (state.player.health <= 0) {
-    state.player.alive = false;
-    state.status = "dead";
-    return;
-  }
-
-  if (state.enemies.every((enemy) => !enemy.alive)) {
-    state.status = "victory";
-  }
-};
