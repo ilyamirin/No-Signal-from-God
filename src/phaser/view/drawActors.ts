@@ -10,7 +10,6 @@ type ActorState = Pick<
 
 export type ActorRig = {
   sprite: Phaser.GameObjects.Sprite;
-  shadow: Phaser.GameObjects.Ellipse;
   textureKey: string;
   previousLoadedRounds?: number;
   recoilMs: number;
@@ -63,9 +62,6 @@ const createActorSprite = (
   textureKey: string,
   position: Vec2,
 ): ActorRig => {
-  const shadow = scene.add
-    .ellipse(position.x, position.y + 15, 54, 30, 0x030303, 0.58)
-    .setDepth(23);
   const sprite = scene.add
     .sprite(position.x, position.y, textureKey, 0)
     .setOrigin(0.5)
@@ -74,7 +70,6 @@ const createActorSprite = (
 
   return {
     sprite,
-    shadow,
     textureKey,
     recoilMs: 0,
     shootMs: 0,
@@ -142,9 +137,6 @@ export const syncActorRig = (
   rig.sprite.setRotation(actor.facing);
   rig.sprite.setAlpha(actor.alive ? 1 : 0.76);
   rig.sprite.setTint(actor.alive ? 0xffffff : 0xa0d65f);
-
-  rig.shadow.setPosition(actor.position.x, actor.position.y + 15);
-  rig.shadow.setVisible(actor.alive);
 };
 
 export const createPlayerRig = (
