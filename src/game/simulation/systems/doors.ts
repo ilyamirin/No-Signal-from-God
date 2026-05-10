@@ -1,9 +1,9 @@
 import type { Collider, DoorState, GameState, Vec2 } from "../types";
 
-const DOOR_FRICTION = 0.9;
-const DOOR_SPRING = 0.000018;
-const DOOR_PUSH = 0.028;
-const DOOR_CONTACT_PADDING = 4;
+const DOOR_FRICTION = 0.94;
+const DOOR_SPRING = 0.000004;
+const DOOR_PUSH = 0.055;
+const DOOR_CONTACT_PADDING = 12;
 
 export const doorEnd = (door: DoorState): Vec2 => ({
   x: door.hinge.x + Math.cos(door.angle) * door.length,
