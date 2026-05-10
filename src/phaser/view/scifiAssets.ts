@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 
+import ringTowerCityUrl from "../../assets/level-art/ring-tower-city.webp?url";
 import bloodFloorUrl from "../../assets/vendor/valentint-scifi/Decals/enemy_blood_floor_Sheet.png?url";
 import playerBloodFloorUrl from "../../assets/vendor/valentint-scifi/Decals/player_blood_floor_Sheet.png?url";
 import rubbishUrl from "../../assets/vendor/valentint-scifi/Decals/rubbish_Sheet.png?url";
@@ -376,6 +377,10 @@ const spriteSheets: SpriteSheetAsset[] = [
 ];
 
 const images: ImageAsset[] = [
+  {
+    key: "ring-tower-city",
+    url: ringTowerCityUrl,
+  },
   {
     key: "scifi-door",
     url: doorUrl,

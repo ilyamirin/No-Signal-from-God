@@ -26,6 +26,11 @@ import {
 } from "../view/drawDroppedWeapons";
 import { drawBulletsAndFx } from "../view/drawFx";
 import {
+  createLevelBackgroundRig,
+  syncLevelBackgroundRig,
+  type LevelBackgroundRig,
+} from "../view/drawLevelBackground";
+import {
   createPropRig,
   syncPropRig,
   type PropRig,
@@ -48,6 +53,7 @@ export class GameScene extends Phaser.Scene {
   private droppedWeapons = new Map<string, DroppedWeaponRig>();
   private scifiFx!: ScifiFxRig;
   private audio!: GameAudioController;
+  private background!: LevelBackgroundRig;
   private fxGraphics!: Phaser.GameObjects.Graphics;
   private previousBulletCount = 0;
   private previousState?: GameState;
@@ -69,6 +75,7 @@ export class GameScene extends Phaser.Scene {
 
     const state = this.bridge.getState();
     configureGameplayCamera(this.cameras.main, state);
+    this.background = createLevelBackgroundRig(this, state);
     drawArena(this, state.arena);
 
     for (const prop of state.props) {
@@ -155,6 +162,7 @@ export class GameScene extends Phaser.Scene {
     drawBulletsAndFx(this.fxGraphics, state.bullets, state.fx);
     syncScifiFxRig(this, this.scifiFx, state.decals, state.fx);
     updateCameraFeedback(this.cameras.main, state, this.previousBulletCount, input.aimWorld);
+    syncLevelBackgroundRig(this.background, this.cameras.main, state);
     this.previousBulletCount = state.bullets.length;
     this.previousState = state;
     this.emitState(state);
