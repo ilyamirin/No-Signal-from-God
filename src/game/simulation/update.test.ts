@@ -9,6 +9,7 @@ const neutralInput: PlayerInput = {
   firing: false,
   restart: false,
   kick: false,
+  interact: false,
 };
 
 describe("updateGame", () => {
@@ -38,8 +39,8 @@ describe("updateGame", () => {
       enemy.health = index < 2 ? 1 : 0;
       enemy.attackCooldownMs = 0;
     });
-    state.enemies[0].position = { x: 500, y: 390 };
-    state.enemies[1].position = { x: 880, y: 390 };
+    state.enemies[0].position = { x: 620, y: 390 };
+    state.enemies[1].position = { x: 760, y: 390 };
     state.engaged = true;
 
     const next = updateGame(state, neutralInput, 16);

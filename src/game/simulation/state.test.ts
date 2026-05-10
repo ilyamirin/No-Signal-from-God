@@ -3,17 +3,27 @@ import { circleIntersectsRect } from "./geometry";
 import { createInitialGameState } from "./state";
 
 describe("createInitialGameState", () => {
-  it("creates one suited TV-head player with one equipped weapon and six enemies", () => {
+  it("creates one suited TV-head player with one equipped weapon and seven enemies", () => {
     const state = createInitialGameState();
 
     expect(state.player.head).toBe("crt");
     expect(state.player.outfit).toBe("suit");
     expect(state.player.weaponId).toBe("service-pistol");
     expect(state.weapons[state.player.weaponId]?.loadedRounds).toBe(6);
-    expect(state.enemies).toHaveLength(6);
+    expect(state.enemies).toHaveLength(7);
     expect(state.enemies.some((enemy) => enemy.head === "human")).toBe(true);
     expect(state.enemies.some((enemy) => enemy.head === "crt")).toBe(true);
     expect(state.status).toBe("playing");
+  });
+
+  it("initializes prop, door, dropped weapon, decal, and collider collections", () => {
+    const state = createInitialGameState();
+
+    expect(state.props.length).toBeGreaterThan(0);
+    expect(state.doors.length).toBeGreaterThan(0);
+    expect(state.droppedWeapons.length).toBeGreaterThan(0);
+    expect(state.decals).toEqual([]);
+    expect(state.colliders.length).toBeGreaterThan(state.arena.obstacles.length);
   });
 
   it("starts every actor outside movement blockers", () => {

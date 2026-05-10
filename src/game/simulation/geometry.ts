@@ -1,4 +1,4 @@
-import type { Rect, Vec2 } from "./types";
+import type { Box, Rect, Vec2 } from "./types";
 
 export const vec = (x = 0, y = 0): Vec2 => ({ x, y });
 
@@ -27,19 +27,19 @@ export const clampToArena = (position: Vec2, radius: number, width: number, heig
   y: Math.max(radius, Math.min(height - radius, position.y)),
 });
 
-export const pointInRect = (point: Vec2, rect: Rect): boolean =>
+export const pointInRect = (point: Vec2, rect: Box): boolean =>
   point.x >= rect.x &&
   point.x <= rect.x + rect.width &&
   point.y >= rect.y &&
   point.y <= rect.y + rect.height;
 
-export const circleIntersectsRect = (center: Vec2, radius: number, rect: Rect): boolean => {
+export const circleIntersectsRect = (center: Vec2, radius: number, rect: Box): boolean => {
   const closestX = Math.max(rect.x, Math.min(center.x, rect.x + rect.width));
   const closestY = Math.max(rect.y, Math.min(center.y, rect.y + rect.height));
   return Math.hypot(center.x - closestX, center.y - closestY) < radius;
 };
 
-const segmentIntersectsRect = (from: Vec2, to: Vec2, rect: Rect): boolean => {
+const segmentIntersectsRect = (from: Vec2, to: Vec2, rect: Box): boolean => {
   if (pointInRect(from, rect) || pointInRect(to, rect)) {
     return true;
   }

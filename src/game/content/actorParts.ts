@@ -10,6 +10,7 @@ export type ActorPartTag =
   | "ranged"
   | "rush"
   | "pistol"
+  | "rifle"
   | "shotgun";
 
 export type PartAnchor = {
@@ -121,6 +122,14 @@ export const actorParts: ActorPartDefinition[] = [
     anchor: { x: 0, y: -2 },
   },
   {
+    id: "arms-broadcast-rifle",
+    slot: "arms",
+    label: "Broadcast guard rifle arms",
+    spriteKey: "part-arms-broadcast-rifle",
+    tags: ["human", "broadcast", "rifle"],
+    anchor: { x: 0, y: -2 },
+  },
+  {
     id: "weapon-service-pistol",
     slot: "weapon",
     label: "Service pistol",
@@ -136,12 +145,20 @@ export const actorParts: ActorPartDefinition[] = [
     tags: ["shotgun"],
     anchor: { x: 0, y: -42 },
   },
+  {
+    id: "weapon-burst-rifle",
+    slot: "weapon",
+    label: "Burst rifle",
+    spriteKey: "part-weapon-burst-rifle",
+    tags: ["rifle"],
+    anchor: { x: 0, y: -42 },
+  },
 ];
 
 export const weaponPoseCatalog: WeaponPoseDefinition[] = [
   {
     id: "pose-suit-service-pistol",
-    weaponIds: ["service-pistol"],
+    weaponIds: ["service-pistol", "floor-pistol-1"],
     label: "Suit service-pistol pose",
     armsPartId: "arms-suit-pistol",
     weaponPartId: "weapon-service-pistol",
@@ -162,6 +179,16 @@ export const weaponPoseCatalog: WeaponPoseDefinition[] = [
     gripOffset: { x: 0, y: -28 },
     recoilDistance: 5,
     recoilDegrees: 2,
+  },
+  {
+    id: "pose-broadcast-burst-rifle",
+    weaponIds: ["enemy-ranged-office-rifle", "floor-rifle-1"],
+    label: "Broadcast guard burst-rifle pose",
+    armsPartId: "arms-broadcast-rifle",
+    weaponPartId: "weapon-burst-rifle",
+    gripOffset: { x: 0, y: -34 },
+    recoilDistance: 7,
+    recoilDegrees: 3,
   },
 ];
 

@@ -1,0 +1,43 @@
+import type { DoorState } from "../simulation/types";
+
+export const createDoors = (): DoorState[] => [
+  {
+    id: "door-left-studio",
+    assetKey: "scifi-door-heavy",
+    hinge: { x: 359, y: 302 },
+    length: 112,
+    thickness: 18,
+    closedAngle: Math.PI / 2,
+    openAngle: Math.PI * 0.08,
+    angle: Math.PI / 2,
+    targetAngle: Math.PI / 2,
+    state: "closed",
+    blocksBullets: true,
+  },
+  {
+    id: "door-right-studio",
+    assetKey: "scifi-door-heavy",
+    hinge: { x: 823, y: 298 },
+    length: 112,
+    thickness: 18,
+    closedAngle: Math.PI / 2,
+    openAngle: Math.PI * 0.92,
+    angle: Math.PI / 2,
+    targetAngle: Math.PI / 2,
+    state: "closed",
+    blocksBullets: true,
+  },
+  {
+    id: "door-center-news",
+    assetKey: "scifi-door",
+    hinge: { x: 648, y: 301 },
+    length: 68,
+    thickness: 16,
+    closedAngle: 0,
+    openAngle: -Math.PI / 2,
+    angle: 0,
+    targetAngle: 0,
+    state: "closed",
+    blocksBullets: true,
+  },
+];

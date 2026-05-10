@@ -74,6 +74,22 @@ body,
   white-space: nowrap;
 }
 
+.hud-interact {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(70px, 9vw, 120px);
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  color: #fff1b3;
+  background: #030303;
+  border: 4px solid #050505;
+  box-shadow: 0 0 0 2px #171717, 5px 5px 0 rgb(0 0 0 / 55%);
+  font-size: clamp(18px, 2vw, 28px);
+  font-weight: 900;
+  text-shadow: 3px 3px 0 #743d67;
+  white-space: nowrap;
+}
+
 .hud-center {
   position: absolute;
   left: 50%;

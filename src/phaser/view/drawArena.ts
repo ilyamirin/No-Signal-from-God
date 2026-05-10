@@ -101,18 +101,6 @@ const drawCamera = (graphics: Phaser.GameObjects.Graphics, rect: Box): void => {
   strokeRect(graphics, { x: centerX - 29, y: centerY - 18, width: 58, height: 36 }, 0x050607, 3);
 };
 
-const drawDroppedGun = (graphics: Phaser.GameObjects.Graphics, x: number, y: number, rotation: number): void => {
-  graphics.save();
-  graphics.translateCanvas(x, y);
-  graphics.rotateCanvas(rotation);
-  graphics.fillStyle(0x050607, 1);
-  graphics.fillRect(-21, -4, 42, 8);
-  graphics.fillRect(8, 1, 8, 17);
-  graphics.fillStyle(0xc6c0b2, 1);
-  graphics.fillRect(-18, -2, 28, 4);
-  graphics.restore();
-};
-
 const drawGlass = (graphics: Phaser.GameObjects.Graphics, x: number, y: number): void => {
   graphics.fillStyle(0x50f4ff, 0.85);
   for (let index = 0; index < 12; index += 1) {
@@ -195,50 +183,6 @@ const addFloorTiles = (
   }
 };
 
-const addScifiSetDressing = (
-  scene: Phaser.Scene,
-  container: Phaser.GameObjects.Container,
-): void => {
-  const props: AssetSprite[] = [
-    { key: "scifi-table-5", x: 238, y: 205, frame: 0, scale: 2.25 },
-    { key: "scifi-table-1", x: 626, y: 170, frame: 1, scale: 2.55 },
-    { key: "scifi-table-1", x: 1116, y: 648, frame: 0, scale: 2.55 },
-    { key: "scifi-computer-sheet", x: 1016, y: 112, frame: 4, scale: 1.7 },
-    { key: "scifi-computer-sheet", x: 1062, y: 112, frame: 5, scale: 1.7 },
-    { key: "scifi-computer-sheet", x: 1108, y: 112, frame: 6, scale: 1.7 },
-    { key: "scifi-display-1", x: 1012, y: 354, frame: 1, scale: 1.8, rotation: -0.35 },
-    { key: "scifi-tv-sheet", x: 596, y: 558, frame: 1, scale: 1.75 },
-    { key: "scifi-tv-sheet", x: 285, y: 318, frame: 0, scale: 1.45, rotation: 0.95 },
-    { key: "scifi-door-heavy", x: 360, y: 358, scale: 0.8, rotation: Math.PI / 2 },
-    { key: "scifi-door-heavy", x: 824, y: 356, scale: 0.8, rotation: Math.PI / 2 },
-    { key: "scifi-door", x: 682, y: 302, scale: 1.05 },
-    { key: "scifi-chair-1", x: 192, y: 142, frame: 1, scale: 1.55, rotation: Math.PI },
-    { key: "scifi-chair-1", x: 284, y: 142, frame: 0, scale: 1.55, rotation: Math.PI },
-    { key: "scifi-chair-1", x: 598, y: 104, frame: 1, scale: 1.55, rotation: Math.PI },
-    { key: "scifi-chair-1", x: 698, y: 104, frame: 0, scale: 1.55, rotation: Math.PI },
-    { key: "scifi-couch-1", x: 1086, y: 240, frame: 2, scale: 1.75 },
-    { key: "scifi-plant", x: 150, y: 520, frame: 0, scale: 1.45 },
-    { key: "scifi-plant", x: 1210, y: 198, frame: 2, scale: 1.35 },
-    { key: "scifi-barrel", x: 1100, y: 405, frame: 0, scale: 1.4 },
-    { key: "scifi-box-big", x: 1042, y: 470, scale: 1.05, rotation: 0.2 },
-    { key: "scifi-box-small", x: 972, y: 474, scale: 1.1, rotation: -0.25 },
-    { key: "scifi-keyboard-mouse", x: 1120, y: 615, scale: 1.2 },
-    { key: "scifi-lab-device", x: 236, y: 668, scale: 1.25 },
-    { key: "scifi-lamp", x: 438, y: 74, frame: 1, scale: 1.7 },
-    { key: "scifi-lamp", x: 838, y: 74, frame: 1, scale: 1.7 },
-    { key: "scifi-blood-floor", x: 236, y: 526, frame: 1, scale: 2.2, rotation: -0.55 },
-    { key: "scifi-blood-floor", x: 612, y: 242, frame: 2, scale: 1.9, rotation: 0.3 },
-    { key: "scifi-blood-floor", x: 1145, y: 538, frame: 0, scale: 2.3, rotation: 1.2 },
-    { key: "scifi-rubbish", x: 840, y: 334, frame: 0, scale: 1.7 },
-    { key: "scifi-rubbish", x: 864, y: 350, frame: 1, scale: 1.7 },
-    { key: "scifi-rubbish", x: 895, y: 335, frame: 1, scale: 1.7 },
-  ];
-
-  for (const prop of props) {
-    addSprite(scene, container, prop);
-  }
-};
-
 export const drawArena = (
   scene: Phaser.Scene,
   arena: ArenaState,
@@ -266,9 +210,6 @@ export const drawArena = (
   drawDoorGap(overlay, 814, 298, 18, 116);
   drawDoorGap(overlay, 648, 292, 68, 18);
 
-  drawDroppedGun(overlay, 675, 300, -0.25);
-  drawDroppedGun(overlay, 1000, 356, 0.55);
-  drawDroppedGun(overlay, 246, 300, 1.1);
   drawGlass(overlay, 850, 338);
   drawShells(overlay, 592, 372);
   drawShells(overlay, 1030, 530);
@@ -276,8 +217,6 @@ export const drawArena = (
   for (const obstacle of arena.obstacles) {
     drawObstacle(overlay, obstacle);
   }
-
-  addScifiSetDressing(scene, container);
 
   overlay.lineStyle(5, 0x050607, 1);
   overlay.strokeRect(26, 24, arena.width - 52, arena.height - 48);

@@ -6,6 +6,8 @@ type ActorState = Pick<
   "id" | "position" | "velocity" | "facing" | "alive" | "head" | "weaponId"
 > & {
   kind?: EnemyState["kind"];
+  archetype?: EnemyState["archetype"];
+  animation?: PlayerState["animation"] | EnemyState["animation"];
 };
 
 export type ActorRig = {
@@ -33,22 +35,32 @@ const velocityDirectionIndex = (velocity: Vec2): number | undefined => {
 };
 
 const enemyTextureKey = (enemy: EnemyState): string => {
-  if (enemy.kind === "rush") {
+  if (enemy.archetype === "monster_melee") {
     return "scifi-enemy-run";
   }
   return "scifi-enemy-idle";
 };
 
-const animationFor = (actor: ActorState, moving: boolean, shooting: boolean): string => {
+const playerAnimationFor = (actor: ActorState, weapon: WeaponState | undefined, moving: boolean, shooting: boolean): string => {
+  const weaponKind = weapon?.kind ?? actor.animation?.weaponKind ?? "pistol";
+  const suffix = weaponKind === "rifle" ? "rifle" : "pistol";
+
+  if (actor.animation?.intent === "reload") {
+    return `scifi-player-reload-${suffix}`;
+  }
+  if (shooting || actor.animation?.intent === "shoot") {
+    return `scifi-player-shoot-${suffix}`;
+  }
+  return moving ? `scifi-player-run-${suffix}` : `scifi-player-idle-${suffix}`;
+};
+
+const animationFor = (actor: ActorState, weapon: WeaponState | undefined, moving: boolean, shooting: boolean): string => {
   if (!actor.alive) {
     return actor.id === "player" ? "scifi-player-death" : "scifi-enemy-death";
   }
 
   if (actor.id === "player") {
-    if (shooting) {
-      return "scifi-player-shoot-pistol";
-    }
-    return moving ? "scifi-player-run-pistol" : "scifi-player-idle-pistol";
+    return playerAnimationFor(actor, weapon, moving, shooting);
   }
 
   if (shooting) {
@@ -108,7 +120,9 @@ export const syncActorRig = (
   deltaMs: number,
 ): void => {
   const nextTextureKey =
-    actor.id === "player" ? "scifi-player-idle-pistol" : enemyTextureKey(actor as EnemyState);
+    actor.id === "player"
+      ? `scifi-player-idle-${weapon?.kind === "rifle" ? "rifle" : "pistol"}`
+      : enemyTextureKey(actor as EnemyState);
   syncTextureKey(rig, nextTextureKey);
   syncRecoil(rig, weapon, deltaMs);
 
@@ -126,7 +140,7 @@ export const syncActorRig = (
   const recoilX = -Math.cos(facing) * recoilDistance;
   const recoilY = -Math.sin(facing) * recoilDistance;
   const walkBob = moving ? Math.sin(rig.walkTimerMs / 70) * 1.5 : 0;
-  const nextAnimation = animationFor(actor, moving, rig.shootMs > 0);
+  const nextAnimation = animationFor(actor, weapon, moving, rig.shootMs > 0 || (actor.animation?.lastShotMs ?? 0) > 0);
 
   if (rig.currentAnimation !== nextAnimation) {
     rig.currentAnimation = nextAnimation;

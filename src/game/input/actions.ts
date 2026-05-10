@@ -6,4 +6,5 @@ export type PlayerInput = {
   firing: boolean;
   restart: boolean;
   kick: boolean;
+  interact: boolean;
 };

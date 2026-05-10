@@ -1,5 +1,6 @@
 import { fromAngle, scale } from "../geometry";
 import type { BulletState, FxState, GameState, Vec2, WeaponState } from "../types";
+import { markActorShot } from "./animation";
 
 const nextId = (state: GameState, prefix: string): string => `${prefix}-${state.nextId++}`;
 
@@ -68,6 +69,7 @@ export const tryFireWeapon = (
   state.fx.push(muzzleFx, casingFx);
   weapon.loadedRounds -= 1;
   weapon.cooldownRemainingMs = weapon.fireCooldownMs;
+  markActorShot(state, ownerId);
 
   if (weapon.loadedRounds === 0 && weapon.reserveRounds > 0) {
     weapon.reloadRemainingMs = weapon.reloadDelayMs;

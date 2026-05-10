@@ -3,7 +3,7 @@ import type { Vec2 } from "../simulation/types";
 import type { PlayerInput } from "./actions";
 
 export type InputBindingState = {
-  keys: Record<"w" | "a" | "s" | "d" | "r", Phaser.Input.Keyboard.Key>;
+  keys: Record<"w" | "a" | "s" | "d" | "r" | "e" | "cyrillicE", Phaser.Input.Keyboard.Key>;
 };
 
 export const createInputBindings = (scene: Phaser.Scene): InputBindingState => {
@@ -18,6 +18,8 @@ export const createInputBindings = (scene: Phaser.Scene): InputBindingState => {
       s: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
       d: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
       r: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R),
+      e: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
+      cyrillicE: scene.input.keyboard.addKey("У"),
     },
   };
 };
@@ -42,5 +44,6 @@ export const readPlayerInput = (
     firing: pointer.isDown,
     restart: Phaser.Input.Keyboard.JustDown(bindings.keys.r),
     kick: false,
+    interact: Phaser.Input.Keyboard.JustDown(bindings.keys.e) || Phaser.Input.Keyboard.JustDown(bindings.keys.cyrillicE),
   };
 };

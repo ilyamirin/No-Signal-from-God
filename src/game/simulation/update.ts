@@ -1,9 +1,15 @@
 import type { PlayerInput } from "../input/actions";
+import { resolveInteractionPrompt, performInteraction } from "./interactions";
 import { createInitialGameState } from "./state";
-import { angleTo, circleIntersectsRect, clampToArena, normalize, scale } from "./geometry";
+import { angleTo, clampToArena, normalize, scale } from "./geometry";
+import { blocksMovementAtCircle } from "./collision";
 import type { GameState, Vec2 } from "./types";
 import { updateBulletsAndHits, updateStatus } from "./systems/combat";
+import { updateDroppedWeapons } from "./systems/droppedWeapons";
+import { updateDoors } from "./systems/doors";
 import { updateEnemies } from "./systems/enemies";
+import { updateActorAnimations } from "./systems/animation";
+import { updateCorpseMotion } from "./systems/death";
 import { tickWeapon, tryFireWeapon } from "./systems/weapons";
 
 const PLAYER_SPEED = 270;
@@ -13,10 +19,10 @@ const reduceTimer = (value: number, deltaMs: number): number => Math.max(0, valu
 const cloneGameState = (state: GameState): GameState => structuredClone(state) as GameState;
 
 const hasEngagementInput = (input: PlayerInput): boolean =>
-  input.firing || input.move.x !== 0 || input.move.y !== 0;
+  input.firing || input.interact || input.move.x !== 0 || input.move.y !== 0;
 
 const canPlayerStandAt = (state: GameState, position: Vec2): boolean =>
-  !state.arena.obstacles.some((obstacle) => obstacle.blocksMovement && circleIntersectsRect(position, state.player.radius, obstacle));
+  !blocksMovementAtCircle(state.colliders, position, state.player.radius);
 
 const updatePlayerMovement = (state: GameState, input: PlayerInput, deltaMs: number): void => {
   const direction = normalize(input.move);
@@ -59,15 +65,23 @@ export const updateGame = (current: GameState, input: PlayerInput, deltaMs: numb
 
   state.elapsedMs += deltaMs;
   updateFx(state, deltaMs);
+  updateDoors(state, deltaMs);
+  updateDroppedWeapons(state, deltaMs);
   Object.values(state.weapons).forEach((weapon) => tickWeapon(weapon, deltaMs));
   state.player.invulnerableMs = reduceTimer(state.player.invulnerableMs, deltaMs);
   state.player.facing = angleTo(state.player.position, input.aimWorld);
   state.engaged = state.engaged || hasEngagementInput(input);
 
   updatePlayerMovement(state, input, deltaMs);
+  state.interaction = resolveInteractionPrompt(state);
+  if (input.interact) {
+    performInteraction(state);
+  }
   if (input.firing && state.player.alive) {
     tryFireWeapon(state, state.player.id, state.player.weaponId, state.player.position, state.player.facing);
   }
+
+  updateActorAnimations(state, deltaMs);
 
   if (!state.engaged) {
     return state;
@@ -75,6 +89,8 @@ export const updateGame = (current: GameState, input: PlayerInput, deltaMs: numb
 
   updateEnemies(state, deltaMs);
   updateBulletsAndHits(state, deltaMs);
+  updateCorpseMotion(state, deltaMs);
+  updateActorAnimations(state, deltaMs);
   updateStatus(state);
 
   return state;

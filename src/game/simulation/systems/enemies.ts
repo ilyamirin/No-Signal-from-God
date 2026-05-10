@@ -1,4 +1,5 @@
-import { angleTo, circleIntersectsRect, clampToArena, distance, hasLineOfSight, normalize, scale } from "../geometry";
+import { angleTo, clampToArena, distance, normalize, scale } from "../geometry";
+import { blocksMovementAtCircle, hasLineOfSightThroughColliders } from "../collision";
 import type { EnemyState, GameState, Vec2 } from "../types";
 import { tryFireWeapon } from "./weapons";
 
@@ -13,7 +14,7 @@ const RANGED_ATTACK_COOLDOWN_MS = 520;
 const reduceTimer = (value: number, deltaMs: number): number => Math.max(0, value - deltaMs);
 
 const canStandAt = (state: GameState, enemy: EnemyState, position: Vec2): boolean =>
-  !state.arena.obstacles.some((obstacle) => obstacle.blocksMovement && circleIntersectsRect(position, enemy.radius, obstacle));
+  !blocksMovementAtCircle(state.colliders, position, enemy.radius);
 
 const moveEnemy = (state: GameState, enemy: EnemyState, desiredVelocity: Vec2, deltaMs: number): void => {
   const deltaSeconds = deltaMs / 1000;
@@ -78,7 +79,7 @@ const updateRangedEnemy = (state: GameState, enemy: EnemyState, deltaMs: number)
   if (
     enemy.weaponId &&
     enemy.attackCooldownMs === 0 &&
-    hasLineOfSight(enemy.position, state.player.position, state.arena.obstacles)
+    hasLineOfSightThroughColliders(state.colliders, enemy.position, state.player.position, "vision")
   ) {
     const fired = tryFireWeapon(state, enemy.id, enemy.weaponId, enemy.position, enemy.facing);
     if (fired) {
@@ -95,9 +96,9 @@ export const updateEnemies = (state: GameState, deltaMs: number): void => {
     }
 
     enemy.attackCooldownMs = reduceTimer(enemy.attackCooldownMs, deltaMs);
-    if (enemy.kind === "rush") {
+    if (enemy.archetype === "monster_melee") {
       updateRushEnemy(state, enemy, deltaMs);
-    } else {
+    } else if (enemy.archetype === "humanoid_ranged") {
       updateRangedEnemy(state, enemy, deltaMs);
     }
   }

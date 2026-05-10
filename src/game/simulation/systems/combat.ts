@@ -1,5 +1,7 @@
-import { distance, pointInRect } from "../geometry";
+import { distance } from "../geometry";
+import { blocksChannelAtPoint } from "../collision";
 import type { GameState, Vec2 } from "../types";
+import { emitHeavyBlood, killEnemy } from "./death";
 
 const RUSH_SCORE = 900;
 const RANGED_SCORE = 1200;
@@ -33,9 +35,15 @@ export const updateBulletsAndHits = (state: GameState, deltaMs: number): void =>
       continue;
     }
 
-    const blockerHit = state.arena.obstacles.find((obstacle) => obstacle.blocksBullets && pointInRect(bullet.position, obstacle));
-    if (blockerHit) {
+    if (blocksChannelAtPoint(state.colliders, "bullets", bullet.position)) {
       addFx(state, "impact", bullet.position, Math.atan2(bullet.velocity.y, bullet.velocity.x));
+      state.fx.push({
+        id: nextFxId(state),
+        kind: "bullet-puff",
+        position: { ...bullet.position },
+        rotation: Math.atan2(bullet.velocity.y, bullet.velocity.x),
+        ttlMs: 180,
+      });
       continue;
     }
 
@@ -45,8 +53,7 @@ export const updateBulletsAndHits = (state: GameState, deltaMs: number): void =>
         enemy.health -= bullet.damage;
         addFx(state, "blood", enemy.position, Math.atan2(bullet.velocity.y, bullet.velocity.x));
         if (enemy.health <= 0) {
-          enemy.alive = false;
-          enemy.velocity = { x: 0, y: 0 };
+          killEnemy(state, enemy, bullet.velocity);
           state.score += killScore(enemy.kind);
         }
         continue;
@@ -58,7 +65,7 @@ export const updateBulletsAndHits = (state: GameState, deltaMs: number): void =>
     ) {
       state.player.health -= bullet.damage;
       state.player.invulnerableMs = 700;
-      addFx(state, "blood", state.player.position, Math.atan2(bullet.velocity.y, bullet.velocity.x));
+      emitHeavyBlood(state, state.player.position, Math.atan2(bullet.velocity.y, bullet.velocity.x), true);
       continue;
     }
 
