@@ -2,6 +2,7 @@ import { angleTo, clampToArena, distance, normalize, scale } from "../geometry";
 import { blocksMovementAtCircle, hasLineOfSightThroughColliders } from "../collision";
 import type { EnemyState, GameState, Vec2 } from "../types";
 import { emitHeavyBlood } from "./death";
+import { canEnemySeePlayer, nearestHeardSound } from "./perception";
 import { tryFireWeapon } from "./weapons";
 
 const RUSH_SPEED = 185;
@@ -76,6 +77,37 @@ const swingAtPlayer = (state: GameState, enemy: EnemyState): void => {
   }
 };
 
+const enterCombat = (state: GameState, enemy: EnemyState, knownPosition = state.player.position): void => {
+  enemy.ai.state = "combat";
+  enemy.ai.knownPlayerPosition = { ...knownPosition };
+
+  for (const ally of state.enemies) {
+    if (!ally.alive || ally.id === enemy.id || ally.ai.alertGroupId !== enemy.ai.alertGroupId) {
+      continue;
+    }
+
+    ally.ai.knownPlayerPosition = { ...knownPosition };
+    if (canEnemySeePlayer(state, ally)) {
+      ally.ai.state = "combat";
+    } else if (ally.ai.state !== "combat") {
+      ally.ai.state = "investigating";
+    }
+  }
+};
+
+const updatePerceptionAndAlerts = (state: GameState, enemy: EnemyState): void => {
+  if (canEnemySeePlayer(state, enemy)) {
+    enterCombat(state, enemy, state.player.position);
+    return;
+  }
+
+  const sound = nearestHeardSound(state, enemy);
+  if (sound && enemy.ai.state !== "combat") {
+    enemy.ai.knownPlayerPosition = { ...sound.position };
+    enemy.ai.state = "suspicious";
+  }
+};
+
 const updateRushEnemy = (state: GameState, enemy: EnemyState, deltaMs: number): void => {
   let playerDistance = distance(enemy.position, state.player.position);
   const toPlayer = normalize({
@@ -131,6 +163,13 @@ export const updateEnemies = (state: GameState, deltaMs: number): void => {
     }
 
     enemy.attackCooldownMs = reduceTimer(enemy.attackCooldownMs, deltaMs);
+    updatePerceptionAndAlerts(state, enemy);
+
+    if (enemy.ai.state !== "combat") {
+      enemy.velocity = { x: 0, y: 0 };
+      continue;
+    }
+
     if (enemy.archetype === "monster_melee") {
       updateRushEnemy(state, enemy, deltaMs);
     } else if (enemy.archetype === "humanoid_ranged") {

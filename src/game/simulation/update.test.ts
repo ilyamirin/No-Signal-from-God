@@ -39,6 +39,7 @@ describe("updateGame", () => {
       const active = firingEnemies.includes(enemy);
       enemy.alive = active;
       enemy.health = active ? 1 : 0;
+      enemy.ai.state = active ? "combat" : "posted";
       enemy.attackCooldownMs = 0;
     });
     firingEnemies[0].position = { x: 620, y: 390 };

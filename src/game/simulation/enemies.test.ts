@@ -22,6 +22,7 @@ const isolateFirstMeleeEnemy = () => {
   state.enemies.forEach((enemy) => {
     enemy.alive = enemy.id === melee.id;
     enemy.health = enemy.id === melee.id ? 1 : 0;
+    enemy.ai.state = enemy.id === melee.id ? "combat" : "posted";
   });
   state.player.position = { x: 330, y: 1040 };
   melee.position = { x: 390, y: 1040 };
