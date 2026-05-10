@@ -1,6 +1,7 @@
 import { createReceptionHubLevel } from "./receptionHubLevel";
 import { createRingTowerLevel } from "./ringTowerLevel";
-import type { LevelDefinition, LevelId } from "./types";
+import type { LevelId } from "../../simulation/types";
+import type { LevelDefinition } from "./types";
 
 export const DEFAULT_LEVEL_ID: LevelId = "ring-tower";
 

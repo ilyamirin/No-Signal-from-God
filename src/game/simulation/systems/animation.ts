@@ -37,7 +37,7 @@ export const markActorShot = (state: GameState, actorId: string): void => {
 export const updateActorAnimations = (state: GameState, deltaMs: number): void => {
   state.player.animation.lastShotMs = Math.max(0, state.player.animation.lastShotMs - deltaMs);
   const playerSpeed = speedOf(state.player);
-  const playerWeapon = state.weapons[state.player.weaponId];
+  const playerWeapon = state.player.weaponId ? state.weapons[state.player.weaponId] : undefined;
   state.player.animation = {
     ...state.player.animation,
     intent: playerIntent(state.player, playerWeapon),

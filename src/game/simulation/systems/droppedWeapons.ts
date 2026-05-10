@@ -55,10 +55,10 @@ export const tryPickupWeapon = (state: GameState): boolean => {
   }
 
   const currentWeaponId = state.player.weaponId;
-  const currentWeapon = state.weapons[currentWeaponId];
+  const currentWeapon = currentWeaponId ? state.weapons[currentWeaponId] : undefined;
   const throwAngle = angleTo(target.position, state.player.position) + Math.PI;
 
-  if (currentWeapon) {
+  if (currentWeapon && currentWeaponId) {
     throwHeldWeapon(state, currentWeaponId, currentWeapon.kind, throwAngle);
   }
 

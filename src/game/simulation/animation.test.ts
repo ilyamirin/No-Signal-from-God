@@ -4,7 +4,7 @@ import { updateActorAnimations } from "./systems/animation";
 
 describe("actor animation state", () => {
   it("selects player weapon and run/shoot intents from simulation state", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     state.player.velocity = { x: 220, y: 0 };
     updateActorAnimations(state, 16);
 
@@ -17,7 +17,7 @@ describe("actor animation state", () => {
   });
 
   it("keeps melee monsters away from ranged weapon animation branches", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     const monster = state.enemies.find((enemy) => enemy.archetype === "monster_melee");
 
     expect(monster).toBeDefined();

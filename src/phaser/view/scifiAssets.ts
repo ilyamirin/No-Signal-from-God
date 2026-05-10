@@ -52,6 +52,7 @@ import playerRunPistolUrl from "../../assets/vendor/valentint-scifi/Player/Run/p
 import playerRunRifleUrl from "../../assets/vendor/valentint-scifi/Player/Run/player_run_rifle_Sheet.png?url";
 import playerShootPistolUrl from "../../assets/vendor/valentint-scifi/Player/Shoot/player_shoot_pistol_Sheet.png?url";
 import playerShootRifleUrl from "../../assets/vendor/valentint-scifi/Player/Shoot/player_shoot_rifle_Sheet.png?url";
+import playerUseUrl from "../../assets/vendor/valentint-scifi/Player/Use/player_use_Sheet.png?url";
 import playerWalkPistolUrl from "../../assets/vendor/valentint-scifi/Player/Walk/player_walk_pistol_Sheet.png?url";
 import playerWalkRifleUrl from "../../assets/vendor/valentint-scifi/Player/Walk/player_walk_rifle_Sheet.png?url";
 import playerSwitchPistolUrl from "../../assets/vendor/valentint-scifi/Player/WeaponSwitch/player_switch_pistol_Sheet.png?url";
@@ -117,6 +118,12 @@ const spriteSheets: SpriteSheetAsset[] = [
   {
     key: "scifi-player-shoot-rifle",
     url: playerShootRifleUrl,
+    frameWidth: 48,
+    frameHeight: 48,
+  },
+  {
+    key: "scifi-player-use",
+    url: playerUseUrl,
     frameWidth: 48,
     frameHeight: 48,
   },
@@ -449,6 +456,7 @@ export const ensureScifiAnimations = (scene: Phaser.Scene): void => {
   createAnimation(scene, "scifi-player-run-rifle", "scifi-player-run-rifle", 6, 14);
   createAnimation(scene, "scifi-player-shoot-pistol", "scifi-player-shoot-pistol", 2, 18, 0);
   createAnimation(scene, "scifi-player-shoot-rifle", "scifi-player-shoot-rifle", 2, 18, 0);
+  createAnimation(scene, "scifi-player-use", "scifi-player-use", 3, 8);
   createAnimation(scene, "scifi-player-punch-pistol", "scifi-player-punch-pistol", 4, 14, 0);
   createAnimation(scene, "scifi-player-reload-pistol", "scifi-player-reload-pistol", 4, 12, 0);
   createAnimation(scene, "scifi-player-reload-rifle", "scifi-player-reload-rifle", 4, 12, 0);

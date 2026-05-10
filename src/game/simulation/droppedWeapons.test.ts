@@ -4,7 +4,7 @@ import { tryPickupWeapon, updateDroppedWeapons } from "./systems/droppedWeapons"
 
 describe("dropped weapons", () => {
   it("moves thrown weapons with spin and friction", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     const weapon = state.droppedWeapons[0];
     weapon.velocity = { x: 300, y: 0 };
     weapon.angularVelocity = 5;
@@ -17,7 +17,7 @@ describe("dropped weapons", () => {
   });
 
   it("equips nearest dropped weapon and leaves the old one on the floor", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     state.player.position = { ...state.droppedWeapons[0].position };
 
     expect(tryPickupWeapon(state)).toBe(true);

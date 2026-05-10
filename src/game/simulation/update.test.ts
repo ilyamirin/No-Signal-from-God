@@ -14,7 +14,7 @@ const neutralInput: PlayerInput = {
 
 describe("updateGame", () => {
   it("moves the suited TV-head player with normalized WASD input", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     const next = updateGame(state, { ...neutralInput, move: { x: 1, y: 1 } }, 100);
 
     expect(next.player.position.x).toBeGreaterThan(state.player.position.x);
@@ -23,7 +23,7 @@ describe("updateGame", () => {
   });
 
   it("fires one bullet from the single equipped weapon and consumes one round", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     const next = updateGame(state, { ...neutralInput, firing: true }, 16);
 
     expect(next.bullets).toHaveLength(1);
@@ -31,8 +31,44 @@ describe("updateGame", () => {
     expect(next.fx.some((fx) => fx.kind === "muzzle")).toBe(true);
   });
 
+  it("does not fire when the selected level starts unarmed", () => {
+    const state = createInitialGameState({ levelId: "ring-tower" });
+    const next = updateGame(
+      state,
+      {
+        ...neutralInput,
+        aimWorld: { x: state.player.position.x + 100, y: state.player.position.y },
+        firing: true,
+      },
+      16,
+    );
+
+    expect(state.player.weaponId).toBeUndefined();
+    expect(next.bullets).toHaveLength(0);
+    expect(next.fx.some((fx) => fx.kind === "muzzle")).toBe(false);
+  });
+
+  it("can pick up the first ring tower pistol from an unarmed start", () => {
+    const state = createInitialGameState({ levelId: "ring-tower" });
+    const firstDrop = state.droppedWeapons.find((weapon) => weapon.id === "ring-drop-first-pistol")!;
+    state.player.position = { ...firstDrop.position };
+
+    const next = updateGame(
+      state,
+      {
+        ...neutralInput,
+        aimWorld: { x: firstDrop.position.x + 100, y: firstDrop.position.y },
+        interact: true,
+      },
+      16,
+    );
+
+    expect(next.player.weaponId).toBe("ring-floor-first-pistol");
+    expect(next.droppedWeapons.some((weapon) => weapon.id === "ring-drop-first-pistol")).toBe(false);
+  });
+
   it("lets ranged enemies fire their own weapon state without consuming the player weapon", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     state.player.position = { x: 690, y: 390 };
     const firingEnemies = state.enemies.filter((enemy) => enemy.archetype === "humanoid_ranged").slice(0, 2);
     state.enemies.forEach((enemy) => {
@@ -54,7 +90,7 @@ describe("updateGame", () => {
   });
 
   it("keeps the opening encounter playable for the first reaction window", () => {
-    let state = createInitialGameState();
+    let state = createInitialGameState({ levelId: "reception-hub" });
 
     for (let frame = 0; frame < 300; frame += 1) {
       state = updateGame(state, neutralInput, 16);
@@ -66,7 +102,7 @@ describe("updateGame", () => {
   });
 
   it("marks victory and awards score after the last enemy dies", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     state.enemies.forEach((enemy, index) => {
       enemy.alive = index === 0;
       enemy.health = index === 0 ? 1 : 0;
@@ -89,7 +125,7 @@ describe("updateGame", () => {
   });
 
   it("resets after death when restart is pressed", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     state.status = "dead";
     state.player.alive = false;
     state.score = 9000;

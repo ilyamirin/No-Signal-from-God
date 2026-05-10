@@ -21,10 +21,14 @@ export const tickWeapon = (weapon: WeaponState, deltaMs: number): void => {
 export const tryFireWeapon = (
   state: GameState,
   ownerId: string,
-  weaponId: string,
+  weaponId: string | undefined,
   origin: Vec2,
   angle: number,
 ): BulletState | undefined => {
+  if (!weaponId) {
+    return undefined;
+  }
+
   const weapon = state.weapons[weaponId];
   if (!weapon || weapon.cooldownRemainingMs > 0 || weapon.reloadRemainingMs > 0) {
     return undefined;

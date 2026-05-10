@@ -42,7 +42,10 @@ const enemyTextureKey = (enemy: EnemyState): string => {
 };
 
 const playerAnimationFor = (actor: ActorState, weapon: WeaponState | undefined, moving: boolean, shooting: boolean): string => {
-  const weaponKind = weapon?.kind ?? actor.animation?.weaponKind ?? "pistol";
+  const weaponKind = weapon?.kind ?? actor.animation?.weaponKind;
+  if (!weaponKind || !actor.weaponId) {
+    return "scifi-player-use";
+  }
   const suffix = weaponKind === "rifle" ? "rifle" : "pistol";
 
   if (actor.animation?.intent === "reload") {
@@ -121,7 +124,9 @@ export const syncActorRig = (
 ): void => {
   const nextTextureKey =
     actor.id === "player"
-      ? `scifi-player-idle-${weapon?.kind === "rifle" ? "rifle" : "pistol"}`
+      ? weapon
+        ? `scifi-player-idle-${weapon.kind === "rifle" ? "rifle" : "pistol"}`
+        : "scifi-player-use"
       : enemyTextureKey(actor as EnemyState);
   syncTextureKey(rig, nextTextureKey);
   syncRecoil(rig, weapon, deltaMs);
@@ -157,7 +162,7 @@ export const createPlayerRig = (
   scene: Phaser.Scene,
   player: PlayerState,
 ): ActorRig =>
-  createActorSprite(scene, "scifi-player-idle-pistol", player.position);
+  createActorSprite(scene, player.weaponId ? "scifi-player-idle-pistol" : "scifi-player-use", player.position);
 
 export const createEnemyRig = (
   scene: Phaser.Scene,

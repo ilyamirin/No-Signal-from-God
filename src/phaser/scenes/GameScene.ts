@@ -106,7 +106,7 @@ export class GameScene extends Phaser.Scene {
     syncActorRig(
       this.player,
       state.player,
-      state.weapons[state.player.weaponId],
+      state.player.weaponId ? state.weapons[state.player.weaponId] : undefined,
       Math.min(delta, 50),
     );
 

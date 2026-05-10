@@ -31,15 +31,16 @@ export const createHud = (root: HTMLElement): HudController => {
     update: (state) => {
       const aliveEnemies = state.enemies.filter((enemy) => enemy.alive).length;
       const clearedEnemies = state.enemies.length - aliveEnemies;
-      const weapon = state.weapons[state.player.weaponId];
+      const weapon = state.player.weaponId ? state.weapons[state.player.weaponId] : undefined;
 
       score.textContent = `${state.score}pts`;
       enemies.textContent = `${clearedEnemies}/${state.enemies.length} enemies`;
-      weaponLabel.textContent = weapon.kind;
-      ammo.textContent =
-        weapon.reloadRemainingMs > 0
+      weaponLabel.textContent = weapon?.kind ?? "unarmed";
+      ammo.textContent = weapon
+        ? weapon.reloadRemainingMs > 0
           ? "reload"
-          : `${weapon.loadedRounds}/${weapon.reserveRounds} rnds`;
+          : `${weapon.loadedRounds}/${weapon.reserveRounds} rnds`
+        : "no weapon";
       interact.hidden = !state.interaction;
       interact.textContent = state.interaction?.label ?? "";
 
