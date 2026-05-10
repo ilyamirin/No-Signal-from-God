@@ -3,7 +3,7 @@ import { blocksMovementAtCircle, hasLineOfSightThroughColliders } from "../colli
 import type { EnemyState, GameState, Vec2 } from "../types";
 import { emitHeavyBlood } from "./death";
 import { applyDoorPressure } from "./doors";
-import { canEnemySeePlayer, nearestHeardSound } from "./perception";
+import { canEnemySeePlayer, hasFriendlyInLineOfFire, nearestHeardSound } from "./perception";
 import { tryFireWeapon } from "./weapons";
 
 const RUSH_SPEED = 185;
@@ -162,7 +162,8 @@ const updateRangedEnemy = (state: GameState, enemy: EnemyState, deltaMs: number)
   if (
     enemy.weaponId &&
     enemy.attackCooldownMs === 0 &&
-    hasLineOfSightThroughColliders(state.colliders, enemy.position, state.player.position, "vision")
+    hasLineOfSightThroughColliders(state.colliders, enemy.position, state.player.position, "vision") &&
+    !hasFriendlyInLineOfFire(state, enemy, state.player.position)
   ) {
     const fired = tryFireWeapon(state, enemy.id, enemy.weaponId, enemy.position, enemy.facing);
     if (fired) {

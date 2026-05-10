@@ -127,3 +127,25 @@ describe("enemy door traversal", () => {
     expect(enemy.position.y).toBeGreaterThan(door.hinge.y + 28);
   });
 });
+
+describe("ranged enemy fire safety", () => {
+  it("withholds fire when a friendly blocks the shot", () => {
+    const state = createInitialGameState();
+    const [shooter, friendly] = state.enemies;
+    state.enemies.forEach((enemy) => {
+      enemy.alive = enemy.id === shooter.id || enemy.id === friendly.id;
+      enemy.health = enemy.alive ? 1 : 0;
+      enemy.ai.state = enemy.id === shooter.id ? "combat" : "posted";
+    });
+    shooter.archetype = "humanoid_ranged";
+    shooter.weaponId = "security-guard-pistol";
+    shooter.attackCooldownMs = 0;
+    shooter.position = { x: 100, y: 100 };
+    friendly.position = { x: 180, y: 100 };
+    state.player.position = { x: 260, y: 100 };
+
+    updateEnemies(state, 16);
+
+    expect(state.bullets.filter((bullet) => bullet.ownerId === shooter.id)).toHaveLength(0);
+  });
+});

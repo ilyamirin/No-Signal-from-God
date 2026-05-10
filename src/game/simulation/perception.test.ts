@@ -92,4 +92,19 @@ describe("friendly fire safety", () => {
 
     expect(hasFriendlyInLineOfFire(state, shooter, state.player.position)).toBe(true);
   });
+
+  it("does not flag a friendly behind the player as blocking fire", () => {
+    const state = createInitialGameState();
+    const [shooter, friendly] = state.enemies;
+    state.enemies.forEach((enemy) => {
+      enemy.alive = enemy.id === shooter.id || enemy.id === friendly.id;
+      enemy.health = enemy.alive ? 1 : 0;
+    });
+    shooter.position = { x: 100, y: 100 };
+    friendly.position = { x: 320, y: 100 };
+    friendly.radius = 18;
+    state.player.position = { x: 260, y: 100 };
+
+    expect(hasFriendlyInLineOfFire(state, shooter, state.player.position)).toBe(false);
+  });
 });
