@@ -14,7 +14,7 @@ const input: PlayerInput = {
 };
 
 const isolateFirstMeleeEnemy = () => {
-  const state = createInitialGameState();
+  const state = createInitialGameState({ levelId: "reception-hub" });
   const melee = state.enemies.find((enemy) => enemy.archetype === "monster_melee");
   if (!melee) {
     throw new Error("Missing melee enemy");
@@ -33,7 +33,7 @@ const isolateFirstMeleeEnemy = () => {
 
 describe("melee enemies", () => {
   it("starts melee monsters ready to swing instead of waiting like ranged guards", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     const meleeEnemies = state.enemies.filter((enemy) => enemy.archetype === "monster_melee");
 
     expect(meleeEnemies.length).toBeGreaterThan(0);

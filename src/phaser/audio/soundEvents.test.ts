@@ -4,7 +4,7 @@ import { collectSoundEvents } from "./soundEvents";
 
 describe("collectSoundEvents", () => {
   it("emits weapon-specific shot events when loaded rounds decrease", () => {
-    const previous = createInitialGameState();
+    const previous = createInitialGameState({ levelId: "reception-hub" });
     const current = structuredClone(previous);
     current.weapons["service-pistol"].loadedRounds -= 1;
 
@@ -12,7 +12,7 @@ describe("collectSoundEvents", () => {
   });
 
   it("emits a footstep only when movement crosses the step cadence", () => {
-    const previous = createInitialGameState();
+    const previous = createInitialGameState({ levelId: "reception-hub" });
     const current = structuredClone(previous);
     previous.elapsedMs = 260;
     current.elapsedMs = 290;
@@ -22,7 +22,7 @@ describe("collectSoundEvents", () => {
   });
 
   it("emits door and monster events from simulation changes", () => {
-    const previous = createInitialGameState();
+    const previous = createInitialGameState({ levelId: "reception-hub" });
     const current = structuredClone(previous);
     current.doors[0].angle += 0.2;
     current.player.health -= 1;

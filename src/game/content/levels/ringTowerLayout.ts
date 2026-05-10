@@ -62,11 +62,11 @@ export const ringTowerLayout = {
   exitLiftTrigger: { x: exitLift.x, y: exitLift.y, width: exitLift.width, height: exitLift.height },
   routeTargets: {
     lobby: { x: 1300, y: 1040 } satisfies Vec2,
-    reception: { x: 610, y: 850 } satisfies Vec2,
-    talkStudio: { x: 720, y: 390 } satisfies Vec2,
-    controlRoom: { x: 1510, y: 400 } satisfies Vec2,
+    reception: { x: 555, y: 850 } satisfies Vec2,
+    talkStudio: { x: 620, y: 500 } satisfies Vec2,
+    controlRoom: { x: 1510, y: 480 } satisfies Vec2,
     backstage: { x: 1960, y: 890 } satisfies Vec2,
-    finalStudio: { x: 1280, y: 1470 } satisfies Vec2,
+    finalStudio: { x: 1280, y: 1600 } satisfies Vec2,
     exitLift: { x: 1300, y: 910 } satisfies Vec2,
   },
   floorRegions: [

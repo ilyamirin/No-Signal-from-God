@@ -14,7 +14,7 @@ const input: PlayerInput = {
 
 describe("interactions", () => {
   it("picks up a floor weapon with E and throws the previous weapon away", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     state.player.position = { ...state.droppedWeapons[0].position };
 
     const next = updateGame(state, { ...input, interact: true }, 16);
@@ -25,7 +25,7 @@ describe("interactions", () => {
   });
 
   it("does not expose doors as E-key interactions", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     state.player.position = { x: 359, y: 330 };
 
     const next = updateGame(state, input, 16);

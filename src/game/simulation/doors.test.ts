@@ -39,7 +39,7 @@ describe("doors", () => {
   });
 
   it("uses standardized single and double reception-hub doors", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     const singleDoors = state.doors.filter((door) => door.id.includes("single"));
     const doubleDoors = state.doors.filter((door) => door.id.includes("double"));
 

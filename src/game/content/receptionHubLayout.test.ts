@@ -12,7 +12,7 @@ const canReach = (
   radius: number,
   step = 32,
 ): boolean => {
-  const state = createInitialGameState();
+  const state = createInitialGameState({ levelId: "reception-hub" });
   const widthSteps = Math.ceil(state.arena.width / step);
   const heightSteps = Math.ceil(state.arena.height / step);
   const toCell = (point: Vec2) => ({
@@ -104,7 +104,7 @@ describe("reception hub layout", () => {
   });
 
   it("keeps every authored room reachable from the player spawn when hinged doors are open", () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState({ levelId: "reception-hub" });
     const openDoorColliders = state.colliders.filter((collider) => !collider.id.startsWith("door-"));
     for (const [roomId, target] of Object.entries(receptionHubLayout.routeTargets)) {
       expect(
