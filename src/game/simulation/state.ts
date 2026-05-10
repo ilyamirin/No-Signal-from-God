@@ -39,6 +39,7 @@ export const createInitialGameState = (): GameState => {
   bullets: [],
   fx: [],
   decals: [],
+  soundEvents: [],
   props,
   doors,
   droppedWeapons: createDroppedWeapons(),
