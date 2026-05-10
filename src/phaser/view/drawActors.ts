@@ -8,78 +8,54 @@ type ActorState = Pick<
   kind?: EnemyState["kind"];
 };
 
-type ActorSheetDefinition = {
-  key: string;
-  url: string;
-};
-
 export type ActorRig = {
   sprite: Phaser.GameObjects.Sprite;
   shadow: Phaser.GameObjects.Ellipse;
   textureKey: string;
   previousLoadedRounds?: number;
   recoilMs: number;
+  shootMs: number;
   walkTimerMs: number;
-  moveDirection: number;
+  currentAnimation?: string;
 };
 
-const FRAME_SIZE = 256;
-const SHEET_COLUMNS = 8;
-const AIM_DIRECTIONS = 8;
+const FRAME_SIZE = 48;
+const SHEET_COLUMNS = 6;
 const WALK_SPEED_THRESHOLD = 8;
 const RECOIL_DURATION_MS = 110;
-const ACTOR_SCALE = 0.31;
-
-const actorSheets: ActorSheetDefinition[] = [
-  {
-    key: "baked-player-crt-suit-pistol",
-    url: new URL("../../assets/generated/ai-actors/player-tv-suit-pistol.png", import.meta.url).href,
-  },
-  {
-    key: "baked-enemy-human-guard-pistol",
-    url: new URL("../../assets/generated/ai-actors/enemy-human-guard-pistol.png", import.meta.url).href,
-  },
-  {
-    key: "baked-enemy-crt-guard-pistol",
-    url: new URL("../../assets/generated/ai-actors/enemy-crt-guard-pistol.png", import.meta.url).href,
-  },
-  {
-    key: "baked-enemy-human-rush",
-    url: new URL("../../assets/generated/ai-actors/enemy-human-rush.png", import.meta.url).href,
-  },
-];
-
-export const loadBakedActorSheets = (scene: Phaser.Scene): void => {
-  for (const sheet of actorSheets) {
-    scene.load.spritesheet(sheet.key, sheet.url, {
-      frameWidth: FRAME_SIZE,
-      frameHeight: FRAME_SIZE,
-    });
-  }
-};
-
-const normalizeDirectionIndex = (index: number): number =>
-  Phaser.Math.Wrap(index, 0, AIM_DIRECTIONS);
-
-const angleToDirectionIndex = (angle: number): number => {
-  const northBasedAngle = Phaser.Math.Angle.Normalize(angle + Math.PI / 2);
-  return normalizeDirectionIndex(Math.round(northBasedAngle / (Math.PI / 4)));
-};
+const SHOOT_ANIMATION_MS = 95;
+const ACTOR_SCALE = 1.42;
 
 const velocityDirectionIndex = (velocity: Vec2): number | undefined => {
   if (Math.hypot(velocity.x, velocity.y) < WALK_SPEED_THRESHOLD) {
     return undefined;
   }
-  return angleToDirectionIndex(Math.atan2(velocity.y, velocity.x));
+  return Math.round(Phaser.Math.Angle.Normalize(Math.atan2(velocity.y, velocity.x)) / (Math.PI / 4));
 };
-
-const frameIndexFor = (aimDirection: number): number => aimDirection;
 
 const enemyTextureKey = (enemy: EnemyState): string => {
   if (enemy.kind === "rush") {
-    return "baked-enemy-human-rush";
+    return "scifi-enemy-run";
   }
-  return enemy.head === "crt" ? "baked-enemy-crt-guard-pistol" : "baked-enemy-human-guard-pistol";
+  return "scifi-enemy-idle";
+};
+
+const animationFor = (actor: ActorState, moving: boolean, shooting: boolean): string => {
+  if (!actor.alive) {
+    return actor.id === "player" ? "scifi-player-death" : "scifi-enemy-death";
+  }
+
+  if (actor.id === "player") {
+    if (shooting) {
+      return "scifi-player-shoot-pistol";
+    }
+    return moving ? "scifi-player-run-pistol" : "scifi-player-idle-pistol";
+  }
+
+  if (shooting) {
+    return "scifi-enemy-attack";
+  }
+  return moving ? (actor.kind === "rush" ? "scifi-enemy-run" : "scifi-enemy-walk") : "scifi-enemy-idle";
 };
 
 const createActorSprite = (
@@ -101,8 +77,8 @@ const createActorSprite = (
     shadow,
     textureKey,
     recoilMs: 0,
+    shootMs: 0,
     walkTimerMs: 0,
-    moveDirection: 0,
   };
 };
 
@@ -114,10 +90,12 @@ const syncRecoil = (
   if (weapon) {
     if (rig.previousLoadedRounds !== undefined && weapon.loadedRounds < rig.previousLoadedRounds) {
       rig.recoilMs = RECOIL_DURATION_MS;
+      rig.shootMs = SHOOT_ANIMATION_MS;
     }
     rig.previousLoadedRounds = weapon.loadedRounds;
   }
   rig.recoilMs = Math.max(0, rig.recoilMs - deltaMs);
+  rig.shootMs = Math.max(0, rig.shootMs - deltaMs);
 };
 
 const syncTextureKey = (rig: ActorRig, nextTextureKey: string): void => {
@@ -135,18 +113,15 @@ export const syncActorRig = (
   deltaMs: number,
 ): void => {
   const nextTextureKey =
-    actor.id === "player" ? "baked-player-crt-suit-pistol" : enemyTextureKey(actor as EnemyState);
+    actor.id === "player" ? "scifi-player-idle-pistol" : enemyTextureKey(actor as EnemyState);
   syncTextureKey(rig, nextTextureKey);
   syncRecoil(rig, weapon, deltaMs);
 
-  const aimDirection = angleToDirectionIndex(actor.facing);
   const velocityDirection = velocityDirectionIndex(actor.velocity);
   const moving = actor.alive && velocityDirection !== undefined;
   if (moving) {
-    rig.moveDirection = velocityDirection;
     rig.walkTimerMs += deltaMs;
   } else {
-    rig.moveDirection = aimDirection;
     rig.walkTimerMs = 0;
   }
 
@@ -156,12 +131,17 @@ export const syncActorRig = (
   const recoilX = -Math.cos(facing) * recoilDistance;
   const recoilY = -Math.sin(facing) * recoilDistance;
   const walkBob = moving ? Math.sin(rig.walkTimerMs / 70) * 1.5 : 0;
+  const nextAnimation = animationFor(actor, moving, rig.shootMs > 0);
 
-  rig.sprite.setFrame(frameIndexFor(aimDirection));
+  if (rig.currentAnimation !== nextAnimation) {
+    rig.currentAnimation = nextAnimation;
+    rig.sprite.play(nextAnimation, true);
+  }
+
   rig.sprite.setPosition(actor.position.x + recoilX, actor.position.y + recoilY + walkBob);
-  rig.sprite.setRotation(actor.alive ? 0 : actor.facing + Math.PI / 2 + 0.75);
-  rig.sprite.setAlpha(actor.alive ? 1 : 0.58);
-  rig.sprite.setTint(actor.alive ? 0xffffff : 0x9b1d25);
+  rig.sprite.setRotation(actor.facing);
+  rig.sprite.setAlpha(actor.alive ? 1 : 0.76);
+  rig.sprite.setTint(actor.alive ? 0xffffff : 0xa0d65f);
 
   rig.shadow.setPosition(actor.position.x, actor.position.y + 15);
   rig.shadow.setVisible(actor.alive);
@@ -171,7 +151,7 @@ export const createPlayerRig = (
   scene: Phaser.Scene,
   player: PlayerState,
 ): ActorRig =>
-  createActorSprite(scene, "baked-player-crt-suit-pistol", player.position);
+  createActorSprite(scene, "scifi-player-idle-pistol", player.position);
 
 export const createEnemyRig = (
   scene: Phaser.Scene,
@@ -182,5 +162,4 @@ export const createEnemyRig = (
 export const actorSheetDebug = {
   frameSize: FRAME_SIZE,
   sheetColumns: SHEET_COLUMNS,
-  aimDirections: AIM_DIRECTIONS,
 };

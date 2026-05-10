@@ -3,8 +3,13 @@ import type { ArenaState, Rect } from "../../game/simulation/types";
 
 type Box = Pick<Rect, "x" | "y" | "width" | "height">;
 
-type DrawRect = Box & {
-  fill: number;
+type AssetSprite = {
+  key: string;
+  x: number;
+  y: number;
+  frame?: number;
+  scale?: number;
+  rotation?: number;
   alpha?: number;
 };
 
@@ -16,54 +21,6 @@ const strokeRect = (
 ): void => {
   graphics.lineStyle(width, color, 1);
   graphics.strokeRect(rect.x, rect.y, rect.width, rect.height);
-};
-
-const fillRoom = (
-  graphics: Phaser.GameObjects.Graphics,
-  room: DrawRect,
-  pattern: "brick" | "grid" | "checker" | "stripe",
-): void => {
-  graphics.fillStyle(room.fill, room.alpha ?? 1);
-  graphics.fillRect(room.x, room.y, room.width, room.height);
-
-  if (pattern === "brick") {
-    graphics.lineStyle(2, 0x120606, 0.55);
-    for (let y = room.y + 16; y < room.y + room.height; y += 16) {
-      graphics.lineBetween(room.x, y, room.x + room.width, y);
-    }
-    for (let y = room.y; y < room.y + room.height; y += 32) {
-      for (let x = room.x + ((y / 32) % 2) * 28; x < room.x + room.width; x += 56) {
-        graphics.lineBetween(x, y, x, Math.min(y + 16, room.y + room.height));
-      }
-    }
-    return;
-  }
-
-  if (pattern === "checker") {
-    for (let x = room.x; x < room.x + room.width; x += 34) {
-      for (let y = room.y; y < room.y + room.height; y += 34) {
-        graphics.fillStyle((x + y) % 68 === 0 ? 0x25231f : 0x7a443c, 1);
-        graphics.fillRect(x, y, 32, 32);
-      }
-    }
-    return;
-  }
-
-  if (pattern === "stripe") {
-    graphics.lineStyle(3, 0xff38d4, 0.25);
-    for (let y = room.y + 8; y < room.y + room.height; y += 11) {
-      graphics.lineBetween(room.x, y, room.x + room.width, y);
-    }
-    return;
-  }
-
-  graphics.lineStyle(1, 0x06090d, 0.7);
-  for (let x = room.x; x < room.x + room.width; x += 32) {
-    graphics.lineBetween(x, room.y, x, room.y + room.height);
-  }
-  for (let y = room.y; y < room.y + room.height; y += 32) {
-    graphics.lineBetween(room.x, y, room.x + room.width, y);
-  }
 };
 
 const drawWall = (graphics: Phaser.GameObjects.Graphics, rect: Box): void => {
@@ -144,45 +101,6 @@ const drawCamera = (graphics: Phaser.GameObjects.Graphics, rect: Box): void => {
   strokeRect(graphics, { x: centerX - 29, y: centerY - 18, width: 58, height: 36 }, 0x050607, 3);
 };
 
-const drawBlood = (graphics: Phaser.GameObjects.Graphics, x: number, y: number, scale = 1): void => {
-  graphics.fillStyle(0xc30016, 0.95);
-  graphics.fillCircle(x, y, 18 * scale);
-  graphics.fillCircle(x + 18 * scale, y - 8 * scale, 10 * scale);
-  graphics.fillCircle(x - 14 * scale, y + 10 * scale, 8 * scale);
-  graphics.lineStyle(5 * scale, 0xc30016, 0.9);
-  graphics.lineBetween(x - 30 * scale, y + 4 * scale, x - 72 * scale, y + 18 * scale);
-  graphics.lineBetween(x + 6 * scale, y - 20 * scale, x + 42 * scale, y - 42 * scale);
-  for (let index = 0; index < 7; index += 1) {
-    graphics.fillCircle(
-      x - 48 * scale + index * 15 * scale,
-      y + ((index % 3) - 1) * 22 * scale,
-      (3 + (index % 3)) * scale,
-    );
-  }
-};
-
-const drawBody = (
-  graphics: Phaser.GameObjects.Graphics,
-  x: number,
-  y: number,
-  rotation: number,
-  suitColor: number,
-): void => {
-  graphics.save();
-  graphics.translateCanvas(x, y);
-  graphics.rotateCanvas(rotation);
-  graphics.fillStyle(0x050607, 1);
-  graphics.fillRect(-14, -30, 28, 58);
-  graphics.fillStyle(suitColor, 1);
-  graphics.fillRect(-11, -27, 22, 52);
-  graphics.fillStyle(0xf0b48a, 1);
-  graphics.fillCircle(0, -39, 12);
-  graphics.fillStyle(0x111111, 1);
-  graphics.fillRect(-5, 22, 5, 28);
-  graphics.fillRect(3, 22, 5, 28);
-  graphics.restore();
-};
-
 const drawDroppedGun = (graphics: Phaser.GameObjects.Graphics, x: number, y: number, rotation: number): void => {
   graphics.save();
   graphics.translateCanvas(x, y);
@@ -212,6 +130,10 @@ const drawShells = (graphics: Phaser.GameObjects.Graphics, x: number, y: number)
 };
 
 const drawObstacle = (graphics: Phaser.GameObjects.Graphics, obstacle: Rect): void => {
+  if (obstacle.id.includes("green-screen")) {
+    drawGreenScreen(graphics, obstacle);
+    return;
+  }
   if (obstacle.id.includes("wall") || obstacle.id.includes("divider")) {
     drawWall(graphics, obstacle);
     return;
@@ -224,10 +146,6 @@ const drawObstacle = (graphics: Phaser.GameObjects.Graphics, obstacle: Rect): vo
     drawServerBank(graphics, obstacle);
     return;
   }
-  if (obstacle.id.includes("green-screen")) {
-    drawGreenScreen(graphics, obstacle);
-    return;
-  }
   if (obstacle.id.includes("camera")) {
     drawCamera(graphics, obstacle);
     return;
@@ -237,52 +155,134 @@ const drawObstacle = (graphics: Phaser.GameObjects.Graphics, obstacle: Rect): vo
   strokeRect(graphics, obstacle);
 };
 
+const addSprite = (
+  scene: Phaser.Scene,
+  container: Phaser.GameObjects.Container,
+  item: AssetSprite,
+): Phaser.GameObjects.Sprite | undefined => {
+  if (!scene.textures.exists(item.key)) {
+    return undefined;
+  }
+
+  const sprite = scene.add
+    .sprite(item.x, item.y, item.key, item.frame ?? 0)
+    .setOrigin(0.5)
+    .setScale(item.scale ?? 1)
+    .setRotation(item.rotation ?? 0)
+    .setAlpha(item.alpha ?? 1);
+  container.add(sprite);
+  return sprite;
+};
+
+const addFloorTiles = (
+  scene: Phaser.Scene,
+  container: Phaser.GameObjects.Container,
+  room: Box,
+  frames: number[],
+): void => {
+  const tileSize = 32;
+  for (let y = room.y; y < room.y + room.height; y += tileSize) {
+    for (let x = room.x; x < room.x + room.width; x += tileSize) {
+      const frame = frames[Math.abs(Math.floor(x / tileSize) + Math.floor(y / tileSize)) % frames.length];
+      const sprite = addSprite(scene, container, {
+        key: "scifi-floor-tiles",
+        x: x + tileSize / 2,
+        y: y + tileSize / 2,
+        frame,
+      });
+      sprite?.setDisplaySize(tileSize, tileSize);
+    }
+  }
+};
+
+const addScifiSetDressing = (
+  scene: Phaser.Scene,
+  container: Phaser.GameObjects.Container,
+): void => {
+  const props: AssetSprite[] = [
+    { key: "scifi-table-5", x: 238, y: 205, frame: 0, scale: 2.25 },
+    { key: "scifi-table-1", x: 626, y: 170, frame: 1, scale: 2.55 },
+    { key: "scifi-table-1", x: 1116, y: 648, frame: 0, scale: 2.55 },
+    { key: "scifi-computer-sheet", x: 1016, y: 112, frame: 4, scale: 1.7 },
+    { key: "scifi-computer-sheet", x: 1062, y: 112, frame: 5, scale: 1.7 },
+    { key: "scifi-computer-sheet", x: 1108, y: 112, frame: 6, scale: 1.7 },
+    { key: "scifi-display-1", x: 1012, y: 354, frame: 1, scale: 1.8, rotation: -0.35 },
+    { key: "scifi-tv-sheet", x: 596, y: 558, frame: 1, scale: 1.75 },
+    { key: "scifi-tv-sheet", x: 285, y: 318, frame: 0, scale: 1.45, rotation: 0.95 },
+    { key: "scifi-door-heavy", x: 360, y: 358, scale: 0.8, rotation: Math.PI / 2 },
+    { key: "scifi-door-heavy", x: 824, y: 356, scale: 0.8, rotation: Math.PI / 2 },
+    { key: "scifi-door", x: 682, y: 302, scale: 1.05 },
+    { key: "scifi-chair-1", x: 192, y: 142, frame: 1, scale: 1.55, rotation: Math.PI },
+    { key: "scifi-chair-1", x: 284, y: 142, frame: 0, scale: 1.55, rotation: Math.PI },
+    { key: "scifi-chair-1", x: 598, y: 104, frame: 1, scale: 1.55, rotation: Math.PI },
+    { key: "scifi-chair-1", x: 698, y: 104, frame: 0, scale: 1.55, rotation: Math.PI },
+    { key: "scifi-couch-1", x: 1086, y: 240, frame: 2, scale: 1.75 },
+    { key: "scifi-plant", x: 150, y: 520, frame: 0, scale: 1.45 },
+    { key: "scifi-plant", x: 1210, y: 198, frame: 2, scale: 1.35 },
+    { key: "scifi-barrel", x: 1100, y: 405, frame: 0, scale: 1.4 },
+    { key: "scifi-box-big", x: 1042, y: 470, scale: 1.05, rotation: 0.2 },
+    { key: "scifi-box-small", x: 972, y: 474, scale: 1.1, rotation: -0.25 },
+    { key: "scifi-keyboard-mouse", x: 1120, y: 615, scale: 1.2 },
+    { key: "scifi-lab-device", x: 236, y: 668, scale: 1.25 },
+    { key: "scifi-lamp", x: 438, y: 74, frame: 1, scale: 1.7 },
+    { key: "scifi-lamp", x: 838, y: 74, frame: 1, scale: 1.7 },
+    { key: "scifi-blood-floor", x: 236, y: 526, frame: 1, scale: 2.2, rotation: -0.55 },
+    { key: "scifi-blood-floor", x: 612, y: 242, frame: 2, scale: 1.9, rotation: 0.3 },
+    { key: "scifi-blood-floor", x: 1145, y: 538, frame: 0, scale: 2.3, rotation: 1.2 },
+    { key: "scifi-rubbish", x: 840, y: 334, frame: 0, scale: 1.7 },
+    { key: "scifi-rubbish", x: 864, y: 350, frame: 1, scale: 1.7 },
+    { key: "scifi-rubbish", x: 895, y: 335, frame: 1, scale: 1.7 },
+  ];
+
+  for (const prop of props) {
+    addSprite(scene, container, prop);
+  }
+};
+
 export const drawArena = (
   scene: Phaser.Scene,
   arena: ArenaState,
 ): Phaser.GameObjects.Container => {
   const container = scene.add.container(0, 0);
   const graphics = scene.add.graphics();
-  container.add(graphics);
 
   graphics.fillStyle(0x050406, 1);
   graphics.fillRect(0, 0, arena.width, arena.height);
 
-  fillRoom(graphics, { x: 90, y: 70, width: 260, height: 628, fill: 0x8f004b }, "stripe");
-  fillRoom(graphics, { x: 368, y: 70, width: 446, height: 222, fill: 0x4c0d10 }, "brick");
-  fillRoom(graphics, { x: 368, y: 310, width: 446, height: 388, fill: 0x2f1114 }, "brick");
-  fillRoom(graphics, { x: 832, y: 70, width: 434, height: 222, fill: 0xd00585 }, "stripe");
-  fillRoom(graphics, { x: 832, y: 310, width: 434, height: 388, fill: 0x26211d }, "checker");
-  fillRoom(graphics, { x: 368, y: 310, width: 446, height: 110, fill: 0xe5d7b5, alpha: 0.95 }, "grid");
-  fillRoom(graphics, { x: 986, y: 168, width: 280, height: 124, fill: 0xb88c35 }, "grid");
+  container.add(graphics);
 
-  drawDoorGap(graphics, 350, 302, 18, 118);
-  drawDoorGap(graphics, 814, 298, 18, 116);
-  drawDoorGap(graphics, 648, 292, 68, 18);
+  addFloorTiles(scene, container, { x: 90, y: 70, width: 260, height: 628 }, [0, 1]);
+  addFloorTiles(scene, container, { x: 368, y: 70, width: 446, height: 222 }, [4]);
+  addFloorTiles(scene, container, { x: 368, y: 310, width: 446, height: 388 }, [1, 2]);
+  addFloorTiles(scene, container, { x: 832, y: 70, width: 434, height: 222 }, [2, 3]);
+  addFloorTiles(scene, container, { x: 832, y: 310, width: 434, height: 388 }, [0, 3]);
+  addFloorTiles(scene, container, { x: 368, y: 310, width: 446, height: 110 }, [5, 6]);
+  addFloorTiles(scene, container, { x: 986, y: 168, width: 280, height: 124 }, [4, 5]);
 
-  drawBlood(graphics, 234, 518, 1.4);
-  drawBlood(graphics, 610, 238, 1.1);
-  drawBlood(graphics, 930, 238, 1.25);
-  drawBlood(graphics, 1135, 532, 1.35);
-  drawBlood(graphics, 620, 612, 0.9);
-  drawBody(graphics, 236, 526, -0.55, 0xd8d8cf);
-  drawBody(graphics, 612, 242, 0.3, 0xf0efe3);
-  drawBody(graphics, 1145, 538, 1.6, 0xd8d8cf);
-  drawDroppedGun(graphics, 675, 300, -0.25);
-  drawDroppedGun(graphics, 1000, 356, 0.55);
-  drawDroppedGun(graphics, 246, 300, 1.1);
-  drawGlass(graphics, 850, 338);
-  drawShells(graphics, 592, 372);
-  drawShells(graphics, 1030, 530);
+  const overlay = scene.add.graphics();
+  container.add(overlay);
+
+  drawDoorGap(overlay, 350, 302, 18, 118);
+  drawDoorGap(overlay, 814, 298, 18, 116);
+  drawDoorGap(overlay, 648, 292, 68, 18);
+
+  drawDroppedGun(overlay, 675, 300, -0.25);
+  drawDroppedGun(overlay, 1000, 356, 0.55);
+  drawDroppedGun(overlay, 246, 300, 1.1);
+  drawGlass(overlay, 850, 338);
+  drawShells(overlay, 592, 372);
+  drawShells(overlay, 1030, 530);
 
   for (const obstacle of arena.obstacles) {
-    drawObstacle(graphics, obstacle);
+    drawObstacle(overlay, obstacle);
   }
 
-  graphics.lineStyle(5, 0x050607, 1);
-  graphics.strokeRect(26, 24, arena.width - 52, arena.height - 48);
-  graphics.lineStyle(3, 0xff25cc, 0.95);
-  graphics.strokeRect(31, 29, arena.width - 62, arena.height - 58);
+  addScifiSetDressing(scene, container);
+
+  overlay.lineStyle(5, 0x050607, 1);
+  overlay.strokeRect(26, 24, arena.width - 52, arena.height - 48);
+  overlay.lineStyle(3, 0xff25cc, 0.95);
+  overlay.strokeRect(31, 29, arena.width - 62, arena.height - 58);
 
   return container;
 };

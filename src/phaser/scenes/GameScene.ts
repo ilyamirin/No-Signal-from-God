@@ -8,13 +8,13 @@ import { createSceneBridge, type SceneBridge } from "../adapters/sceneBridge";
 import {
   createEnemyRig,
   createPlayerRig,
-  loadBakedActorSheets,
   syncActorRig,
   type ActorRig,
 } from "../view/drawActors";
 import { drawArena } from "../view/drawArena";
 import { updateCameraFeedback } from "../view/camera";
 import { drawBulletsAndFx } from "../view/drawFx";
+import { ensureScifiAnimations, loadScifiAssets } from "../view/scifiAssets";
 
 export class GameScene extends Phaser.Scene {
   private bridge!: SceneBridge;
@@ -29,11 +29,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload(): void {
-    loadBakedActorSheets(this);
+    loadScifiAssets(this);
   }
 
   create(): void {
     this.cameras.main.setBackgroundColor("#07101a");
+    ensureScifiAnimations(this);
     this.bridge = createSceneBridge();
     this.bindings = createInputBindings(this);
 
