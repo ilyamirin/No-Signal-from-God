@@ -8,7 +8,7 @@ import { createSceneBridge, type SceneBridge } from "../adapters/sceneBridge";
 import {
   createEnemyRig,
   createPlayerRig,
-  ensureActorPartTextures,
+  loadBakedActorSheets,
   syncActorRig,
   type ActorRig,
 } from "../view/drawActors";
@@ -28,9 +28,12 @@ export class GameScene extends Phaser.Scene {
     super("game");
   }
 
+  preload(): void {
+    loadBakedActorSheets(this);
+  }
+
   create(): void {
     this.cameras.main.setBackgroundColor("#07101a");
-    ensureActorPartTextures(this);
     this.bridge = createSceneBridge();
     this.bindings = createInputBindings(this);
 
