@@ -1,28 +1,5 @@
-import { distance } from "./geometry";
 import { nearestDroppedWeapon, tryPickupWeapon } from "./systems/droppedWeapons";
-import { toggleDoor } from "./systems/doors";
 import type { GameState, InteractionState } from "./types";
-
-const DOOR_RADIUS = 64;
-
-const nearestDoorInteraction = (state: GameState): InteractionState | undefined => {
-  let best: InteractionState | undefined;
-  let bestDistance = Infinity;
-
-  for (const door of state.doors) {
-    const current = distance(state.player.position, door.hinge);
-    if (current < DOOR_RADIUS && current < bestDistance) {
-      best = {
-        kind: "door",
-        targetId: door.id,
-        label: door.state === "open" || door.state === "opening" ? "E close" : "E open",
-      };
-      bestDistance = current;
-    }
-  }
-
-  return best;
-};
 
 export const resolveInteractionPrompt = (state: GameState): InteractionState | undefined => {
   const weapon = nearestDroppedWeapon(state);
@@ -34,7 +11,7 @@ export const resolveInteractionPrompt = (state: GameState): InteractionState | u
     };
   }
 
-  return nearestDoorInteraction(state);
+  return undefined;
 };
 
 export const performInteraction = (state: GameState): void => {
@@ -46,11 +23,6 @@ export const performInteraction = (state: GameState): void => {
 
   if (prompt.kind === "pickup") {
     tryPickupWeapon(state);
-  } else {
-    const door = state.doors.find((candidate) => candidate.id === prompt.targetId);
-    if (door) {
-      toggleDoor(door);
-    }
   }
 
   state.interaction = resolveInteractionPrompt(state);

@@ -6,7 +6,7 @@ import { blocksMovementAtCircle } from "./collision";
 import type { GameState, Vec2 } from "./types";
 import { updateBulletsAndHits, updateStatus } from "./systems/combat";
 import { updateDroppedWeapons } from "./systems/droppedWeapons";
-import { updateDoors } from "./systems/doors";
+import { applyDoorPressure, updateDoors } from "./systems/doors";
 import { updateEnemies } from "./systems/enemies";
 import { updateActorAnimations } from "./systems/animation";
 import { updateCorpseMotion } from "./systems/death";
@@ -39,6 +39,9 @@ const updatePlayerMovement = (state: GameState, input: PlayerInput, deltaMs: num
   );
 
   state.player.velocity = velocity;
+  applyDoorPressure(state, nextPosition, state.player.radius);
+  updateDoors(state, deltaMs);
+
   if (canPlayerStandAt(state, nextPosition)) {
     state.player.position = nextPosition;
   } else {

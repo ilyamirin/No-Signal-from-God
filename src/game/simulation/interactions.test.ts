@@ -24,13 +24,12 @@ describe("interactions", () => {
     expect(next.droppedWeapons.find((weapon) => weapon.weaponId === "service-pistol")?.velocity.x).not.toBe(0);
   });
 
-  it("toggles a hinged door with interaction", () => {
+  it("does not expose doors as E-key interactions", () => {
     const state = createInitialGameState();
     state.player.position = { x: 359, y: 330 };
 
-    const next = updateGame(state, { ...input, interact: true }, 16);
+    const next = updateGame(state, input, 16);
 
-    expect(next.doors[0].state).toBe("opening");
-    expect(next.colliders.some((collider) => collider.id === "door-door-left-studio")).toBe(true);
+    expect(next.interaction).toBeUndefined();
   });
 });

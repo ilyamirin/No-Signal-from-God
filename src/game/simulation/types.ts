@@ -173,8 +173,11 @@ export type DoorState = {
   thickness: number;
   closedAngle: number;
   openAngle: number;
+  minAngle: number;
+  maxAngle: number;
   angle: number;
   targetAngle: number;
+  angularVelocity: number;
   state: "closed" | "opening" | "open" | "closing";
   blocksBullets: boolean;
 };
@@ -218,7 +221,7 @@ export type GameState = {
 };
 
 export type InteractionState = {
-  kind: "pickup" | "door";
+  kind: "pickup";
   targetId: string;
   label: string;
 };
