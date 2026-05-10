@@ -51,6 +51,10 @@ export const receptionHubLayout = {
     roomFloor("newsroom-floor", newsroom, [4, 5]),
     roomFloor("server-archive-floor", serverArchive, [1, 2]),
     roomFloor("broadcast-control-floor", broadcastControl, [3, 4]),
+    roomFloor("reception-security-corridor-floor", { id: "reception", x: 700, y: 950, width: 80, height: 118 }, [0, 2]),
+    roomFloor("reception-newsroom-corridor-floor", { id: "reception", x: 350, y: 760, width: 130, height: 62 }, [0, 5]),
+    roomFloor("security-server-corridor-floor", { id: "security", x: 1180, y: 1010, width: 82, height: 96 }, [1, 3]),
+    roomFloor("security-control-corridor-floor", { id: "security", x: 1180, y: 720, width: 340, height: 122 }, [2, 4]),
   ],
   obstacles: [
     wall("outer-top", 80, 160, 1960, 26),

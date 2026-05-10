@@ -24,7 +24,11 @@ describe("reception hub layout", () => {
       "broadcast-control-floor",
       "newsroom-floor",
       "reception-floor",
+      "reception-newsroom-corridor-floor",
+      "reception-security-corridor-floor",
+      "security-control-corridor-floor",
       "security-floor",
+      "security-server-corridor-floor",
       "server-archive-floor",
     ]);
   });

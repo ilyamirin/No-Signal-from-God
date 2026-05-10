@@ -7,13 +7,21 @@ import barrelUrl from "../../assets/vendor/valentint-scifi/Decorations/barrel_Sh
 import boxBigUrl from "../../assets/vendor/valentint-scifi/Decorations/boxBig.png?url";
 import boxSmallUrl from "../../assets/vendor/valentint-scifi/Decorations/boxSmall.png?url";
 import chair1Url from "../../assets/vendor/valentint-scifi/Decorations/chair_1_Sheet.png?url";
+import chair2Url from "../../assets/vendor/valentint-scifi/Decorations/chair_2_Sheet.png?url";
 import couch1Url from "../../assets/vendor/valentint-scifi/Decorations/couch_1_Sheet.png?url";
 import display1Url from "../../assets/vendor/valentint-scifi/Decorations/display_1_Sheet.png?url";
+import display2Url from "../../assets/vendor/valentint-scifi/Decorations/display_2_Sheet.png?url";
 import keyboardMouseUrl from "../../assets/vendor/valentint-scifi/Decorations/keyboardMouse.png?url";
 import labDeviceUrl from "../../assets/vendor/valentint-scifi/Decorations/laboratoryDevice.png?url";
 import plantUrl from "../../assets/vendor/valentint-scifi/Decorations/plants_Sheet.png?url";
 import table1Url from "../../assets/vendor/valentint-scifi/Decorations/table_1_Sheet.png?url";
+import table2Url from "../../assets/vendor/valentint-scifi/Decorations/table_2_Sheet.png?url";
+import table3Url from "../../assets/vendor/valentint-scifi/Decorations/table_3_Sheet.png?url";
+import table4Url from "../../assets/vendor/valentint-scifi/Decorations/table_4_Sheet.png?url";
 import table5Url from "../../assets/vendor/valentint-scifi/Decorations/table_5_Sheet.png?url";
+import table8Url from "../../assets/vendor/valentint-scifi/Decorations/table_8_Sheet.png?url";
+import table10Url from "../../assets/vendor/valentint-scifi/Decorations/table_10_Sheet.png?url";
+import trashCan2Url from "../../assets/vendor/valentint-scifi/Decorations/trashCan_2_Sheet.png?url";
 import tvUrl from "../../assets/vendor/valentint-scifi/Decorations/tv_Sheet.png?url";
 import enemyAttackUrl from "../../assets/vendor/valentint-scifi/NPCs/Enemy/enemy_attack_Sheet.png?url";
 import enemyDeathUrl from "../../assets/vendor/valentint-scifi/NPCs/Enemy/enemy_death_Sheet.png?url";
@@ -275,8 +283,32 @@ const spriteSheets: SpriteSheetAsset[] = [
     frameHeight: 32,
   },
   {
+    key: "scifi-chair-2",
+    url: chair2Url,
+    frameWidth: 32,
+    frameHeight: 32,
+  },
+  {
     key: "scifi-table-1",
     url: table1Url,
+    frameWidth: 64,
+    frameHeight: 32,
+  },
+  {
+    key: "scifi-table-2",
+    url: table2Url,
+    frameWidth: 64,
+    frameHeight: 32,
+  },
+  {
+    key: "scifi-table-3",
+    url: table3Url,
+    frameWidth: 64,
+    frameHeight: 32,
+  },
+  {
+    key: "scifi-table-4",
+    url: table4Url,
     frameWidth: 64,
     frameHeight: 32,
   },
@@ -287,8 +319,26 @@ const spriteSheets: SpriteSheetAsset[] = [
     frameHeight: 32,
   },
   {
+    key: "scifi-table-8",
+    url: table8Url,
+    frameWidth: 64,
+    frameHeight: 32,
+  },
+  {
+    key: "scifi-table-10",
+    url: table10Url,
+    frameWidth: 64,
+    frameHeight: 32,
+  },
+  {
     key: "scifi-display-1",
     url: display1Url,
+    frameWidth: 64,
+    frameHeight: 32,
+  },
+  {
+    key: "scifi-display-2",
+    url: display2Url,
     frameWidth: 64,
     frameHeight: 32,
   },
@@ -309,6 +359,12 @@ const spriteSheets: SpriteSheetAsset[] = [
     url: lampUrl,
     frameWidth: 16,
     frameHeight: 16,
+  },
+  {
+    key: "scifi-trash-can-2",
+    url: trashCan2Url,
+    frameWidth: 32,
+    frameHeight: 32,
   },
 ];
 
