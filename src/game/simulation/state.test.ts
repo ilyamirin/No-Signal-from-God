@@ -82,4 +82,14 @@ describe("createInitialGameState", () => {
       expect(inReception, `${enemy.id} should not spawn in safe reception`).toBe(false);
     }
   });
+
+  it("authors every enemy with AI state and alert group metadata", () => {
+    const state = createInitialGameState();
+
+    expect(state.enemies.every((enemy) => enemy.ai.alertGroupId.length > 0)).toBe(true);
+    expect(state.enemies.every((enemy) => enemy.ai.perception.visionRange > 0)).toBe(true);
+    expect(state.enemies.some((enemy) => enemy.ai.state === "patrolling")).toBe(true);
+    expect(state.enemies.some((enemy) => enemy.ai.state === "talking")).toBe(true);
+    expect(state.enemies.some((enemy) => enemy.ai.state === "posted")).toBe(true);
+  });
 });

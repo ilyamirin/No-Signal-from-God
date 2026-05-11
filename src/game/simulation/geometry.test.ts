@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hasLineOfSight } from "./geometry";
+import { angleDelta, distanceToSegment, hasLineOfSight } from "./geometry";
 import type { Rect } from "./types";
 
 describe("hasLineOfSight", () => {
@@ -33,5 +33,19 @@ describe("hasLineOfSight", () => {
     ];
 
     expect(hasLineOfSight({ x: 0, y: 0 }, { x: 100, y: 0 }, blockers)).toBe(true);
+  });
+});
+
+describe("angleDelta", () => {
+  it("returns the smallest signed angle difference", () => {
+    expect(angleDelta(Math.PI - 0.1, -Math.PI + 0.1)).toBeCloseTo(-0.2);
+    expect(angleDelta(-Math.PI + 0.1, Math.PI - 0.1)).toBeCloseTo(0.2);
+  });
+});
+
+describe("distanceToSegment", () => {
+  it("measures the closest distance to a finite line segment", () => {
+    expect(distanceToSegment({ x: 5, y: 3 }, { x: 0, y: 0 }, { x: 10, y: 0 })).toBeCloseTo(3);
+    expect(distanceToSegment({ x: 14, y: 3 }, { x: 0, y: 0 }, { x: 10, y: 0 })).toBeCloseTo(5);
   });
 });

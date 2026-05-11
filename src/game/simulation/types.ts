@@ -122,12 +122,57 @@ export type PlayerState = ActorBase & {
   animation: ActorAnimationState;
 };
 
+export type EnemyAiStateName =
+  | "posted"
+  | "patrolling"
+  | "talking"
+  | "suspicious"
+  | "investigating"
+  | "combat"
+  | "coolingDown";
+
+export type EnemyPerceptionState = {
+  visionRange: number;
+  visionAngle: number;
+  hearingRange: number;
+};
+
+export type EnemyPostState = {
+  position: Vec2;
+  facing: number;
+  lookAngles?: number[];
+};
+
+export type EnemyAiState = {
+  state: EnemyAiStateName;
+  alertGroupId: string;
+  route?: Vec2[];
+  routeIndex?: number;
+  post?: EnemyPostState;
+  perception: EnemyPerceptionState;
+  knownPlayerPosition?: Vec2;
+  suspicionMs: number;
+  cooldownMs: number;
+  conversationId?: string;
+};
+
+export type SoundEventKind = "gunshot" | "door" | "impact" | "movement";
+
+export type SoundEvent = {
+  id: string;
+  kind: SoundEventKind;
+  position: Vec2;
+  radius: number;
+  sourceId?: string;
+};
+
 export type EnemyState = ActorBase & {
   kind: EnemyKind;
   archetype: ActorArchetype;
   head: HeadType;
   weaponId?: string;
   attackCooldownMs: number;
+  ai: EnemyAiState;
   animation: ActorAnimationState;
 };
 
@@ -244,6 +289,7 @@ export type GameState = {
   bullets: BulletState[];
   fx: FxState[];
   decals: DecalState[];
+  soundEvents: SoundEvent[];
   props: PropEntity[];
   doors: DoorState[];
   droppedWeapons: DroppedWeaponState[];

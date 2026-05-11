@@ -75,6 +75,7 @@ describe("updateGame", () => {
       const active = firingEnemies.includes(enemy);
       enemy.alive = active;
       enemy.health = active ? 1 : 0;
+      enemy.ai.state = active ? "combat" : "posted";
       enemy.attackCooldownMs = 0;
     });
     firingEnemies[0].position = { x: 620, y: 390 };
@@ -136,5 +137,12 @@ describe("updateGame", () => {
     expect(next.player.alive).toBe(true);
     expect(next.score).toBe(0);
     expect(next.level.id).toBe("reception-hub");
+  });
+
+  it("emits a player gunshot sound event when the player fires", () => {
+    const state = createInitialGameState({ levelId: "reception-hub" });
+    const next = updateGame(state, { ...neutralInput, firing: true }, 16);
+
+    expect(next.soundEvents.some((sound) => sound.kind === "gunshot" && sound.sourceId === "player")).toBe(true);
   });
 });

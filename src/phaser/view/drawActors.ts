@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import type { EnemyState, PlayerState, Vec2, WeaponState } from "../../game/simulation/types";
+import { actorDepthFor, LIVE_ACTOR_DEPTH } from "./actorDepth";
 
 type ActorState = Pick<
   PlayerState | EnemyState,
@@ -81,7 +82,7 @@ const createActorSprite = (
     .sprite(position.x, position.y, textureKey, 0)
     .setOrigin(0.5)
     .setScale(ACTOR_SCALE)
-    .setDepth(25);
+    .setDepth(LIVE_ACTOR_DEPTH);
 
   return {
     sprite,
@@ -154,6 +155,7 @@ export const syncActorRig = (
 
   rig.sprite.setPosition(actor.position.x + recoilX, actor.position.y + recoilY + walkBob);
   rig.sprite.setRotation(actor.facing);
+  rig.sprite.setDepth(actorDepthFor(actor.alive));
   rig.sprite.setAlpha(actor.alive ? 1 : 0.76);
   rig.sprite.setTint(actor.alive ? 0xffffff : 0xa0d65f);
 };

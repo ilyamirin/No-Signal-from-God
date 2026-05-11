@@ -43,6 +43,7 @@ export const createInitialGameState = (options: CreateGameStateOptions = {}): Ga
     bullets: [],
     fx: [],
     decals: [],
+    soundEvents: [],
     props: level.props,
     doors: level.doors,
     droppedWeapons: level.droppedWeapons,

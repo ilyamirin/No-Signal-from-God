@@ -1,9 +1,43 @@
-import type { Collider, DoorState, DroppedWeaponState, EnemyState, PropEntity, WeaponState } from "../../simulation/types";
+import type {
+  Collider,
+  DoorState,
+  DroppedWeaponState,
+  EnemyAiState,
+  EnemyAiStateName,
+  EnemyState,
+  PropEntity,
+  Vec2,
+  WeaponState,
+} from "../../simulation/types";
 import { createWeapon } from "../weapons";
 import { ringTowerLayout } from "./ringTowerLayout";
 import type { LevelDefinition } from "./types";
 
 const animation = { intent: "idle" as const, weaponKind: undefined, moving: false, speed: 0, lastShotMs: 0 };
+
+const defaultPerception = {
+  visionRange: 500,
+  visionAngle: Math.PI * 0.62,
+  hearingRange: 560,
+};
+
+const ai = (
+  state: EnemyAiStateName,
+  alertGroupId: string,
+  options: Partial<EnemyAiState> = {},
+): EnemyAiState => ({
+  state,
+  alertGroupId,
+  perception: defaultPerception,
+  suspicionMs: 0,
+  cooldownMs: 0,
+  ...options,
+});
+
+const post = (position: Vec2, facing: number) => ({
+  position,
+  facing,
+});
 
 const door = (
   id: string,
@@ -34,6 +68,7 @@ const enemy = (
   x: number,
   y: number,
   weaponId?: string,
+  aiState: EnemyAiState = ai("posted", "ring-tower", { post: post({ x, y }, Math.PI) }),
 ): EnemyState => ({
   id,
   kind: archetype === "monster_melee" ? "rush" : "ranged",
@@ -47,6 +82,7 @@ const enemy = (
   alive: true,
   weaponId,
   attackCooldownMs: archetype === "monster_melee" ? 0 : 1000,
+  ai: aiState,
   animation: { ...animation, weaponKind: weaponId?.includes("rifle") ? "rifle" : weaponId ? "pistol" : undefined },
 });
 
@@ -173,16 +209,106 @@ export const createRingTowerLevel = (): LevelDefinition => {
       prop("ring-final-camera-right", "display_1", 1600, 1600, 94, 46, { scale: 1.8, rotation: 0.25 }),
     ],
     enemies: [
-      enemy("ring-talk-guard", "humanoid_ranged", 980, 390, "ring-talk-guard-pistol"),
-      enemy("ring-talk-melee", "monster_melee", 540, 500),
-      enemy("ring-control-rifle-crt", "humanoid_ranged", 1690, 380, "ring-control-rifle"),
-      enemy("ring-control-melee", "monster_melee", 1390, 525),
-      enemy("ring-backstage-pistol", "humanoid_ranged", 2120, 925, "ring-backstage-pistol"),
-      enemy("ring-backstage-melee", "monster_melee", 1800, 1000),
-      enemy("ring-final-left-crt", "humanoid_ranged", 1010, 1385, "ring-final-left-rifle"),
-      enemy("ring-final-right", "humanoid_ranged", 1590, 1390, "ring-final-right-pistol"),
-      enemy("ring-final-melee-a", "monster_melee", 1040, 1600),
-      enemy("ring-final-melee-b", "monster_melee", 1540, 1605),
+      enemy(
+        "ring-talk-guard",
+        "humanoid_ranged",
+        980,
+        390,
+        "ring-talk-guard-pistol",
+        ai("talking", "talkStudio", { conversationId: "talk-show-floor-chat" }),
+      ),
+      enemy(
+        "ring-talk-melee",
+        "monster_melee",
+        540,
+        500,
+        undefined,
+        ai("talking", "talkStudio", {
+          conversationId: "talk-show-floor-chat",
+          perception: { visionRange: 390, visionAngle: Math.PI * 0.72, hearingRange: 620 },
+        }),
+      ),
+      enemy(
+        "ring-control-rifle-crt",
+        "humanoid_ranged",
+        1690,
+        380,
+        "ring-control-rifle",
+        ai("posted", "controlRoom", { post: post({ x: 1690, y: 380 }, Math.PI) }),
+      ),
+      enemy(
+        "ring-control-melee",
+        "monster_melee",
+        1390,
+        525,
+        undefined,
+        ai("posted", "controlRoom", {
+          post: post({ x: 1390, y: 525 }, -Math.PI / 2),
+          perception: { visionRange: 390, visionAngle: Math.PI * 0.72, hearingRange: 620 },
+        }),
+      ),
+      enemy(
+        "ring-backstage-pistol",
+        "humanoid_ranged",
+        2120,
+        925,
+        "ring-backstage-pistol",
+        ai("patrolling", "backstage", {
+          route: [{ x: 2120, y: 925 }, { x: 1900, y: 925 }, { x: 2120, y: 925 }],
+          routeIndex: 1,
+        }),
+      ),
+      enemy(
+        "ring-backstage-melee",
+        "monster_melee",
+        1800,
+        1000,
+        undefined,
+        ai("posted", "backstage", {
+          post: post({ x: 1800, y: 1000 }, Math.PI),
+          perception: { visionRange: 390, visionAngle: Math.PI * 0.72, hearingRange: 620 },
+        }),
+      ),
+      enemy(
+        "ring-final-left-crt",
+        "humanoid_ranged",
+        1010,
+        1385,
+        "ring-final-left-rifle",
+        ai("posted", "finalStudio", { post: post({ x: 1010, y: 1385 }, Math.PI / 2) }),
+      ),
+      enemy(
+        "ring-final-right",
+        "humanoid_ranged",
+        1590,
+        1390,
+        "ring-final-right-pistol",
+        ai("posted", "finalStudio", { post: post({ x: 1590, y: 1390 }, Math.PI / 2) }),
+      ),
+      enemy(
+        "ring-final-melee-a",
+        "monster_melee",
+        1040,
+        1600,
+        undefined,
+        ai("patrolling", "finalStudio", {
+          route: [{ x: 1040, y: 1600 }, { x: 1180, y: 1600 }, { x: 1040, y: 1600 }],
+          routeIndex: 1,
+          perception: { visionRange: 420, visionAngle: Math.PI * 0.72, hearingRange: 660 },
+        }),
+      ),
+      enemy(
+        "ring-final-melee-b",
+        "monster_melee",
+        1540,
+        1605,
+        undefined,
+        ai("patrolling", "finalStudio", {
+          route: [{ x: 1540, y: 1605 }, { x: 1400, y: 1605 }, { x: 1540, y: 1605 }],
+          routeIndex: 1,
+          perception: { visionRange: 420, visionAngle: Math.PI * 0.72, hearingRange: 660 },
+        }),
+      ),
     ],
     droppedWeapons: [
       dropped("ring-drop-first-pistol", "ring-floor-first-pistol", "pistol", 650, 850),

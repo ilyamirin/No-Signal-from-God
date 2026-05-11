@@ -47,18 +47,26 @@ export const updateBulletsAndHits = (state: GameState, deltaMs: number): void =>
       continue;
     }
 
-    if (bullet.ownerId === state.player.id) {
-      const enemy = state.enemies.find((candidate) => candidate.alive && distance(candidate.position, bullet.position) <= candidate.radius);
-      if (enemy) {
-        enemy.health -= bullet.damage;
-        addFx(state, "blood", enemy.position, Math.atan2(bullet.velocity.y, bullet.velocity.x));
-        if (enemy.health <= 0) {
-          killEnemy(state, enemy, bullet.velocity);
-          state.score += killScore(enemy.kind);
+    const hitEnemy = state.enemies.find(
+      (candidate) =>
+        candidate.alive &&
+        candidate.id !== bullet.ownerId &&
+        distance(candidate.position, bullet.position) <= candidate.radius,
+    );
+    if (hitEnemy) {
+      hitEnemy.health -= bullet.damage;
+      addFx(state, "blood", hitEnemy.position, Math.atan2(bullet.velocity.y, bullet.velocity.x));
+      if (hitEnemy.health <= 0) {
+        killEnemy(state, hitEnemy, bullet.velocity);
+        if (bullet.ownerId === state.player.id) {
+          state.score += killScore(hitEnemy.kind);
         }
-        continue;
       }
-    } else if (
+      continue;
+    }
+
+    if (
+      bullet.ownerId !== state.player.id &&
       state.player.alive &&
       state.player.invulnerableMs === 0 &&
       distance(state.player.position, bullet.position) <= state.player.radius
