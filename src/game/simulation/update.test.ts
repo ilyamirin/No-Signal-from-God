@@ -67,6 +67,30 @@ describe("updateGame", () => {
     expect(next.droppedWeapons.some((weapon) => weapon.id === "ring-drop-first-pistol")).toBe(false);
   });
 
+  it("keeps the ring tower lift-to-reception path passable", () => {
+    let state = createInitialGameState({ levelId: "ring-tower" });
+    state.enemies.forEach((enemy) => {
+      enemy.position = { x: 3000, y: 2500 };
+      enemy.ai.perception = { visionRange: 0, visionAngle: 0, hearingRange: 0 };
+      enemy.attackCooldownMs = 100000;
+    });
+
+    for (let frame = 0; frame < 650; frame += 1) {
+      state = updateGame(
+        state,
+        {
+          ...neutralInput,
+          move: { x: -1, y: 0 },
+          aimWorld: { x: state.player.position.x - 100, y: state.player.position.y },
+        },
+        16,
+      );
+    }
+
+    expect(state.player.position.x).toBeLessThan(760);
+    expect(state.player.position.y).toBeCloseTo(1350, 0);
+  });
+
   it("lets ranged enemies fire their own weapon state without consuming the player weapon", () => {
     const state = createInitialGameState({ levelId: "reception-hub" });
     state.player.position = { x: 690, y: 390 };

@@ -120,10 +120,10 @@ const wallsForBox = (
 ];
 
 const lift: ZoneRect = { id: "lift", x: 1460, y: 1210, width: 280, height: 280 };
-const lobbyNorth: ZoneRect = { id: "lobbyNorth", x: 860, y: 790, width: 1480, height: 420 };
-const lobbyWest: ZoneRect = { id: "lobbyWest", x: 760, y: 1100, width: 700, height: 650 };
-const lobbyEast: ZoneRect = { id: "lobbyEast", x: 2020, y: 1100, width: 420, height: 650 };
-const lobbySouth: ZoneRect = { id: "lobbySouth", x: 860, y: 1490, width: 1480, height: 420 };
+const lobbyNorth: ZoneRect = { id: "lobbyNorth", x: 540, y: 790, width: 620, height: 288 };
+const lobbyWest: ZoneRect = { id: "lobbyWest", x: 780, y: 1240, width: 680, height: 420 };
+const lobbyEast: ZoneRect = { id: "lobbyEast", x: 2020, y: 1320, width: 220, height: 590 };
+const lobbySouth: ZoneRect = { id: "lobbySouth", x: 860, y: 1660, width: 1360, height: 250 };
 const reception: ZoneRect = { id: "reception", x: 320, y: 1050, width: 460, height: 610 };
 const newsStudio: ZoneRect = { id: "newsStudio", x: 700, y: 280, width: 760, height: 510 };
 const controlRoom: ZoneRect = { id: "controlRoom", x: 1460, y: 280, width: 760, height: 510 };
@@ -171,6 +171,8 @@ export const ringTowerLayout = {
     floor("ring-lobby-east-floor", lobbyEast, [0, 2]),
     floor("ring-lobby-south-floor", lobbySouth, [0, 2]),
     floor("ring-reception-floor", reception, [1, 2]),
+    floor("ring-reception-tech-floor", { x: reception.x, y: reception.y, width: reception.width, height: 220 }, [0, 2]),
+    floor("ring-reception-carpet-floor", { x: 350, y: 1388, width: 400, height: 236 }, [3, 5]),
     floor("ring-talk-studio-floor", newsStudio, [3, 4]),
     floor("ring-control-floor", controlRoom, [2, 4]),
     floor("ring-tech-floor", techRoom, [1, 3]),
@@ -180,7 +182,29 @@ export const ringTowerLayout = {
   ],
   obstacles: [
     ...wallsForBox("ring-lift-core", lift, [{ side: "west", from: 1280, to: 1392 }]),
-    ...wallsForBox("ring-reception", reception, [{ side: "east", from: 1280, to: 1392 }]),
+    ...wallsForBox("ring-lobby-news-corridor", lobbyNorth, [
+      { side: "north", from: 1040, to: 1152 },
+      { side: "south", from: 540, to: 652 },
+    ]),
+    ...wallsForBox("ring-lift-vestibule", lobbyWest, [
+      { side: "west", from: 1258, to: 1414 },
+      { side: "east", from: 1280, to: 1392 },
+      { side: "south", from: 1180, to: 1460 },
+    ]),
+    ...wallsForBox("ring-return-corridor", lobbySouth, [
+      { side: "north", from: 1180, to: 1460 },
+      { side: "south", from: 910, to: 1022 },
+      { side: "south", from: 1520, to: 1632 },
+      { side: "east", from: 1660, to: 1882 },
+    ]),
+    ...wallsForBox("ring-east-service-corridor", lobbyEast, [
+      { side: "west", from: 1660, to: 1882 },
+      { side: "east", from: 1320, to: 1432 },
+    ]),
+    ...wallsForBox("ring-reception", reception, [
+      { side: "north", from: 540, to: 652 },
+      { side: "east", from: 1258, to: 1414 },
+    ]),
     ...wallsForBox("ring-news-studio", newsStudio, [
       { side: "south", from: 1040, to: 1152 },
       { side: "east", from: 500, to: 612 },
@@ -199,18 +223,6 @@ export const ringTowerLayout = {
     ]),
     ...wallsForBox("ring-equipment-store", equipmentStore, [{ side: "north", from: 910, to: 1022 }]),
     ...wallsForBox("ring-final-studio", finalStudio, [{ side: "north", from: 1520, to: 1632 }]),
-
-    wall("ring-lobby-north-west-glass-wall", 860, 790, 180, WALL),
-    wall("ring-lobby-north-east-glass-wall", 2220, 790, 120, WALL),
-    wall("ring-lobby-west-upper-seal", 760, 1100, WALL, 180),
-    wall("ring-lobby-west-lower-seal", 760, 1392, WALL, 358),
-    wall("ring-lobby-west-central-partition", 1180, 1180, 280, WALL),
-    wall("ring-lobby-west-return-partition", 1180, 1520, 280, WALL),
-    wall("ring-lobby-east-upper-seal", 2412, 1100, WALL, 250),
-    wall("ring-lobby-east-mid-seal", 2412, 1270, WALL, 90),
-    wall("ring-lobby-east-lower-seal", 2412, 1662, WALL, 88),
-    wall("ring-lobby-south-left-glass-wall", 1100, 1882, 420, WALL),
-    wall("ring-lobby-south-right-glass-wall", 1632, 1882, 708, WALL),
 
     wall("ring-outer-service-west", 280, 1000, WALL, 740),
     wall("ring-outer-service-east", 2892, 760, WALL, 1180),

@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import type { ArenaState, Rect } from "../../game/simulation/types";
+import type { ArenaState, DecorItem, Rect } from "../../game/simulation/types";
 
 type Box = Pick<Rect, "x" | "y" | "width" | "height">;
 
@@ -119,19 +119,10 @@ const drawRingTowerFoundation = (graphics: Phaser.GameObjects.Graphics, arena: A
   graphics.lineStyle(5, 0xf2fff8, 0.34);
   graphics.strokeEllipse(cx, cy, arena.width * 0.78, arena.height * 0.76);
 
-  graphics.lineStyle(4, 0xff35c8, 0.24);
-  graphics.strokeEllipse(cx, cy, arena.width * 0.59, arena.height * 0.56);
-
-  graphics.lineStyle(3, 0xffcf5a, 0.55);
-  graphics.strokeEllipse(cx, cy, arena.width * 0.49, arena.height * 0.47);
-
-  graphics.fillStyle(0x060709, 0.94);
-  graphics.fillEllipse(cx, cy, arena.width * 0.17, arena.height * 0.19);
-
   graphics.lineStyle(3, 0x5cf0ff, 0.18);
   for (let angle = -Math.PI * 0.92; angle <= Math.PI * 0.92; angle += Math.PI / 8) {
-    const innerX = cx + Math.cos(angle) * 260;
-    const innerY = cy + Math.sin(angle) * 230;
+    const innerX = cx + Math.cos(angle) * 640;
+    const innerY = cy + Math.sin(angle) * 540;
     const outerX = cx + Math.cos(angle) * 1320;
     const outerY = cy + Math.sin(angle) * 1110;
     graphics.lineBetween(innerX, innerY, outerX, outerY);
@@ -149,11 +140,6 @@ const drawRingTowerOverlays = (graphics: Phaser.GameObjects.Graphics, arena: Are
   graphics.lineStyle(3, 0x57f6eb, 0.9);
   graphics.strokeEllipse(cx, cy, arena.width * 0.82, arena.height * 0.79);
 
-  graphics.lineStyle(5, 0x050607, 0.95);
-  graphics.strokeEllipse(cx, cy, 340, 360);
-  graphics.lineStyle(3, 0xff25cc, 0.75);
-  graphics.strokeEllipse(cx, cy, 420, 440);
-
   drawGlass(graphics, 780, 1010);
   drawGlass(graphics, 2420, 1010);
   drawGlass(graphics, 1000, 2020);
@@ -166,6 +152,98 @@ const drawShells = (graphics: Phaser.GameObjects.Graphics, x: number, y: number)
   graphics.fillStyle(0xffd46c, 1);
   for (let index = 0; index < 10; index += 1) {
     graphics.fillRect(x + index * 9, y + (index % 3) * 7, 5, 9);
+  }
+};
+
+const drawCableDecor = (graphics: Phaser.GameObjects.Graphics, item: DecorItem): void => {
+  const { x, y } = item.position;
+  const angle = item.rotation;
+  graphics.lineStyle(5, 0x050607, 0.95);
+  for (let index = 0; index < 4; index += 1) {
+    const offset = index * 16;
+    const x1 = x + Math.cos(angle) * offset;
+    const y1 = y + Math.sin(angle) * offset;
+    const x2 = x + Math.cos(angle) * (offset + 34) - Math.sin(angle) * (index % 2 === 0 ? 14 : -14);
+    const y2 = y + Math.sin(angle) * (offset + 34) + Math.cos(angle) * (index % 2 === 0 ? 14 : -14);
+    graphics.lineBetween(x1, y1, x2, y2);
+  }
+  graphics.lineStyle(2, 0x38e7ff, 0.35);
+  graphics.lineBetween(x, y, x + Math.cos(angle) * 88, y + Math.sin(angle) * 88);
+};
+
+const drawCableCoilDecor = (graphics: Phaser.GameObjects.Graphics, item: DecorItem): void => {
+  const { x, y } = item.position;
+  graphics.lineStyle(5, 0x050607, 0.95);
+  for (let radius = 12; radius <= 34; radius += 7) {
+    graphics.strokeCircle(x, y, radius);
+  }
+  graphics.lineStyle(2, 0x6ff7ff, 0.25);
+  graphics.strokeCircle(x, y, 26);
+};
+
+const drawCrtWallDecor = (graphics: Phaser.GameObjects.Graphics, item: DecorItem): void => {
+  const { x, y } = item.position;
+  const cols = 3;
+  const rows = 2;
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      const px = x + col * 58;
+      const py = y + row * 42;
+      graphics.fillStyle(0x050607, 1);
+      graphics.fillRect(px - 3, py - 3, 52, 34);
+      graphics.fillStyle(0x1c242b, 1);
+      graphics.fillRect(px, py, 46, 28);
+      graphics.fillStyle((row + col) % 3 === 0 ? 0x8afff5 : (row + col) % 3 === 1 ? 0xff43c8 : 0xf6e46a, 0.92);
+      for (let line = 0; line < 6; line += 1) {
+        graphics.fillRect(px + 7, py + 6 + line * 3, 28 + ((line + col) % 3) * 3, 1);
+      }
+    }
+  }
+};
+
+const drawNeonStripDecor = (graphics: Phaser.GameObjects.Graphics, item: DecorItem): void => {
+  const { x, y } = item.position;
+  const horizontal = Math.abs(Math.cos(item.rotation)) > Math.abs(Math.sin(item.rotation));
+  graphics.lineStyle(9, 0x050607, 1);
+  if (horizontal) {
+    graphics.lineBetween(x - 58, y, x + 58, y);
+    graphics.lineStyle(4, 0xff25cc, 0.95);
+    graphics.lineBetween(x - 52, y, x + 52, y);
+    graphics.lineStyle(2, 0x67f6ff, 0.85);
+    graphics.lineBetween(x - 52, y + 6, x + 52, y + 6);
+  } else {
+    graphics.lineBetween(x, y - 58, x, y + 58);
+    graphics.lineStyle(4, 0xff25cc, 0.95);
+    graphics.lineBetween(x, y - 52, x, y + 52);
+    graphics.lineStyle(2, 0x67f6ff, 0.85);
+    graphics.lineBetween(x + 6, y - 52, x + 6, y + 52);
+  }
+};
+
+const drawPaperStackDecor = (graphics: Phaser.GameObjects.Graphics, item: DecorItem): void => {
+  const { x, y } = item.position;
+  for (let index = 0; index < 4; index += 1) {
+    graphics.fillStyle(0x050607, 0.8);
+    graphics.fillRect(x + index * 5 - 13, y + index * 3 - 8, 24, 16);
+    graphics.fillStyle(0xf3e3b8, 1);
+    graphics.fillRect(x + index * 5 - 14, y + index * 3 - 9, 22, 14);
+    graphics.lineStyle(1, 0x6b5744, 0.8);
+    graphics.lineBetween(x + index * 5 - 10, y + index * 3 - 3, x + index * 5 + 3, y + index * 3 - 3);
+    graphics.lineBetween(x + index * 5 - 10, y + index * 3 + 2, x + index * 5 + 1, y + index * 3 + 2);
+  }
+};
+
+const drawDecorItem = (graphics: Phaser.GameObjects.Graphics, item: DecorItem): void => {
+  if (item.kind === "cable") {
+    drawCableDecor(graphics, item);
+  } else if (item.kind === "cable-coil") {
+    drawCableCoilDecor(graphics, item);
+  } else if (item.kind === "crt-wall") {
+    drawCrtWallDecor(graphics, item);
+  } else if (item.kind === "neon-strip") {
+    drawNeonStripDecor(graphics, item);
+  } else if (item.kind === "paper-stack") {
+    drawPaperStackDecor(graphics, item);
   }
 };
 
@@ -243,7 +321,13 @@ const tintForFloor = (id: string): { color: number; alpha: number } => {
     return { color: 0x6f3e58, alpha: 0.25 };
   }
   if (id.includes("reception")) {
-    return { color: 0x735d48, alpha: 0.2 };
+    if (id.includes("carpet")) {
+      return { color: 0x9b315e, alpha: 0.32 };
+    }
+    if (id.includes("tech")) {
+      return { color: 0x163848, alpha: 0.3 };
+    }
+    return { color: 0x8b7a68, alpha: 0.18 };
   }
   if (id.includes("talk-studio")) {
     return { color: 0x172d63, alpha: 0.28 };
@@ -304,6 +388,10 @@ export const drawArena = (
     drawGlass(overlay, 850, 338);
     drawShells(overlay, 592, 372);
     drawShells(overlay, 1030, 530);
+  }
+
+  for (const item of arena.decor) {
+    drawDecorItem(overlay, item);
   }
 
   for (const obstacle of arena.obstacles) {

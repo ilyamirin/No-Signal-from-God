@@ -69,6 +69,9 @@ export type ArenaDecor =
   | "camera"
   | "studio-light"
   | "cable"
+  | "cable-coil"
+  | "neon-strip"
+  | "paper-stack"
   | "server-rack"
   | "green-screen"
   | "control-panel";

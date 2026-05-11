@@ -1,5 +1,6 @@
 import type {
   Collider,
+  DecorItem,
   DoorState,
   DroppedWeaponState,
   EnemyAiState,
@@ -97,6 +98,13 @@ const dropped = (id: string, weaponId: string, kind: "pistol" | "rifle", x: numb
   pickupCooldownMs: 0,
 });
 
+const decor = (id: string, kind: DecorItem["kind"], x: number, y: number, rotation = 0): DecorItem => ({
+  id,
+  kind,
+  position: { x, y },
+  rotation,
+});
+
 const propChannels = (catalogKey: string): Collider["channels"] => {
   const soft = { movement: true, bullets: false, vision: false, sound: false };
   const hard = { movement: true, bullets: true, vision: true, sound: true };
@@ -157,7 +165,17 @@ export const createRingTowerLevel = (): LevelDefinition => {
       height: ringTowerLayout.size.height,
       floorRegions: ringTowerLayout.floorRegions,
       obstacles: ringTowerLayout.obstacles,
-      decor: [],
+      // Reception dressing is decomposed from the approved A concept into gameplay-safe pieces.
+      decor: [
+        decor("ring-reception-crt-wall", "crt-wall", 398, 1108),
+        decor("ring-reception-console-cables", "cable", 512, 1228, 0.25),
+        decor("ring-reception-cable-coil", "cable-coil", 430, 1308),
+        decor("ring-reception-papers-a", "paper-stack", 690, 1188, -0.15),
+        decor("ring-reception-papers-b", "paper-stack", 548, 1470, 0.1),
+        decor("ring-reception-neon-west-a", "neon-strip", 334, 1182, Math.PI / 2),
+        decor("ring-reception-neon-west-b", "neon-strip", 334, 1534, Math.PI / 2),
+        decor("ring-reception-neon-south", "neon-strip", 540, 1648, 0),
+      ],
       background: {
         cityTextureKey: "ring-tower-city",
         cityParallax: 0.35,
@@ -170,8 +188,9 @@ export const createRingTowerLevel = (): LevelDefinition => {
     doors: [
       door("ring-lift-door-upper", { x: 1460, y: 1280 }, Math.PI / 2, 0, Math.PI),
       door("ring-lift-door-lower", { x: 1460, y: 1392 }, -Math.PI / 2, -Math.PI, 0),
-      door("ring-lobby-reception-upper", { x: 780, y: 1280 }, Math.PI / 2, 0, Math.PI),
-      door("ring-lobby-reception-lower", { x: 780, y: 1392 }, -Math.PI / 2, -Math.PI, 0),
+      door("ring-lobby-reception-upper", { x: 780, y: 1258 }, Math.PI / 2, 0, Math.PI),
+      door("ring-reception-corridor-left", { x: 540, y: 1050 }, 0, -Math.PI / 2, Math.PI / 2),
+      door("ring-reception-corridor-right", { x: 652, y: 1050 }, Math.PI, Math.PI / 2, Math.PI * 1.5),
       door("ring-reception-studio-left", { x: 1040, y: 790 }, 0, -Math.PI / 2, Math.PI / 2),
       door("ring-reception-studio-right", { x: 1152, y: 790 }, Math.PI, Math.PI / 2, Math.PI * 1.5),
       door("ring-studio-control-upper", { x: 1460, y: 500 }, Math.PI / 2, 0, Math.PI),
@@ -188,22 +207,28 @@ export const createRingTowerLevel = (): LevelDefinition => {
       door("ring-final-entry-right", { x: 1632, y: 1910 }, Math.PI, Math.PI / 2, Math.PI * 1.5),
     ],
     props: [
-      prop("ring-lobby-couch-north-a", "couch_1", 1260, 1070, 118, 52, { frame: 1, scale: 1.8 }),
-      prop("ring-lobby-couch-north-b", "couch_2", 1940, 1070, 118, 52, { scale: 1.8 }),
-      prop("ring-lobby-table-a", "table_4", 1325, 1160, 84, 48, { scale: 1.6 }),
-      prop("ring-lobby-table-b", "table_4", 1875, 1160, 84, 48, { scale: 1.6 }),
-      prop("ring-lobby-plant-a", "plants", 910, 1180, 38, 38, { frame: 2, scale: 1.35 }),
-      prop("ring-lobby-plant-b", "plants", 2295, 1600, 38, 38, { scale: 1.35 }),
-      prop("ring-lobby-water-cooler", "cooler", 935, 1540, 38, 62, { scale: 1.35 }),
-      prop("ring-lobby-info-tv", "tv", 1600, 930, 84, 48, { frame: 1, scale: 1.6 }),
+      prop("ring-lobby-couch-north-a", "couch_1", 1020, 1580, 118, 52, { frame: 1, scale: 1.8 }),
+      prop("ring-lobby-couch-north-b", "couch_2", 1890, 1780, 118, 52, { scale: 1.8 }),
+      prop("ring-lobby-table-a", "table_4", 1220, 1570, 84, 48, { scale: 1.6 }),
+      prop("ring-lobby-table-b", "table_4", 1790, 1780, 84, 48, { scale: 1.6 }),
+      prop("ring-lobby-plant-a", "plants", 910, 1715, 38, 38, { frame: 2, scale: 1.35 }),
+      prop("ring-lobby-plant-b", "plants", 2160, 1725, 38, 38, { scale: 1.35 }),
+      prop("ring-lobby-water-cooler", "cooler", 920, 1286, 38, 62, { scale: 1.35 }),
+      prop("ring-lobby-info-tv", "tv", 1260, 1288, 84, 48, { frame: 1, scale: 1.6 }),
 
-      prop("ring-reception-desk", "table_1", 500, 1210, 210, 70, { frame: 1, scale: 2.45, rotation: Math.PI / 2 }),
-      prop("ring-reception-computer", "computer", 575, 1220, 46, 38, { frame: 5, scale: 1.55, collider: false }),
-      prop("ring-reception-couch-a", "couch_1", 510, 1545, 118, 52, { frame: 1, scale: 1.85 }),
-      prop("ring-reception-couch-b", "couch_2", 650, 1545, 118, 52, { scale: 1.85 }),
-      prop("ring-reception-cooler", "cooler", 700, 1130, 38, 62, { scale: 1.35 }),
-      prop("ring-reception-plant", "plants", 405, 1110, 38, 38, { scale: 1.35 }),
-      prop("ring-reception-coffee-table", "table_4", 575, 1455, 84, 48, { scale: 1.6 }),
+      prop("ring-reception-desk", "table_10", 500, 1196, 180, 62, { scale: 2.05 }),
+      prop("ring-reception-computer", "computer", 466, 1178, 46, 38, { frame: 5, scale: 1.55, collider: false }),
+      prop("ring-reception-console-tv", "tv", 410, 1168, 84, 48, { frame: 1, scale: 1.45, collider: false }),
+      prop("ring-reception-side-display", "display_2", 574, 1164, 42, 42, { frame: 1, scale: 1.45, collider: false }),
+      prop("ring-reception-cooler", "cooler", 724, 1158, 38, 62, { scale: 1.35 }),
+      prop("ring-reception-couch-west", "couch_2", 394, 1494, 118, 52, { scale: 1.85, rotation: Math.PI / 2 }),
+      prop("ring-reception-couch-south", "couch_1", 548, 1592, 118, 52, { frame: 1, scale: 1.85 }),
+      prop("ring-reception-chair", "chair_1", 706, 1538, 38, 36, { frame: 1, scale: 1.55, rotation: -Math.PI / 2 }),
+      prop("ring-reception-coffee-table", "table_4", 548, 1468, 84, 48, { scale: 1.6 }),
+      prop("ring-reception-plant-a", "plants", 386, 1120, 38, 38, { frame: 2, scale: 1.35 }),
+      prop("ring-reception-plant-b", "plants", 398, 1604, 38, 38, { scale: 1.35 }),
+      prop("ring-reception-plant-c", "plants", 724, 1600, 38, 38, { frame: 1, scale: 1.35 }),
+      prop("ring-reception-trash", "trash_can_2", 724, 1452, 36, 36, { scale: 1.25 }),
 
       prop("ring-talk-host-desk", "table_5", 1080, 440, 176, 64, { scale: 2.35 }),
       prop("ring-talk-guest-couch", "couch_1", 1080, 615, 118, 52, { frame: 1, scale: 2 }),
