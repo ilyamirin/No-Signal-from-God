@@ -36,6 +36,26 @@ describe("ring tower level", () => {
     expect(level.weapons["ring-floor-first-pistol"]?.kind).toBe("pistol");
   });
 
+  it("routes the tower clockwise through rooms instead of a direct lobby shortcut", () => {
+    const level = createRingTowerLevel();
+    const doorIds = level.doors.map((door) => door.id);
+
+    expect(doorIds).toEqual(
+      expect.arrayContaining([
+        "ring-lift-door-upper",
+        "ring-lobby-reception-upper",
+        "ring-reception-studio-left",
+        "ring-studio-control-upper",
+        "ring-control-tech-upper",
+        "ring-tech-backstage-left",
+        "ring-backstage-lobby-upper",
+        "ring-final-entry-left",
+      ]),
+    );
+    expect(doorIds).not.toContain("ring-control-lobby-left");
+    expect(ringTowerLayout.routeTargets.lobby.x).toBeLessThan(ringTowerLayout.center.x);
+  });
+
   it("uses final fight then exit victory", () => {
     const level = createRingTowerLevel();
 

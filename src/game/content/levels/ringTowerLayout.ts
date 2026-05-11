@@ -121,14 +121,14 @@ const wallsForBox = (
 
 const lift: ZoneRect = { id: "lift", x: 1460, y: 1210, width: 280, height: 280 };
 const lobbyNorth: ZoneRect = { id: "lobbyNorth", x: 860, y: 790, width: 1480, height: 420 };
-const lobbyWest: ZoneRect = { id: "lobbyWest", x: 760, y: 1100, width: 420, height: 650 };
+const lobbyWest: ZoneRect = { id: "lobbyWest", x: 760, y: 1100, width: 700, height: 650 };
 const lobbyEast: ZoneRect = { id: "lobbyEast", x: 2020, y: 1100, width: 420, height: 650 };
 const lobbySouth: ZoneRect = { id: "lobbySouth", x: 860, y: 1490, width: 1480, height: 420 };
 const reception: ZoneRect = { id: "reception", x: 320, y: 1050, width: 460, height: 610 };
 const newsStudio: ZoneRect = { id: "newsStudio", x: 700, y: 280, width: 760, height: 510 };
 const controlRoom: ZoneRect = { id: "controlRoom", x: 1460, y: 280, width: 760, height: 510 };
-const techRoom: ZoneRect = { id: "techRoom", x: 2440, y: 840, width: 440, height: 430 };
-const backstage: ZoneRect = { id: "backstage", x: 2440, y: 1360, width: 440, height: 500 };
+const techRoom: ZoneRect = { id: "techRoom", x: 2220, y: 500, width: 480, height: 420 };
+const backstage: ZoneRect = { id: "backstage", x: 2220, y: 1000, width: 480, height: 520 };
 const equipmentStore: ZoneRect = { id: "equipmentStore", x: 520, y: 1910, width: 580, height: 430 };
 const finalStudio: ZoneRect = { id: "finalStudio", x: 1180, y: 1910, width: 1040, height: 520 };
 const exitLift: ZoneRect = { id: "exitLift", x: 1490, y: 1240, width: 220, height: 220 };
@@ -154,12 +154,12 @@ export const ringTowerLayout = {
   playerSpawn: { x: 1600, y: 1350 } satisfies Vec2,
   exitLiftTrigger: { x: exitLift.x, y: exitLift.y, width: exitLift.width, height: exitLift.height },
   routeTargets: {
-    lobby: { x: 1600, y: 980 } satisfies Vec2,
+    lobby: { x: 1010, y: 1350 } satisfies Vec2,
     reception: { x: 555, y: 1350 } satisfies Vec2,
     newsStudio: { x: 1080, y: 560 } satisfies Vec2,
     controlRoom: { x: 1810, y: 560 } satisfies Vec2,
-    techRoom: { x: 2660, y: 1060 } satisfies Vec2,
-    backstage: { x: 2660, y: 1600 } satisfies Vec2,
+    techRoom: { x: 2460, y: 720 } satisfies Vec2,
+    backstage: { x: 2460, y: 1260 } satisfies Vec2,
     equipmentStore: { x: 860, y: 2130 } satisfies Vec2,
     finalStudio: { x: 1700, y: 2350 } satisfies Vec2,
     exitLift: { x: 1600, y: 1350 } satisfies Vec2,
@@ -179,7 +179,7 @@ export const ringTowerLayout = {
     floor("ring-final-studio-floor", finalStudio, [4, 5]),
   ],
   obstacles: [
-    ...wallsForBox("ring-lift-core", lift, [{ side: "north", from: 1544, to: 1656 }]),
+    ...wallsForBox("ring-lift-core", lift, [{ side: "west", from: 1280, to: 1392 }]),
     ...wallsForBox("ring-reception", reception, [{ side: "east", from: 1280, to: 1392 }]),
     ...wallsForBox("ring-news-studio", newsStudio, [
       { side: "south", from: 1040, to: 1152 },
@@ -187,10 +187,16 @@ export const ringTowerLayout = {
     ]),
     ...wallsForBox("ring-control-room", controlRoom, [
       { side: "west", from: 500, to: 612 },
-      { side: "south", from: 1820, to: 1932 },
+      { side: "east", from: 520, to: 632 },
     ]),
-    ...wallsForBox("ring-tech-room", techRoom, [{ side: "west", from: 980, to: 1092 }]),
-    ...wallsForBox("ring-backstage", backstage, [{ side: "west", from: 1550, to: 1662 }]),
+    ...wallsForBox("ring-tech-room", techRoom, [
+      { side: "west", from: 520, to: 632 },
+      { side: "south", from: 2380, to: 2492 },
+    ]),
+    ...wallsForBox("ring-backstage", backstage, [
+      { side: "north", from: 2380, to: 2492 },
+      { side: "west", from: 1320, to: 1432 },
+    ]),
     ...wallsForBox("ring-equipment-store", equipmentStore, [{ side: "north", from: 910, to: 1022 }]),
     ...wallsForBox("ring-final-studio", finalStudio, [{ side: "north", from: 1520, to: 1632 }]),
 
@@ -198,6 +204,8 @@ export const ringTowerLayout = {
     wall("ring-lobby-north-east-glass-wall", 2220, 790, 120, WALL),
     wall("ring-lobby-west-upper-seal", 760, 1100, WALL, 180),
     wall("ring-lobby-west-lower-seal", 760, 1392, WALL, 358),
+    wall("ring-lobby-west-central-partition", 1180, 1180, 280, WALL),
+    wall("ring-lobby-west-return-partition", 1180, 1520, 280, WALL),
     wall("ring-lobby-east-upper-seal", 2412, 1100, WALL, 250),
     wall("ring-lobby-east-mid-seal", 2412, 1270, WALL, 90),
     wall("ring-lobby-east-lower-seal", 2412, 1662, WALL, 88),
