@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import type { EnemyState, PlayerState, Vec2, WeaponState } from "../../game/simulation/types";
+import { playerAnimationFor, playerLegsAnimationFor } from "./actorAnimationKeys";
 import { actorDepthFor, LIVE_ACTOR_DEPTH } from "./actorDepth";
 
 type ActorState = Pick<
@@ -13,12 +14,15 @@ type ActorState = Pick<
 
 export type ActorRig = {
   sprite: Phaser.GameObjects.Sprite;
+  legs?: Phaser.GameObjects.Sprite;
   textureKey: string;
+  legsTextureKey?: string;
   previousLoadedRounds?: number;
   recoilMs: number;
   shootMs: number;
   walkTimerMs: number;
   currentAnimation?: string;
+  currentLegsAnimation?: string;
 };
 
 const FRAME_SIZE = 48;
@@ -42,22 +46,6 @@ const enemyTextureKey = (enemy: EnemyState): string => {
   return "scifi-enemy-idle";
 };
 
-const playerAnimationFor = (actor: ActorState, weapon: WeaponState | undefined, moving: boolean, shooting: boolean): string => {
-  const weaponKind = weapon?.kind ?? actor.animation?.weaponKind;
-  if (!weaponKind || !actor.weaponId) {
-    return "scifi-player-use";
-  }
-  const suffix = weaponKind === "rifle" ? "rifle" : "pistol";
-
-  if (actor.animation?.intent === "reload") {
-    return `scifi-player-reload-${suffix}`;
-  }
-  if (shooting || actor.animation?.intent === "shoot") {
-    return `scifi-player-shoot-${suffix}`;
-  }
-  return moving ? `scifi-player-run-${suffix}` : `scifi-player-idle-${suffix}`;
-};
-
 const animationFor = (actor: ActorState, weapon: WeaponState | undefined, moving: boolean, shooting: boolean): string => {
   if (!actor.alive) {
     return actor.id === "player" ? "scifi-player-death" : "scifi-enemy-death";
@@ -77,7 +65,16 @@ const createActorSprite = (
   scene: Phaser.Scene,
   textureKey: string,
   position: Vec2,
+  options: { withLegs?: boolean } = {},
 ): ActorRig => {
+  const legs = options.withLegs
+    ? scene.add
+        .sprite(position.x, position.y, "scifi-player-legs-idle", 0)
+        .setOrigin(0.5)
+        .setScale(ACTOR_SCALE)
+        .setDepth(LIVE_ACTOR_DEPTH - 1)
+    : undefined;
+
   const sprite = scene.add
     .sprite(position.x, position.y, textureKey, 0)
     .setOrigin(0.5)
@@ -86,7 +83,9 @@ const createActorSprite = (
 
   return {
     sprite,
+    legs,
     textureKey,
+    legsTextureKey: legs ? "scifi-player-legs-idle" : undefined,
     recoilMs: 0,
     shootMs: 0,
     walkTimerMs: 0,
@@ -153,6 +152,19 @@ export const syncActorRig = (
     rig.sprite.play(nextAnimation, true);
   }
 
+  const nextLegsAnimation = playerLegsAnimationFor(actor, moving);
+  if (rig.legs && nextLegsAnimation) {
+    if (rig.currentLegsAnimation !== nextLegsAnimation) {
+      rig.currentLegsAnimation = nextLegsAnimation;
+      rig.legs.play(nextLegsAnimation, true);
+    }
+    rig.legs.setPosition(actor.position.x, actor.position.y + walkBob);
+    rig.legs.setRotation(velocityDirection === undefined ? actor.facing : Math.atan2(actor.velocity.y, actor.velocity.x));
+    rig.legs.setDepth(actorDepthFor(actor.alive) - 1);
+    rig.legs.setAlpha(actor.alive ? 1 : 0.76);
+    rig.legs.setTint(actor.alive ? 0xffffff : 0xa0d65f);
+  }
+
   rig.sprite.setPosition(actor.position.x + recoilX, actor.position.y + recoilY + walkBob);
   rig.sprite.setRotation(actor.facing);
   rig.sprite.setDepth(actorDepthFor(actor.alive));
@@ -164,7 +176,9 @@ export const createPlayerRig = (
   scene: Phaser.Scene,
   player: PlayerState,
 ): ActorRig =>
-  createActorSprite(scene, player.weaponId ? "scifi-player-idle-pistol" : "scifi-player-use", player.position);
+  createActorSprite(scene, player.weaponId ? "scifi-player-idle-pistol" : "scifi-player-use", player.position, {
+    withLegs: true,
+  });
 
 export const createEnemyRig = (
   scene: Phaser.Scene,

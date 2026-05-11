@@ -103,6 +103,65 @@ const drawGlass = (graphics: Phaser.GameObjects.Graphics, x: number, y: number):
   }
 };
 
+const drawRingTowerFoundation = (graphics: Phaser.GameObjects.Graphics, arena: ArenaState): void => {
+  const cx = arena.width / 2;
+  const cy = arena.height / 2;
+
+  graphics.fillStyle(0x05070a, 0.92);
+  graphics.fillEllipse(cx, cy, arena.width * 0.88, arena.height * 0.88);
+
+  graphics.lineStyle(44, 0x111923, 0.98);
+  graphics.strokeEllipse(cx, cy, arena.width * 0.9, arena.height * 0.88);
+
+  graphics.lineStyle(16, 0x66e6ff, 0.38);
+  graphics.strokeEllipse(cx, cy, arena.width * 0.84, arena.height * 0.82);
+
+  graphics.lineStyle(5, 0xf2fff8, 0.34);
+  graphics.strokeEllipse(cx, cy, arena.width * 0.78, arena.height * 0.76);
+
+  graphics.lineStyle(4, 0xff35c8, 0.24);
+  graphics.strokeEllipse(cx, cy, arena.width * 0.59, arena.height * 0.56);
+
+  graphics.lineStyle(3, 0xffcf5a, 0.55);
+  graphics.strokeEllipse(cx, cy, arena.width * 0.49, arena.height * 0.47);
+
+  graphics.fillStyle(0x060709, 0.94);
+  graphics.fillEllipse(cx, cy, arena.width * 0.17, arena.height * 0.19);
+
+  graphics.lineStyle(3, 0x5cf0ff, 0.18);
+  for (let angle = -Math.PI * 0.92; angle <= Math.PI * 0.92; angle += Math.PI / 8) {
+    const innerX = cx + Math.cos(angle) * 260;
+    const innerY = cy + Math.sin(angle) * 230;
+    const outerX = cx + Math.cos(angle) * 1320;
+    const outerY = cy + Math.sin(angle) * 1110;
+    graphics.lineBetween(innerX, innerY, outerX, outerY);
+  }
+};
+
+const drawRingTowerOverlays = (graphics: Phaser.GameObjects.Graphics, arena: ArenaState): void => {
+  const cx = arena.width / 2;
+  const cy = arena.height / 2;
+
+  graphics.lineStyle(28, 0x070708, 1);
+  graphics.strokeEllipse(cx, cy, arena.width * 0.91, arena.height * 0.89);
+  graphics.lineStyle(8, 0xd8d0b7, 0.9);
+  graphics.strokeEllipse(cx, cy, arena.width * 0.87, arena.height * 0.84);
+  graphics.lineStyle(3, 0x57f6eb, 0.9);
+  graphics.strokeEllipse(cx, cy, arena.width * 0.82, arena.height * 0.79);
+
+  graphics.lineStyle(5, 0x050607, 0.95);
+  graphics.strokeEllipse(cx, cy, 340, 360);
+  graphics.lineStyle(3, 0xff25cc, 0.75);
+  graphics.strokeEllipse(cx, cy, 420, 440);
+
+  drawGlass(graphics, 780, 1010);
+  drawGlass(graphics, 2420, 1010);
+  drawGlass(graphics, 1000, 2020);
+  drawGlass(graphics, 2200, 2020);
+  drawShells(graphics, 1365, 2225);
+  drawShells(graphics, 1980, 2120);
+};
+
 const drawShells = (graphics: Phaser.GameObjects.Graphics, x: number, y: number): void => {
   graphics.fillStyle(0xffd46c, 1);
   for (let index = 0; index < 10; index += 1) {
@@ -176,6 +235,45 @@ const addFloorTiles = (
   }
 };
 
+const tintForFloor = (id: string): { color: number; alpha: number } => {
+  if (id.includes("lift")) {
+    return { color: 0x243b55, alpha: 0.22 };
+  }
+  if (id.includes("lobby")) {
+    return { color: 0x6f3e58, alpha: 0.25 };
+  }
+  if (id.includes("reception")) {
+    return { color: 0x735d48, alpha: 0.2 };
+  }
+  if (id.includes("talk-studio")) {
+    return { color: 0x172d63, alpha: 0.28 };
+  }
+  if (id.includes("control") || id.includes("tech")) {
+    return { color: 0x123544, alpha: 0.27 };
+  }
+  if (id.includes("backstage") || id.includes("equipment")) {
+    return { color: 0x3b2c34, alpha: 0.28 };
+  }
+  if (id.includes("final")) {
+    return { color: 0x7b164f, alpha: 0.3 };
+  }
+  return { color: 0x111217, alpha: 0.14 };
+};
+
+const addFloorTints = (
+  scene: Phaser.Scene,
+  container: Phaser.GameObjects.Container,
+  arena: ArenaState,
+): void => {
+  const tint = scene.add.graphics();
+  for (const region of arena.floorRegions) {
+    const style = tintForFloor(region.id);
+    tint.fillStyle(style.color, style.alpha);
+    tint.fillRect(region.x, region.y, region.width, region.height);
+  }
+  container.add(tint);
+};
+
 export const drawArena = (
   scene: Phaser.Scene,
   arena: ArenaState,
@@ -186,6 +284,8 @@ export const drawArena = (
   if (!arena.background) {
     graphics.fillStyle(0x050406, 1);
     graphics.fillRect(0, 0, arena.width, arena.height);
+  } else {
+    drawRingTowerFoundation(graphics, arena);
   }
 
   container.add(graphics);
@@ -193,22 +293,29 @@ export const drawArena = (
   for (const region of arena.floorRegions) {
     addFloorTiles(scene, container, region, region.frames);
   }
+  addFloorTints(scene, container, arena);
 
   const overlay = scene.add.graphics();
   container.add(overlay);
 
-  drawGlass(overlay, 850, 338);
-  drawShells(overlay, 592, 372);
-  drawShells(overlay, 1030, 530);
+  if (arena.background) {
+    drawRingTowerOverlays(overlay, arena);
+  } else {
+    drawGlass(overlay, 850, 338);
+    drawShells(overlay, 592, 372);
+    drawShells(overlay, 1030, 530);
+  }
 
   for (const obstacle of arena.obstacles) {
     drawObstacle(overlay, obstacle);
   }
 
-  overlay.lineStyle(5, 0x050607, 1);
-  overlay.strokeRect(26, 24, arena.width - 52, arena.height - 48);
-  overlay.lineStyle(3, 0xff25cc, 0.95);
-  overlay.strokeRect(31, 29, arena.width - 62, arena.height - 58);
+  if (!arena.background) {
+    overlay.lineStyle(5, 0x050607, 1);
+    overlay.strokeRect(26, 24, arena.width - 52, arena.height - 48);
+    overlay.lineStyle(3, 0xff25cc, 0.95);
+    overlay.strokeRect(31, 29, arena.width - 62, arena.height - 58);
+  }
 
   return container;
 };

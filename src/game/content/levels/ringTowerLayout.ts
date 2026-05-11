@@ -2,11 +2,16 @@ import type { FloorRegion, Rect, Vec2 } from "../../simulation/types";
 
 type ZoneId =
   | "lift"
-  | "lobby"
+  | "lobbyNorth"
+  | "lobbyWest"
+  | "lobbyEast"
+  | "lobbySouth"
   | "reception"
-  | "talkStudio"
+  | "newsStudio"
   | "controlRoom"
+  | "techRoom"
   | "backstage"
+  | "equipmentStore"
   | "finalStudio"
   | "exitLift";
 
@@ -17,6 +22,16 @@ type ZoneRect = {
   width: number;
   height: number;
 };
+
+type WallSide = "north" | "south" | "west" | "east";
+
+type WallOpening = {
+  side: WallSide;
+  from: number;
+  to: number;
+};
+
+const WALL = 28;
 
 const wall = (id: string, x: number, y: number, width: number, height: number): Rect => ({
   id,
@@ -37,99 +52,161 @@ const floor = (id: string, zone: Omit<ZoneRect, "id">, frames: number[]): FloorR
   frames,
 });
 
-const lift: ZoneRect = { id: "lift", x: 1210, y: 820, width: 180, height: 150 };
-const lobby: ZoneRect = { id: "lobby", x: 1040, y: 650, width: 520, height: 480 };
-const reception: ZoneRect = { id: "reception", x: 320, y: 650, width: 620, height: 420 };
-const talkStudio: ZoneRect = { id: "talkStudio", x: 300, y: 190, width: 850, height: 410 };
-const controlRoom: ZoneRect = { id: "controlRoom", x: 1180, y: 190, width: 700, height: 410 };
-const backstage: ZoneRect = { id: "backstage", x: 1660, y: 660, width: 620, height: 460 };
-const finalStudio: ZoneRect = { id: "finalStudio", x: 760, y: 1230, width: 1040, height: 470 };
-const exitLift: ZoneRect = { id: "exitLift", x: 1218, y: 845, width: 164, height: 118 };
+const horizontalSegments = (
+  id: string,
+  x: number,
+  y: number,
+  width: number,
+  side: WallSide,
+  openings: WallOpening[],
+): Rect[] => {
+  const sorted = openings
+    .filter((opening) => opening.side === side)
+    .map((opening) => ({ from: Math.max(x, opening.from), to: Math.min(x + width, opening.to) }))
+    .filter((opening) => opening.to > opening.from)
+    .sort((a, b) => a.from - b.from);
+
+  const segments: Rect[] = [];
+  let cursor = x;
+  for (const opening of sorted) {
+    if (opening.from - cursor > 4) {
+      segments.push(wall(`${id}-${side}-${segments.length}`, cursor, y, opening.from - cursor, WALL));
+    }
+    cursor = Math.max(cursor, opening.to);
+  }
+  if (x + width - cursor > 4) {
+    segments.push(wall(`${id}-${side}-${segments.length}`, cursor, y, x + width - cursor, WALL));
+  }
+  return segments;
+};
+
+const verticalSegments = (
+  id: string,
+  x: number,
+  y: number,
+  height: number,
+  side: WallSide,
+  openings: WallOpening[],
+): Rect[] => {
+  const sorted = openings
+    .filter((opening) => opening.side === side)
+    .map((opening) => ({ from: Math.max(y, opening.from), to: Math.min(y + height, opening.to) }))
+    .filter((opening) => opening.to > opening.from)
+    .sort((a, b) => a.from - b.from);
+
+  const segments: Rect[] = [];
+  let cursor = y;
+  for (const opening of sorted) {
+    if (opening.from - cursor > 4) {
+      segments.push(wall(`${id}-${side}-${segments.length}`, x, cursor, WALL, opening.from - cursor));
+    }
+    cursor = Math.max(cursor, opening.to);
+  }
+  if (y + height - cursor > 4) {
+    segments.push(wall(`${id}-${side}-${segments.length}`, x, cursor, WALL, y + height - cursor));
+  }
+  return segments;
+};
+
+const wallsForBox = (
+  id: string,
+  zone: Omit<ZoneRect, "id">,
+  openings: WallOpening[] = [],
+): Rect[] => [
+  ...horizontalSegments(id, zone.x, zone.y, zone.width, "north", openings),
+  ...horizontalSegments(id, zone.x, zone.y + zone.height - WALL, zone.width, "south", openings),
+  ...verticalSegments(id, zone.x, zone.y, zone.height, "west", openings),
+  ...verticalSegments(id, zone.x + zone.width - WALL, zone.y, zone.height, "east", openings),
+];
+
+const lift: ZoneRect = { id: "lift", x: 1460, y: 1210, width: 280, height: 280 };
+const lobbyNorth: ZoneRect = { id: "lobbyNorth", x: 860, y: 790, width: 1480, height: 420 };
+const lobbyWest: ZoneRect = { id: "lobbyWest", x: 760, y: 1100, width: 420, height: 650 };
+const lobbyEast: ZoneRect = { id: "lobbyEast", x: 2020, y: 1100, width: 420, height: 650 };
+const lobbySouth: ZoneRect = { id: "lobbySouth", x: 860, y: 1490, width: 1480, height: 420 };
+const reception: ZoneRect = { id: "reception", x: 320, y: 1050, width: 460, height: 610 };
+const newsStudio: ZoneRect = { id: "newsStudio", x: 700, y: 280, width: 760, height: 510 };
+const controlRoom: ZoneRect = { id: "controlRoom", x: 1460, y: 280, width: 760, height: 510 };
+const techRoom: ZoneRect = { id: "techRoom", x: 2440, y: 840, width: 440, height: 430 };
+const backstage: ZoneRect = { id: "backstage", x: 2440, y: 1360, width: 440, height: 500 };
+const equipmentStore: ZoneRect = { id: "equipmentStore", x: 520, y: 1910, width: 580, height: 430 };
+const finalStudio: ZoneRect = { id: "finalStudio", x: 1180, y: 1910, width: 1040, height: 520 };
+const exitLift: ZoneRect = { id: "exitLift", x: 1490, y: 1240, width: 220, height: 220 };
 
 export const ringTowerLayout = {
-  size: { width: 2600, height: 1900 },
+  size: { width: 3200, height: 2700 },
+  center: { x: 1600, y: 1350 } satisfies Vec2,
   zones: {
     lift,
-    lobby,
+    lobbyNorth,
+    lobbyWest,
+    lobbyEast,
+    lobbySouth,
     reception,
-    talkStudio,
+    newsStudio,
     controlRoom,
+    techRoom,
     backstage,
+    equipmentStore,
     finalStudio,
     exitLift,
   },
-  playerSpawn: { x: 1300, y: 910 } satisfies Vec2,
+  playerSpawn: { x: 1600, y: 1350 } satisfies Vec2,
   exitLiftTrigger: { x: exitLift.x, y: exitLift.y, width: exitLift.width, height: exitLift.height },
   routeTargets: {
-    lobby: { x: 1300, y: 1040 } satisfies Vec2,
-    reception: { x: 555, y: 850 } satisfies Vec2,
-    talkStudio: { x: 620, y: 500 } satisfies Vec2,
-    controlRoom: { x: 1510, y: 480 } satisfies Vec2,
-    backstage: { x: 1960, y: 890 } satisfies Vec2,
-    finalStudio: { x: 1280, y: 1600 } satisfies Vec2,
-    exitLift: { x: 1300, y: 910 } satisfies Vec2,
+    lobby: { x: 1600, y: 980 } satisfies Vec2,
+    reception: { x: 555, y: 1350 } satisfies Vec2,
+    newsStudio: { x: 1080, y: 560 } satisfies Vec2,
+    controlRoom: { x: 1810, y: 560 } satisfies Vec2,
+    techRoom: { x: 2660, y: 1060 } satisfies Vec2,
+    backstage: { x: 2660, y: 1600 } satisfies Vec2,
+    equipmentStore: { x: 860, y: 2130 } satisfies Vec2,
+    finalStudio: { x: 1700, y: 2350 } satisfies Vec2,
+    exitLift: { x: 1600, y: 1350 } satisfies Vec2,
   },
   floorRegions: [
     floor("ring-lift-floor", lift, [2, 3]),
-    floor("ring-lobby-floor", lobby, [0, 2]),
+    floor("ring-lobby-floor", lobbyNorth, [0, 2]),
+    floor("ring-lobby-west-floor", lobbyWest, [0, 2]),
+    floor("ring-lobby-east-floor", lobbyEast, [0, 2]),
+    floor("ring-lobby-south-floor", lobbySouth, [0, 2]),
     floor("ring-reception-floor", reception, [1, 2]),
-    floor("ring-talk-studio-floor", talkStudio, [3, 4]),
+    floor("ring-talk-studio-floor", newsStudio, [3, 4]),
     floor("ring-control-floor", controlRoom, [2, 4]),
+    floor("ring-tech-floor", techRoom, [1, 3]),
     floor("ring-backstage-floor", backstage, [1, 3]),
+    floor("ring-equipment-floor", equipmentStore, [1, 5]),
     floor("ring-final-studio-floor", finalStudio, [4, 5]),
-    floor("ring-lobby-reception-corridor-floor", { x: 930, y: 805, width: 110, height: 120 }, [0, 2]),
-    floor("ring-reception-studio-corridor-floor", { x: 560, y: 600, width: 150, height: 60 }, [1, 3]),
-    floor("ring-studio-control-corridor-floor", { x: 1150, y: 340, width: 80, height: 120 }, [2, 4]),
-    floor("ring-control-backstage-corridor-floor", { x: 1880, y: 520, width: 110, height: 160 }, [1, 4]),
-    floor("ring-backstage-final-corridor-floor", { x: 1660, y: 1120, width: 160, height: 120 }, [3, 5]),
-    floor("ring-final-lobby-return-floor", { x: 1180, y: 1130, width: 230, height: 100 }, [0, 4]),
   ],
   obstacles: [
-    wall("ring-outer-north", 240, 130, 2100, 32),
-    wall("ring-outer-south", 240, 1740, 2100, 32),
-    wall("ring-outer-west", 240, 130, 32, 1642),
-    wall("ring-outer-east", 2308, 130, 32, 1642),
+    ...wallsForBox("ring-lift-core", lift, [{ side: "north", from: 1544, to: 1656 }]),
+    ...wallsForBox("ring-reception", reception, [{ side: "east", from: 1280, to: 1392 }]),
+    ...wallsForBox("ring-news-studio", newsStudio, [
+      { side: "south", from: 1040, to: 1152 },
+      { side: "east", from: 500, to: 612 },
+    ]),
+    ...wallsForBox("ring-control-room", controlRoom, [
+      { side: "west", from: 500, to: 612 },
+      { side: "south", from: 1820, to: 1932 },
+    ]),
+    ...wallsForBox("ring-tech-room", techRoom, [{ side: "west", from: 980, to: 1092 }]),
+    ...wallsForBox("ring-backstage", backstage, [{ side: "west", from: 1550, to: 1662 }]),
+    ...wallsForBox("ring-equipment-store", equipmentStore, [{ side: "north", from: 910, to: 1022 }]),
+    ...wallsForBox("ring-final-studio", finalStudio, [{ side: "north", from: 1520, to: 1632 }]),
 
-    wall("ring-lobby-inner-north-left", 1040, 650, 170, 26),
-    wall("ring-lobby-inner-north-right", 1390, 650, 170, 26),
-    wall("ring-lobby-inner-south-left", 1040, 1110, 170, 26),
-    wall("ring-lobby-inner-south-right", 1390, 1110, 170, 26),
-    wall("ring-lobby-west-upper", 1040, 650, 26, 155),
-    wall("ring-lobby-west-lower", 1040, 925, 26, 205),
-    wall("ring-lobby-east-upper", 1534, 650, 26, 155),
-    wall("ring-lobby-east-lower", 1534, 925, 26, 205),
+    wall("ring-lobby-north-west-glass-wall", 860, 790, 180, WALL),
+    wall("ring-lobby-north-east-glass-wall", 2220, 790, 120, WALL),
+    wall("ring-lobby-west-upper-seal", 760, 1100, WALL, 180),
+    wall("ring-lobby-west-lower-seal", 760, 1392, WALL, 358),
+    wall("ring-lobby-east-upper-seal", 2412, 1100, WALL, 250),
+    wall("ring-lobby-east-mid-seal", 2412, 1270, WALL, 90),
+    wall("ring-lobby-east-lower-seal", 2412, 1662, WALL, 88),
+    wall("ring-lobby-south-left-glass-wall", 1100, 1882, 420, WALL),
+    wall("ring-lobby-south-right-glass-wall", 1632, 1882, 708, WALL),
 
-    wall("ring-reception-north", 320, 650, 620, 26),
-    wall("ring-reception-south", 320, 1070, 620, 26),
-    wall("ring-reception-west", 320, 650, 26, 446),
-    wall("ring-reception-east-upper", 914, 650, 26, 155),
-    wall("ring-reception-east-lower", 914, 925, 26, 171),
-
-    wall("ring-talk-north", 300, 190, 850, 26),
-    wall("ring-talk-west", 300, 190, 26, 410),
-    wall("ring-talk-east-upper", 1124, 190, 26, 150),
-    wall("ring-talk-east-lower", 1124, 460, 26, 140),
-    wall("ring-talk-south-left", 300, 574, 260, 26),
-    wall("ring-talk-south-right", 710, 574, 440, 26),
-
-    wall("ring-control-north", 1180, 190, 700, 26),
-    wall("ring-control-south-left", 1180, 574, 500, 26),
-    wall("ring-control-west-upper", 1180, 190, 26, 150),
-    wall("ring-control-west-lower", 1180, 460, 26, 140),
-    wall("ring-control-east-upper", 1854, 190, 26, 330),
-
-    wall("ring-backstage-north-left", 1660, 660, 220, 26),
-    wall("ring-backstage-north-right", 1990, 660, 290, 26),
-    wall("ring-backstage-east", 2254, 660, 26, 460),
-    wall("ring-backstage-west-upper", 1660, 660, 26, 200),
-    wall("ring-backstage-west-lower", 1660, 980, 26, 140),
-    wall("ring-backstage-south-left", 1660, 1094, 160, 26),
-    wall("ring-backstage-south-right", 1960, 1094, 320, 26),
-
-    wall("ring-final-north-left", 760, 1230, 420, 26),
-    wall("ring-final-north-right", 1410, 1230, 390, 26),
-    wall("ring-final-south", 760, 1700, 1040, 26),
-    wall("ring-final-west", 760, 1230, 26, 496),
-    wall("ring-final-east", 1774, 1230, 26, 496),
+    wall("ring-outer-service-west", 280, 1000, WALL, 740),
+    wall("ring-outer-service-east", 2892, 760, WALL, 1180),
+    wall("ring-outer-north-cap", 640, 240, 1640, WALL),
+    wall("ring-outer-south-cap", 500, 2430, 1760, WALL),
   ],
 };

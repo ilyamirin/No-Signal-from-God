@@ -7,14 +7,16 @@ describe("ring tower level", () => {
     const level = createRingTowerLevel();
 
     expect(level.id).toBe("ring-tower");
-    expect(level.arena.width).toBe(2600);
-    expect(level.arena.height).toBe(1900);
+    expect(level.arena.width).toBe(3200);
+    expect(level.arena.height).toBe(2700);
     expect(Object.keys(ringTowerLayout.routeTargets)).toEqual([
       "lobby",
       "reception",
-      "talkStudio",
+      "newsStudio",
       "controlRoom",
+      "techRoom",
       "backstage",
+      "equipmentStore",
       "finalStudio",
       "exitLift",
     ]);

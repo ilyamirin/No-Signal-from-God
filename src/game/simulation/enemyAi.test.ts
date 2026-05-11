@@ -100,7 +100,7 @@ describe("enemy door traversal", () => {
   it("applies door pressure while a patrolling enemy moves through a doorway", () => {
     const state = createInitialGameState();
     const enemy = state.enemies[0];
-    const door = state.doors[0];
+    const door = state.doors.find((candidate) => candidate.id === "ring-lobby-reception-upper") ?? state.doors[0];
     state.enemies.forEach((candidate) => {
       candidate.alive = candidate.id === enemy.id;
       candidate.health = candidate.alive ? 1 : 0;

@@ -45,6 +45,9 @@ import monsterBloodDeathUrl from "../../assets/vendor/valentint-scifi/Particles/
 import monsterBloodSplashUrl from "../../assets/vendor/valentint-scifi/Particles/monsterBloodSplash_Sheet.png?url";
 import playerBloodDeathUrl from "../../assets/vendor/valentint-scifi/Particles/playerBloodDeath_Sheet.png?url";
 import playerBloodSplashUrl from "../../assets/vendor/valentint-scifi/Particles/playerBloodSplash_Sheet.png?url";
+import playerLegsIdleUrl from "../../assets/vendor/valentint-scifi/Legs/Player/player_legs_idle_Sheet.png?url";
+import playerLegsRunUrl from "../../assets/vendor/valentint-scifi/Legs/Player/player_legs_run_Sheet.png?url";
+import playerLegsWalkUrl from "../../assets/vendor/valentint-scifi/Legs/Player/player_legs_walk_Sheet.png?url";
 import playerDeathUrl from "../../assets/vendor/valentint-scifi/Player/Death/player_death_Sheet.png?url";
 import playerIdlePistolUrl from "../../assets/vendor/valentint-scifi/Player/Idle/player_idle_pistol_Sheet.png?url";
 import playerIdleRifleUrl from "../../assets/vendor/valentint-scifi/Player/Idle/player_idle_rifle_Sheet.png?url";
@@ -129,6 +132,24 @@ const spriteSheets: SpriteSheetAsset[] = [
   {
     key: "scifi-player-use",
     url: playerUseUrl,
+    frameWidth: 48,
+    frameHeight: 48,
+  },
+  {
+    key: "scifi-player-legs-idle",
+    url: playerLegsIdleUrl,
+    frameWidth: 48,
+    frameHeight: 48,
+  },
+  {
+    key: "scifi-player-legs-walk",
+    url: playerLegsWalkUrl,
+    frameWidth: 48,
+    frameHeight: 48,
+  },
+  {
+    key: "scifi-player-legs-run",
+    url: playerLegsRunUrl,
     frameWidth: 48,
     frameHeight: 48,
   },
@@ -490,6 +511,10 @@ export const ensureScifiAnimations = (scene: Phaser.Scene): void => {
   createAnimation(scene, "scifi-player-shoot-pistol", "scifi-player-shoot-pistol", 2, 18, 0);
   createAnimation(scene, "scifi-player-shoot-rifle", "scifi-player-shoot-rifle", 2, 18, 0);
   createAnimation(scene, "scifi-player-use", "scifi-player-use", 3, 8);
+  createAnimation(scene, "scifi-player-unarmed-idle", "scifi-player-use", 1, 1);
+  createAnimation(scene, "scifi-player-legs-idle", "scifi-player-legs-idle", 1, 1);
+  createAnimation(scene, "scifi-player-legs-walk", "scifi-player-legs-walk", 6, 9);
+  createAnimation(scene, "scifi-player-legs-run", "scifi-player-legs-run", 6, 12);
   createAnimation(scene, "scifi-player-punch-pistol", "scifi-player-punch-pistol", 4, 14, 0);
   createAnimation(scene, "scifi-player-reload-pistol", "scifi-player-reload-pistol", 4, 12, 0);
   createAnimation(scene, "scifi-player-reload-rifle", "scifi-player-reload-rifle", 4, 12, 0);
