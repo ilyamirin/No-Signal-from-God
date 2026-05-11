@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import type { EnemyState, PlayerState, Vec2, WeaponState } from "../../game/simulation/types";
-import { playerAnimationFor, playerLegsAnimationFor } from "./actorAnimationKeys";
+import { enemyLegsAnimationFor, playerAnimationFor, playerLegsAnimationFor } from "./actorAnimationKeys";
 import { actorDepthFor, LIVE_ACTOR_DEPTH } from "./actorDepth";
 
 type ActorState = Pick<
@@ -65,11 +65,11 @@ const createActorSprite = (
   scene: Phaser.Scene,
   textureKey: string,
   position: Vec2,
-  options: { withLegs?: boolean } = {},
+  options: { legsTextureKey?: string } = {},
 ): ActorRig => {
-  const legs = options.withLegs
+  const legs = options.legsTextureKey
     ? scene.add
-        .sprite(position.x, position.y, "scifi-player-legs-idle", 0)
+        .sprite(position.x, position.y, options.legsTextureKey, 0)
         .setOrigin(0.5)
         .setScale(ACTOR_SCALE)
         .setDepth(LIVE_ACTOR_DEPTH - 1)
@@ -85,7 +85,7 @@ const createActorSprite = (
     sprite,
     legs,
     textureKey,
-    legsTextureKey: legs ? "scifi-player-legs-idle" : undefined,
+    legsTextureKey: options.legsTextureKey,
     recoilMs: 0,
     shootMs: 0,
     walkTimerMs: 0,
@@ -152,8 +152,10 @@ export const syncActorRig = (
     rig.sprite.play(nextAnimation, true);
   }
 
-  const nextLegsAnimation = playerLegsAnimationFor(actor, moving);
+  const nextLegsAnimation =
+    actor.id === "player" ? playerLegsAnimationFor(actor, moving) : enemyLegsAnimationFor(actor, moving);
   if (rig.legs && nextLegsAnimation) {
+    rig.legs.setVisible(true);
     if (rig.currentLegsAnimation !== nextLegsAnimation) {
       rig.currentLegsAnimation = nextLegsAnimation;
       rig.legs.play(nextLegsAnimation, true);
@@ -163,6 +165,8 @@ export const syncActorRig = (
     rig.legs.setDepth(actorDepthFor(actor.alive) - 1);
     rig.legs.setAlpha(actor.alive ? 1 : 0.76);
     rig.legs.setTint(actor.alive ? 0xffffff : 0xa0d65f);
+  } else if (rig.legs) {
+    rig.legs.setVisible(false);
   }
 
   rig.sprite.setPosition(actor.position.x + recoilX, actor.position.y + recoilY + walkBob);
@@ -177,14 +181,16 @@ export const createPlayerRig = (
   player: PlayerState,
 ): ActorRig =>
   createActorSprite(scene, player.weaponId ? "scifi-player-idle-pistol" : "scifi-player-use", player.position, {
-    withLegs: true,
+    legsTextureKey: "scifi-player-legs-idle",
   });
 
 export const createEnemyRig = (
   scene: Phaser.Scene,
   enemy: EnemyState,
 ): ActorRig =>
-  createActorSprite(scene, enemyTextureKey(enemy), enemy.position);
+  createActorSprite(scene, enemyTextureKey(enemy), enemy.position, {
+    legsTextureKey: "scifi-enemy-legs-idle",
+  });
 
 export const actorSheetDebug = {
   frameSize: FRAME_SIZE,

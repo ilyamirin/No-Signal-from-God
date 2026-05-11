@@ -37,3 +37,16 @@ export const playerLegsAnimationFor = (
   }
   return actor.animation?.intent === "run" ? "scifi-player-legs-run" : "scifi-player-legs-walk";
 };
+
+export const enemyLegsAnimationFor = (
+  actor: ActorAnimationInput,
+  moving: boolean,
+): string | undefined => {
+  if (actor.id === "player" || !actor.alive) {
+    return undefined;
+  }
+  if (!moving) {
+    return "scifi-enemy-legs-idle";
+  }
+  return actor.animation?.intent === "run" ? "scifi-enemy-legs-run" : "scifi-enemy-legs-walk";
+};
