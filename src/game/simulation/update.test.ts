@@ -91,6 +91,31 @@ describe("updateGame", () => {
     expect(state.player.position.y).toBeCloseTo(1350, 0);
   });
 
+  it("keeps the ring tower reception-to-north-corridor path passable", () => {
+    let state = createInitialGameState({ levelId: "ring-tower" });
+    state.player.position = { x: 606, y: 1370 };
+    state.enemies.forEach((enemy) => {
+      enemy.position = { x: 3000, y: 2500 };
+      enemy.ai.perception = { visionRange: 0, visionAngle: 0, hearingRange: 0 };
+      enemy.attackCooldownMs = 100000;
+    });
+
+    for (let frame = 0; frame < 420; frame += 1) {
+      state = updateGame(
+        state,
+        {
+          ...neutralInput,
+          move: { x: 0, y: -1 },
+          aimWorld: { x: state.player.position.x, y: state.player.position.y - 100 },
+        },
+        16,
+      );
+    }
+
+    expect(state.player.position.y).toBeLessThan(1040);
+    expect(state.player.position.x).toBeCloseTo(606, 0);
+  });
+
   it("lets ranged enemies fire their own weapon state without consuming the player weapon", () => {
     const state = createInitialGameState({ levelId: "reception-hub" });
     state.player.position = { x: 690, y: 390 };
