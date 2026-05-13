@@ -72,6 +72,78 @@ export const propCatalog: Record<string, PropCatalogEntry> = {
   door_heavy: { assetKey: "scifi-door-heavy", collisionClass: "hardCover", channels: hard, themes: ["server", "lab"] },
   health_bag: { assetKey: "scifi-health-bag", collisionClass: "interactivePickup", channels: visual, themes: ["medical"] },
   weapon_bag: { assetKey: "scifi-weapon-bag", collisionClass: "interactivePickup", channels: visual, themes: ["utility"] },
+  reception_crt_console: {
+    assetKey: "reception-crt-console-bank",
+    collisionClass: "softCover",
+    channels: soft,
+    themes: ["tvStudio", "office"],
+  },
+  reception_desk_generated: {
+    assetKey: "reception-desk-generated",
+    collisionClass: "softCover",
+    channels: soft,
+    themes: ["tvStudio", "office"],
+  },
+  reception_sofa_horizontal: {
+    assetKey: "reception-sofa-horizontal",
+    collisionClass: "softCover",
+    channels: soft,
+    themes: ["office"],
+  },
+  reception_sofa_vertical: {
+    assetKey: "reception-sofa-vertical",
+    collisionClass: "softCover",
+    channels: soft,
+    themes: ["office"],
+  },
+  reception_water_cooler: {
+    assetKey: "reception-water-cooler",
+    collisionClass: "softCover",
+    channels: soft,
+    themes: ["office"],
+  },
+  reception_potted_plant: {
+    assetKey: "reception-potted-plant",
+    collisionClass: "softCover",
+    channels: soft,
+    themes: ["office", "tvStudio"],
+  },
+  reception_coffee_table: {
+    assetKey: "reception-coffee-table",
+    collisionClass: "softCover",
+    channels: soft,
+    themes: ["office"],
+  },
+  reception_cable_coil: {
+    assetKey: "reception-cable-coil",
+    collisionClass: "visualDecor",
+    channels: visual,
+    themes: ["tvStudio", "server"],
+  },
+  reception_crt_stack: {
+    assetKey: "reception-crt-stack",
+    collisionClass: "softCover",
+    channels: soft,
+    themes: ["tvStudio", "office"],
+  },
+  reception_neon_panel: {
+    assetKey: "reception-neon-panel",
+    collisionClass: "visualDecor",
+    channels: visual,
+    themes: ["tvStudio", "office"],
+  },
+  reception_paper_pile: {
+    assetKey: "reception-paper-pile",
+    collisionClass: "visualDecor",
+    channels: visual,
+    themes: ["office"],
+  },
+  reception_equipment_case: {
+    assetKey: "reception-equipment-case",
+    collisionClass: "softCover",
+    channels: soft,
+    themes: ["tvStudio", "utility"],
+  },
 };
 
 const prop = (

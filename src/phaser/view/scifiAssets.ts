@@ -1,6 +1,18 @@
 import Phaser from "phaser";
 
 import ringTowerCityUrl from "../../assets/level-art/ring-tower-city.webp?url";
+import receptionCableCoilUrl from "../../assets/generated/reception-kit/cable-coil.png?url";
+import receptionCoffeeTableUrl from "../../assets/generated/reception-kit/coffee-table.png?url";
+import receptionCrtConsoleBankUrl from "../../assets/generated/reception-kit/crt-console-bank.png?url";
+import receptionCrtStackUrl from "../../assets/generated/reception-kit/crt-stack.png?url";
+import receptionEquipmentCaseUrl from "../../assets/generated/reception-kit/equipment-case.png?url";
+import receptionNeonPanelUrl from "../../assets/generated/reception-kit/neon-panel.png?url";
+import receptionPaperPileUrl from "../../assets/generated/reception-kit/paper-pile.png?url";
+import receptionPottedPlantUrl from "../../assets/generated/reception-kit/potted-plant.png?url";
+import receptionDeskUrl from "../../assets/generated/reception-kit/reception-desk.png?url";
+import receptionSofaHorizontalUrl from "../../assets/generated/reception-kit/waiting-sofa-horizontal.png?url";
+import receptionSofaVerticalUrl from "../../assets/generated/reception-kit/waiting-sofa-vertical.png?url";
+import receptionWaterCoolerUrl from "../../assets/generated/reception-kit/water-cooler.png?url";
 import bloodFloorUrl from "../../assets/vendor/valentint-scifi/Decals/enemy_blood_floor_Sheet.png?url";
 import playerBloodFloorUrl from "../../assets/vendor/valentint-scifi/Decals/player_blood_floor_Sheet.png?url";
 import rubbishUrl from "../../assets/vendor/valentint-scifi/Decals/rubbish_Sheet.png?url";
@@ -486,6 +498,54 @@ const images: ImageAsset[] = [
   {
     key: "scifi-weapon-bag",
     url: weaponBagUrl,
+  },
+  {
+    key: "reception-cable-coil",
+    url: receptionCableCoilUrl,
+  },
+  {
+    key: "reception-coffee-table",
+    url: receptionCoffeeTableUrl,
+  },
+  {
+    key: "reception-crt-console-bank",
+    url: receptionCrtConsoleBankUrl,
+  },
+  {
+    key: "reception-crt-stack",
+    url: receptionCrtStackUrl,
+  },
+  {
+    key: "reception-equipment-case",
+    url: receptionEquipmentCaseUrl,
+  },
+  {
+    key: "reception-neon-panel",
+    url: receptionNeonPanelUrl,
+  },
+  {
+    key: "reception-paper-pile",
+    url: receptionPaperPileUrl,
+  },
+  {
+    key: "reception-potted-plant",
+    url: receptionPottedPlantUrl,
+  },
+  {
+    key: "reception-desk-generated",
+    url: receptionDeskUrl,
+  },
+  {
+    key: "reception-sofa-horizontal",
+    url: receptionSofaHorizontalUrl,
+  },
+  {
+    key: "reception-sofa-vertical",
+    url: receptionSofaVerticalUrl,
+  },
+  {
+    key: "reception-water-cooler",
+    url: receptionWaterCoolerUrl,
   },
 ];
 

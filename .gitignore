@@ -8,4 +8,8 @@ art/
 tmp/
 screenshots/
 src/assets/generated/
+!src/assets/generated/
+src/assets/generated/*
+!src/assets/generated/reception-kit/
+!src/assets/generated/reception-kit/*.png
 .DS_Store

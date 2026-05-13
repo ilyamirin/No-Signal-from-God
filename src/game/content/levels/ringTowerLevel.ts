@@ -1,6 +1,5 @@
 import type {
   Collider,
-  DecorItem,
   DoorState,
   DroppedWeaponState,
   EnemyAiState,
@@ -98,19 +97,20 @@ const dropped = (id: string, weaponId: string, kind: "pistol" | "rifle", x: numb
   pickupCooldownMs: 0,
 });
 
-const decor = (id: string, kind: DecorItem["kind"], x: number, y: number, rotation = 0): DecorItem => ({
-  id,
-  kind,
-  position: { x, y },
-  rotation,
-});
-
 const propChannels = (catalogKey: string): Collider["channels"] => {
   const soft = { movement: true, bullets: false, vision: false, sound: false };
   const hard = { movement: true, bullets: true, vision: true, sound: true };
   const visual = { movement: false, bullets: false, vision: false, sound: false };
   const hardKeys = new Set(["laboratory_device", "display_1", "display_2"]);
-  const visualKeys = new Set(["keyboard_mouse", "wall_lamp", "lamps", "tv_remote"]);
+  const visualKeys = new Set([
+    "keyboard_mouse",
+    "wall_lamp",
+    "lamps",
+    "tv_remote",
+    "reception_cable_coil",
+    "reception_neon_panel",
+    "reception_paper_pile",
+  ]);
   return visualKeys.has(catalogKey) ? visual : hardKeys.has(catalogKey) ? hard : soft;
 };
 
@@ -165,17 +165,7 @@ export const createRingTowerLevel = (): LevelDefinition => {
       height: ringTowerLayout.size.height,
       floorRegions: ringTowerLayout.floorRegions,
       obstacles: ringTowerLayout.obstacles,
-      // Reception dressing is decomposed from the approved A concept into gameplay-safe pieces.
-      decor: [
-        decor("ring-reception-crt-wall", "crt-wall", 398, 1108),
-        decor("ring-reception-console-cables", "cable", 512, 1228, 0.25),
-        decor("ring-reception-cable-coil", "cable-coil", 430, 1308),
-        decor("ring-reception-papers-a", "paper-stack", 690, 1188, -0.15),
-        decor("ring-reception-papers-b", "paper-stack", 548, 1470, 0.1),
-        decor("ring-reception-neon-west-a", "neon-strip", 334, 1182, Math.PI / 2),
-        decor("ring-reception-neon-west-b", "neon-strip", 334, 1534, Math.PI / 2),
-        decor("ring-reception-neon-south", "neon-strip", 540, 1648, 0),
-      ],
+      decor: [],
       background: {
         cityTextureKey: "ring-tower-city",
         cityParallax: 0.35,
@@ -216,19 +206,32 @@ export const createRingTowerLevel = (): LevelDefinition => {
       prop("ring-lobby-water-cooler", "cooler", 920, 1286, 38, 62, { scale: 1.35 }),
       prop("ring-lobby-info-tv", "tv", 1260, 1288, 84, 48, { frame: 1, scale: 1.6 }),
 
-      prop("ring-reception-desk", "table_10", 500, 1196, 180, 62, { scale: 2.05 }),
-      prop("ring-reception-computer", "computer", 466, 1178, 46, 38, { frame: 5, scale: 1.55, collider: false }),
-      prop("ring-reception-console-tv", "tv", 410, 1168, 84, 48, { frame: 1, scale: 1.45, collider: false }),
-      prop("ring-reception-side-display", "display_2", 574, 1164, 42, 42, { frame: 1, scale: 1.45, collider: false }),
-      prop("ring-reception-cooler", "cooler", 724, 1158, 38, 62, { scale: 1.35 }),
-      prop("ring-reception-couch-west", "couch_2", 394, 1494, 118, 52, { scale: 1.85, rotation: Math.PI / 2 }),
-      prop("ring-reception-couch-south", "couch_1", 548, 1592, 118, 52, { frame: 1, scale: 1.85 }),
-      prop("ring-reception-chair", "chair_1", 706, 1538, 38, 36, { frame: 1, scale: 1.55, rotation: -Math.PI / 2 }),
-      prop("ring-reception-coffee-table", "table_4", 548, 1468, 84, 48, { scale: 1.6 }),
-      prop("ring-reception-plant-a", "plants", 386, 1120, 38, 38, { frame: 2, scale: 1.35 }),
-      prop("ring-reception-plant-b", "plants", 398, 1604, 38, 38, { scale: 1.35 }),
-      prop("ring-reception-plant-c", "plants", 724, 1600, 38, 38, { frame: 1, scale: 1.35 }),
-      prop("ring-reception-trash", "trash_can_2", 724, 1452, 36, 36, { scale: 1.25 }),
+      prop("ring-reception-crt-console", "reception_crt_console", 510, 1160, 205, 92, { scale: 0.42 }),
+      prop("ring-reception-desk", "reception_desk_generated", 566, 1260, 230, 86, { scale: 0.36 }),
+      prop("ring-reception-cooler", "reception_water_cooler", 720, 1165, 40, 72, { scale: 0.28 }),
+      prop("ring-reception-crt-stack", "reception_crt_stack", 396, 1140, 96, 74, { scale: 0.28 }),
+      prop("ring-reception-cable-coil", "reception_cable_coil", 430, 1310, 64, 56, { scale: 0.34 }),
+      prop("ring-reception-couch-west", "reception_sofa_vertical", 398, 1502, 56, 132, { scale: 0.34 }),
+      prop("ring-reception-couch-south", "reception_sofa_horizontal", 555, 1590, 142, 58, {
+        scale: 0.36,
+        rotation: Math.PI,
+      }),
+      prop("ring-reception-coffee-table", "reception_coffee_table", 555, 1468, 88, 48, { scale: 0.3 }),
+      prop("ring-reception-equipment-case", "reception_equipment_case", 710, 1462, 76, 54, { scale: 0.23 }),
+      prop("ring-reception-plant-a", "reception_potted_plant", 396, 1118, 42, 52, { scale: 0.25 }),
+      prop("ring-reception-plant-b", "reception_potted_plant", 400, 1606, 42, 52, { scale: 0.25 }),
+      prop("ring-reception-plant-c", "reception_potted_plant", 724, 1600, 42, 52, { scale: 0.25 }),
+      prop("ring-reception-paper-top", "reception_paper_pile", 702, 1198, 40, 34, { scale: 0.16 }),
+      prop("ring-reception-paper-table", "reception_paper_pile", 558, 1464, 40, 34, { scale: 0.15 }),
+      prop("ring-reception-neon-west-a", "reception_neon_panel", 334, 1176, 100, 20, {
+        scale: 0.18,
+        rotation: Math.PI / 2,
+      }),
+      prop("ring-reception-neon-west-b", "reception_neon_panel", 334, 1540, 100, 20, {
+        scale: 0.18,
+        rotation: Math.PI / 2,
+      }),
+      prop("ring-reception-neon-south", "reception_neon_panel", 540, 1648, 100, 20, { scale: 0.18 }),
 
       prop("ring-talk-host-desk", "table_5", 1080, 440, 176, 64, { scale: 2.35 }),
       prop("ring-talk-guest-couch", "couch_1", 1080, 615, 118, 52, { frame: 1, scale: 2 }),

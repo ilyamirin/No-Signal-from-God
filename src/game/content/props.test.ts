@@ -13,6 +13,10 @@ const requiredKeys = [
   "toilet_table", "toilet_wall", "trash_can_1", "trash_can_2", "trash_can_3",
   "tv", "tv_remote", "keyboard_mouse", "wall_lamp", "computer", "door_small",
   "door_heavy", "health_bag", "weapon_bag",
+  "reception_cable_coil", "reception_coffee_table", "reception_crt_console",
+  "reception_crt_stack", "reception_desk_generated", "reception_equipment_case",
+  "reception_neon_panel", "reception_paper_pile", "reception_potted_plant",
+  "reception_sofa_horizontal", "reception_sofa_vertical", "reception_water_cooler",
 ];
 
 describe("prop catalog", () => {
