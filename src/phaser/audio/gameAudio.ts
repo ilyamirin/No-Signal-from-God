@@ -7,6 +7,7 @@ import footstep01Url from "../../assets/vendor/kenney-audio/footstep01.ogg?url";
 import monsterAttackUrl from "../../assets/vendor/kenney-audio/monster-attack.ogg?url";
 import shotPistolUrl from "../../assets/vendor/kenney-audio/shot-pistol.mp3?url";
 import shotRifleUrl from "../../assets/vendor/kenney-audio/shot-rifle.mp3?url";
+import { createMusicRotator, type MusicRotator } from "./musicRotator";
 import { collectSoundEvents, type SoundEvent } from "./soundEvents";
 
 type SoundDef = {
@@ -30,6 +31,7 @@ const extraSoundDefs = [
 
 export type GameAudioController = {
   sync: (previous: GameState, current: GameState) => void;
+  music: MusicRotator;
 };
 
 export const loadGameAudio = (scene: Phaser.Scene): void => {
@@ -43,7 +45,10 @@ export const loadGameAudio = (scene: Phaser.Scene): void => {
 
 export const createGameAudio = (scene: Phaser.Scene): GameAudioController => {
   const lastPlayedAt = new Map<SoundEvent, number>();
+  const music = createMusicRotator(scene);
   let footstepIndex = 0;
+
+  music.start();
 
   const playEvent = (event: SoundEvent): void => {
     const def = soundDefs[event];
@@ -65,6 +70,7 @@ export const createGameAudio = (scene: Phaser.Scene): GameAudioController => {
   };
 
   return {
+    music,
     sync: (previous, current) => {
       for (const event of collectSoundEvents(previous, current)) {
         playEvent(event);
